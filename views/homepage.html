@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{seo.title}}</title>
+    <meta name="description" content="{{seo.description}}">
+    <meta name="keywords" content="{{seo.keywords}}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{seo.canonical}}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{seo.ogTitle}}">
+    <meta property="og:description" content="{{seo.ogDescription}}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{seo.canonical}}">
+    <meta property="og:image" content="{{seo.ogImage}}">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="{{seo.twitterCard}}">
+    <meta name="twitter:title" content="{{seo.twitterTitle}}">
+    <meta name="twitter:description" content="{{seo.twitterDescription}}">
+    <meta name="twitter:image" content="{{seo.twitterImage}}">
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ffcc00',
+                        dark: '#1a1a1a',
+                        darker: '#0f0f0f'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Service Worker for Ad Control -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            // Register original service worker (propeller tracking)
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('✅ Propeller Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ Propeller Service Worker registration failed:', error);
+                });
+            
+            // Register custom ad protection service worker
+            navigator.serviceWorker.register('/sw-custom.js')
+                .then(registration => {
+                    console.log('🛡️ ArenaStreams Ad Protection SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ ArenaStreams Ad Protection SW registration failed:', error);
+                });
+        }
+    </script>
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ArenaStreams",
+        "url": "https://arenastreams.com",
+        "description": "Live sports streaming platform for football, basketball, tennis, UFC, rugby and baseball",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://arenastreams.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+</head>
+<body class="bg-darker text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark border-b border-gray-800">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-primary">🏟️ ArenaStreams</h1>
+                    <span class="text-gray-400 text-sm">Live Sports Streaming</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-white hover:text-primary transition-colors">Home</a>
+                    <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
+                    <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
+                    <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
+                    <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
+                    <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
+                    <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden bg-dark border-b border-gray-800 hidden">
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex flex-col space-y-4">
+                <a href="/" class="text-white hover:text-primary transition-colors">Home</a>
+                <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
+                <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
+                <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
+                <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
+                <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
+                <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="text-center mb-12">
+            <h2 class="text-4xl md:text-6xl font-bold mb-4">
+                Live Sports <span class="text-primary">Streaming</span>
+            </h2>
+            <p class="text-xl text-gray-300 mb-6 max-w-3xl mx-auto">
+                Watch live football, basketball, tennis, UFC, rugby and baseball matches in HD quality. 
+                Free streaming with no registration required.
+            </p>
+            
+            <!-- Today's Date Display -->
+            <div class="bg-dark border border-gray-800 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                <p class="text-lg font-semibold text-primary" id="current-date">Loading today's date...</p>
+                <p class="text-sm text-gray-400">Choose your sport below to start watching</p>
+            </div>
+            
+            <!-- Welcome Message -->
+            <div class="bg-primary text-dark px-6 py-3 rounded-lg inline-block font-bold text-lg mb-6">
+                🎯 Select Your Sport Below
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+                <span class="flex items-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    HD Quality
+                </span>
+                <span class="flex items-center">
+                    <span class="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                    No Registration
+                </span>
+                <span class="flex items-center">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                    Free Streaming
+                </span>
+            </div>
+        </section>
+
+
+        <!-- Real Banner Ad -->
+        <section class="mb-12">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 max-w-4xl mx-auto">
+                <p class="text-gray-400 text-sm mb-2 text-center">Advertisement</p>
+                <div class="text-center">
+                    <!-- Real Banner Ad -->
+                    <iframe src="https://otieu.com/4/9879175" 
+                            width="728" height="90" 
+                            frameborder="0" 
+                            scrolling="no"
+                            style="max-width: 100%; height: auto;">
+                    </iframe>
+                    <p class="text-xs mt-2 text-gray-500">728x90 Banner Ad</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Choose Your Sport -->
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold mb-4">
+                    Choose Your <span class="text-primary">Sport</span>
+                </h3>
+                <p class="text-gray-400 text-lg">Click on any sport below to view live matches and streams</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <a href="/football" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">⚽</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Football</h4>
+                    <p class="text-sm text-gray-400 mt-2">Premier League, Champions League</p>
+                </a>
+                <a href="/basketball" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏀</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Basketball</h4>
+                    <p class="text-sm text-gray-400 mt-2">NBA, EuroLeague</p>
+                </a>
+                <a href="/tennis" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🎾</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Tennis</h4>
+                    <p class="text-sm text-gray-400 mt-2">Grand Slams, ATP, WTA</p>
+                </a>
+                <a href="/ufc" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🥊</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">UFC</h4>
+                    <p class="text-sm text-gray-400 mt-2">Fights, Championships</p>
+                </a>
+                <a href="/rugby" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏉</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Rugby</h4>
+                    <p class="text-sm text-gray-400 mt-2">Six Nations, World Cup</p>
+                </a>
+                <a href="/baseball" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">⚾</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Baseball</h4>
+                    <p class="text-sm text-gray-400 mt-2">MLB, World Series</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-t border-gray-800 mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-xl font-bold text-primary mb-4">🏟️ ArenaStreams</h4>
+                    <p class="text-gray-400 text-sm">
+                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC and more in HD quality.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Sports</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="/football" class="hover:text-primary transition-colors">Football</a></li>
+                        <li><a href="/basketball" class="hover:text-primary transition-colors">Basketball</a></li>
+                        <li><a href="/tennis" class="hover:text-primary transition-colors">Tennis</a></li>
+                        <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Quick Links</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="/football" class="hover:text-primary transition-colors">Football</a></li>
+                        <li><a href="/basketball" class="hover:text-primary transition-colors">Basketball</a></li>
+                        <li><a href="/tennis" class="hover:text-primary transition-colors">Tennis</a></li>
+                        <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Legal</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="/privacy" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" class="hover:text-primary transition-colors">Terms of Service</a></li>
+                        <li><a href="/contact" class="hover:text-primary transition-colors">Contact</a></li>
+                        <li><a href="/sitemap.xml" class="hover:text-primary transition-colors">Sitemap</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 ArenaStreams. All rights reserved. | Live sports streaming platform</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Display today's date
+        function displayTodaysDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = formattedDate;
+        }
+
+        // Add click tracking for sport selection
+        function trackSportSelection(sport) {
+            console.log(`🎯 User selected sport: ${sport}`);
+            // You can add analytics tracking here if needed
+        }
+
+        // Initialize homepage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Display today's date immediately
+            displayTodaysDate();
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Add click handlers to sport cards
+            document.querySelectorAll('a[href^="/"]').forEach(link => {
+                if (link.href.includes('/football') || link.href.includes('/basketball') || 
+                    link.href.includes('/tennis') || link.href.includes('/ufc') || 
+                    link.href.includes('/rugby') || link.href.includes('/baseball')) {
+                    link.addEventListener('click', function(e) {
+                        const sport = this.href.split('/').pop();
+                        trackSportSelection(sport);
+                    });
+                }
+            });
+        });
+    </script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
