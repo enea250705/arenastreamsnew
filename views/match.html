@@ -187,6 +187,11 @@
                     <div class="flex flex-wrap justify-center gap-2 py-3 sm:py-4" id="player-tabs-container">
                         <!-- Server buttons will be dynamically generated here -->
                     </div>
+                    <div class="text-center pb-3">
+                        <button id="load-more-servers" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors hidden">
+                            🔄 Load More Servers
+                        </button>
+                    </div>
                 </div>
 
             <!-- Player Content -->
@@ -523,8 +528,8 @@
                         }
                     }
                     
-                    // Limit to 20 streams like football.html does
-                    const limitedStreams = allStreams.slice(0, 20);
+                    // Limit to 30 streams (increased from 20)
+                    const limitedStreams = allStreams.slice(0, 30);
                     window.match.embedUrls = limitedStreams.map(stream => stream.embedUrl);
                     
                     console.log(`📺 Total loaded ${limitedStreams.length} real streams from ${window.match.sources.length} sources:`, window.match.embedUrls);
@@ -533,15 +538,41 @@
                     generatePlayerTabs(limitedStreams.length);
                     
                 } else {
-                    console.log('⚠️ No match sources available, using default streams');
-                    // Generate default 3 player tabs
-                    generatePlayerTabs(3);
+                    console.log('⚠️ No match sources available, using enhanced default streams');
+                    // Generate more default player tabs with fallback streams
+                    generatePlayerTabs(8); // Increased from 3 to 8
+                    
+                    // Create fallback embed URLs with multiple sources
+                    window.match.embedUrls = [
+                        'https://streamed.pk/embed/1',
+                        'https://streamed.pk/embed/2', 
+                        'https://streamed.pk/embed/3',
+                        'https://streamed.pk/embed/4',
+                        'https://streamed.pk/embed/5',
+                        'https://streamed.pk/embed/6',
+                        'https://streamed.pk/embed/7',
+                        'https://streamed.pk/embed/8',
+                        'https://streamed.pk/embed/9',
+                        'https://streamed.pk/embed/10'
+                    ];
                 }
                 } catch (error) {
                     console.error('❌ Failed to load real streams:', error);
-                    // Generate default 3 player tabs on error
-                generatePlayerTabs(3);
-            }
+                    // Generate more default player tabs on error
+                    generatePlayerTabs(8); // Increased from 3 to 8
+                    
+                    // Create fallback embed URLs for error case
+                    window.match.embedUrls = [
+                        'https://streamed.pk/embed/1',
+                        'https://streamed.pk/embed/2', 
+                        'https://streamed.pk/embed/3',
+                        'https://streamed.pk/embed/4',
+                        'https://streamed.pk/embed/5',
+                        'https://streamed.pk/embed/6',
+                        'https://streamed.pk/embed/7',
+                        'https://streamed.pk/embed/8'
+                    ];
+                }
         }
 
         // Generate player tabs dynamically based on number of streams
@@ -574,6 +605,16 @@
             }
 
             console.log(`🎮 Generated ${streamCount} player tabs successfully`);
+            
+            // Show/hide load more servers button based on stream count
+            const loadMoreBtn = document.getElementById('load-more-servers');
+            if (loadMoreBtn) {
+                if (streamCount >= 8) {
+                    loadMoreBtn.classList.remove('hidden');
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+            }
         }
 
         // Match data from server - with error handling
@@ -668,7 +709,7 @@
 
             // Generate default tabs first, then load real streams
             try {
-            generatePlayerTabs(3); // Default 3 tabs
+            generatePlayerTabs(8); // Default 8 tabs (increased from 3)
                 console.log('✅ Player tabs generated successfully');
             } catch (error) {
                 console.error('❌ Error generating player tabs:', error);
@@ -891,6 +932,41 @@
                 console.log('🔄 Refreshing stream...');
                 loadStream();
             });
+
+            // Load more servers button
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'load-more-servers') {
+                    console.log('🔄 Load more servers button clicked');
+                    loadAdditionalServers();
+                }
+            });
+
+            // Function to load additional servers
+            function loadAdditionalServers() {
+                console.log('🔄 Loading additional servers...');
+                
+                // Add more fallback servers
+                const additionalServers = [
+                    'https://streamed.pk/embed/11',
+                    'https://streamed.pk/embed/12',
+                    'https://streamed.pk/embed/13',
+                    'https://streamed.pk/embed/14',
+                    'https://streamed.pk/embed/15'
+                ];
+                
+                // Add to existing embedUrls
+                if (window.match.embedUrls) {
+                    window.match.embedUrls.push(...additionalServers);
+                } else {
+                    window.match.embedUrls = additionalServers;
+                }
+                
+                // Generate additional tabs
+                const currentTabCount = document.querySelectorAll('.player-tab').length;
+                generatePlayerTabs(window.match.embedUrls.length, true); // Force regenerate
+                
+                console.log(`✅ Added ${additionalServers.length} more servers. Total: ${window.match.embedUrls.length}`);
+            }
 
             // Player tab switching (using event delegation for dynamic tabs)
             document.addEventListener('click', function(e) {
