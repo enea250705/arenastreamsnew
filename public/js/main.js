@@ -331,20 +331,47 @@ function getMatchStatus(matchDate) {
     }
 }
 
-// Helper function to truncate team names intelligently
-function truncateTeamName(name, maxLength = 20) {
+// Helper function to truncate team names intelligently for mobile
+function truncateTeamName(name, maxLength = 15) {
     if (name.length <= maxLength) return name;
     
     // Try to truncate at a space if possible
     const truncated = name.substring(0, maxLength);
     const lastSpace = truncated.lastIndexOf(' ');
     
-    if (lastSpace > maxLength * 0.7) {
+    if (lastSpace > maxLength * 0.6) {
         return truncated.substring(0, lastSpace) + '...';
     }
     
     return truncated + '...';
 }
+
+// Helper function to get mobile-optimized team name
+function getMobileTeamName(name) {
+    // For mobile, use shorter truncation
+    if (window.innerWidth < 640) { // sm breakpoint
+        return truncateTeamName(name, 10);
+    }
+    return truncateTeamName(name, 18);
+}
+
+// Force re-render on window resize to update mobile layout
+let resizeTimeout;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+        // Re-render all match containers on resize
+        const containers = ['live-matches', 'upcoming-matches', 'matches-container'];
+        containers.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (container && container.innerHTML.trim()) {
+                // Trigger a re-render by dispatching a custom event
+                const event = new CustomEvent('resizeMatches');
+                container.dispatchEvent(event);
+            }
+        });
+    }, 250);
+});
 
 // Render matches in the UI with improved mobile responsiveness
 function renderMatches(matches, containerId) {
@@ -363,41 +390,35 @@ function renderMatches(matches, containerId) {
     }
     
     container.innerHTML = matches.map(match => `
-        <div class="bg-dark border border-gray-800 rounded-lg p-4 sm:p-6 hover:border-primary transition-colors">
-            <!-- Mobile-friendly team display with better long name handling -->
-            <div class="mb-4">
+        <div class="bg-dark border border-gray-800 rounded-lg p-3 sm:p-6 hover:border-primary transition-colors">
+            <!-- Ultra-compact mobile layout for team names -->
+            <div class="mb-3 sm:mb-4">
                 ${match.teamB !== 'vs Opponent' ? `
-                <!-- Two team match -->
-                <div class="flex flex-col space-y-2">
+                <!-- Two team match - Horizontal layout: Team A vs Team B -->
+                <div class="flex items-center justify-between space-x-2">
                     <!-- Team A -->
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
-                        <div class="flex-1 min-w-0">
-                            <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamA}">${truncateTeamName(match.teamA)}</span>
-                        </div>
+                    <div class="flex items-center space-x-2 min-w-0 flex-1">
+                        ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-5 h-5 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
+                        <span class="font-semibold text-xs sm:text-base truncate" title="${match.teamA}">${getMobileTeamName(match.teamA)}</span>
                     </div>
                     
                     <!-- VS separator -->
-                    <div class="flex justify-center">
-                        <span class="text-primary font-bold text-xs sm:text-sm bg-gray-800 px-2 py-1 rounded-full">VS</span>
-                    </div>
+                    <span class="text-primary font-bold text-xs sm:text-sm flex-shrink-0">VS</span>
                     
                     <!-- Team B -->
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        ${match.teamBBadge ? `<img src="${match.teamBBadge}" alt="${match.teamB}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
-                        <div class="flex-1 min-w-0">
-                            <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamB}">${truncateTeamName(match.teamB)}</span>
-                        </div>
+                    <div class="flex items-center space-x-2 min-w-0 flex-1 justify-end">
+                        <span class="font-semibold text-xs sm:text-base truncate" title="${match.teamB}">${getMobileTeamName(match.teamB)}</span>
+                        ${match.teamBBadge ? `<img src="${match.teamBBadge}" alt="${match.teamB}" class="w-5 h-5 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
                     </div>
                 </div>
                 ` : `
-                <!-- Single team/channel -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
-                    <div class="flex-1 min-w-0">
-                        <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamA}">${truncateTeamName(match.teamA)}</span>
+                <!-- Single team/channel - Mobile optimized -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 min-w-0 flex-1">
+                        ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-5 h-5 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
+                        <span class="font-semibold text-xs sm:text-base truncate" title="${match.teamA}">${getMobileTeamName(match.teamA)}</span>
                     </div>
-                    <span class="text-gray-400 text-xs">Live Channel</span>
+                    <span class="text-gray-400 text-xs flex-shrink-0">Live</span>
                 </div>
                 `}
             </div>
