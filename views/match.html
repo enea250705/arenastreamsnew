@@ -1,78 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        // Madurird.com script integration with our 5 ads logic
-        (function() {
-            const script = document.createElement('script');
-            script.src = '//madurird.com/tag.min.js';
-            script.setAttribute('data-zone', '9879600');
-            script.setAttribute('data-cfasync', 'false');
-            script.async = true;
-            
-            // Override the global functions to integrate with our ad system
-            window._ybegdek = function() {
-                console.log('📢 Madurird script error - using our 5 ads system');
-                // Fallback to our existing ad system
-                if (window.triggerPopups) {
-                    window.triggerPopups(2); // Trigger 2 popups as fallback
-                }
-            };
-            
-            window._imdxert = function() {
-                console.log('📢 Madurird script loaded - integrated with our 5 ads system');
-                // When madurird loads, it can trigger our popup system
-                if (window.triggerPopups) {
-                    // Trigger 1 popup when madurird loads successfully
-                    setTimeout(() => {
-                        window.triggerPopups(1);
-                    }, 1000);
-                }
-                
-                // Expose additional functions for madurird to use
-                window.madurirdTriggerAds = function(count = 1) {
-                    console.log('📢 Madurird requesting ad trigger:', count);
-                    if (window.triggerPopups) {
-                        window.triggerPopups(count);
-                    }
-                };
-                
-                // Trigger ads on page interactions (madurird can call these)
-                window.madurirdOnClick = function() {
-                    console.log('📢 Madurird click event - triggering ads');
-                    window.madurirdTriggerAds(1);
-                };
-                
-                window.madurirdOnScroll = function() {
-                    console.log('📢 Madurird scroll event - triggering ads');
-                    window.madurirdTriggerAds(1);
-                };
-                
-                // Set up event listeners for madurird integration
-                document.addEventListener('click', function(e) {
-                    // Let madurird handle click events if it wants to trigger ads
-                    if (window.madurirdOnClick && Math.random() < 0.1) { // 10% chance
-                        window.madurirdOnClick();
-                    }
-                });
-                
-                let scrollTimeout;
-                window.addEventListener('scroll', function() {
-                    clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(() => {
-                        if (window.madurirdOnScroll && Math.random() < 0.05) { // 5% chance
-                            window.madurirdOnScroll();
-                        }
-                    }, 1000);
-                });
-            };
-            
-            script.onerror = window._ybegdek;
-            script.onload = window._imdxert;
-            
-            document.head.appendChild(script);
-        })();
-    </script>
+    <script>(s=>{s.dataset.zone='9879600',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{match.teamA}} vs {{match.teamB}} Live Stream {{match.competition}} {{match.date}} | ArenaStreams</title>
