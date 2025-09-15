@@ -361,8 +361,11 @@ let searchTimeout;
 
 // Search function to filter matches by team names
 function searchMatches(searchTerm, containerId) {
+    console.log(`🔍 Searching for "${searchTerm}" in container ${containerId} with ${allMatches.length} matches`);
+    
     if (!searchTerm.trim()) {
         // If search is empty, show all matches
+        console.log('🔍 Empty search, showing all matches');
         renderMatches(allMatches, containerId);
         return;
     }
@@ -374,12 +377,19 @@ function searchMatches(searchTerm, containerId) {
         const competition = match.competition ? match.competition.toLowerCase() : '';
         const title = match.title ? match.title.toLowerCase() : '';
         
-        return teamA.includes(searchLower) || 
-               teamB.includes(searchLower) || 
-               competition.includes(searchLower) ||
-               title.includes(searchLower);
+        const matches = teamA.includes(searchLower) || 
+                       teamB.includes(searchLower) || 
+                       competition.includes(searchLower) ||
+                       title.includes(searchLower);
+        
+        if (matches) {
+            console.log(`✅ Match found: ${teamA} vs ${teamB}`);
+        }
+        
+        return matches;
     });
     
+    console.log(`🎯 Found ${filteredMatches.length} matches for "${searchTerm}"`);
     renderMatches(filteredMatches, containerId);
     
     // Show search results count
@@ -388,7 +398,7 @@ function searchMatches(searchTerm, containerId) {
         const resultsInfo = container.previousElementSibling.querySelector('.search-results-info');
         if (resultsInfo) {
             resultsInfo.textContent = `Found ${filteredMatches.length} match${filteredMatches.length !== 1 ? 'es' : ''} for "${searchTerm}"`;
-            resultsInfo.style.display = filteredMatches.length > 0 ? 'block' : 'none';
+            resultsInfo.style.display = 'block';
         }
     }
 }
@@ -427,8 +437,20 @@ function createSearchInput(containerId, placeholder = "Search teams or matches..
 
 // Initialize search functionality
 function initializeSearch(containerId, placeholder) {
+    console.log(`🔧 Initializing search for container: ${containerId}`);
+    
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container) {
+        console.log(`❌ Container ${containerId} not found`);
+        return;
+    }
+    
+    // Check if search input already exists
+    const existingSearchInput = document.getElementById(`search-input-${containerId}`);
+    if (existingSearchInput) {
+        console.log(`✅ Search input already exists for ${containerId}`);
+        return;
+    }
     
     // Add search input before the container
     const searchHTML = createSearchInput(containerId, placeholder);
@@ -437,14 +459,22 @@ function initializeSearch(containerId, placeholder) {
     const searchInput = document.getElementById(`search-input-${containerId}`);
     const clearButton = document.getElementById(`clear-search-${containerId}`);
     
-    if (!searchInput) return;
+    if (!searchInput) {
+        console.log(`❌ Failed to create search input for ${containerId}`);
+        return;
+    }
+    
+    console.log(`✅ Search input created for ${containerId}`);
     
     // Search input event listener
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.trim();
+        console.log(`🔍 Search input changed: "${searchTerm}"`);
         
         // Show/hide clear button
-        clearButton.style.display = searchTerm ? 'flex' : 'none';
+        if (clearButton) {
+            clearButton.style.display = searchTerm ? 'flex' : 'none';
+        }
         
         // Debounce search
         clearTimeout(searchTimeout);
@@ -454,32 +484,32 @@ function initializeSearch(containerId, placeholder) {
     });
     
     // Clear button event listener
-    clearButton.addEventListener('click', function() {
-        searchInput.value = '';
-        this.style.display = 'none';
-        searchMatches('', containerId);
-        searchInput.focus();
-    });
-    
-    // Store original matches when first loaded
-    if (allMatches.length === 0 && container.innerHTML.trim()) {
-        // We'll populate allMatches when matches are loaded
+    if (clearButton) {
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            this.style.display = 'none';
+            searchMatches('', containerId);
+            searchInput.focus();
+        });
     }
+    
+    console.log(`🎯 Search initialization complete for ${containerId}`);
 }
 
 // Enhanced renderMatches function with search support
 function renderMatchesWithSearch(matches, containerId, placeholder = "Search teams or matches...") {
+    console.log(`🔍 Initializing search for container: ${containerId} with ${matches.length} matches`);
+    
     // Store all matches for search functionality
     allMatches = matches;
     
-    // Initialize search if not already done
-    const searchInput = document.getElementById(`search-input-${containerId}`);
-    if (!searchInput) {
-        initializeSearch(containerId, placeholder);
-    }
+    // Always initialize search (in case it wasn't done before)
+    initializeSearch(containerId, placeholder);
     
     // Render matches
     renderMatches(matches, containerId);
+    
+    console.log(`✅ Search initialized for ${containerId}, stored ${allMatches.length} matches`);
 }
 
 // Force re-render on window resize to update mobile layout
