@@ -758,6 +758,28 @@ Sitemap: ${seoConfig.siteUrl}/sitemap-sports.xml
 Sitemap: ${seoConfig.siteUrl}/sitemap-matches.xml`);
 });
 
+// Privacy Policy route
+app.get('/privacy', async (req, res) => {
+  try {
+    const html = await renderTemplate('privacy', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering privacy page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Terms of Service route
+app.get('/terms', async (req, res) => {
+  try {
+    const html = await renderTemplate('terms', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering terms page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // Initialize data and start server
 initializeData().then(() => {
   app.listen(PORT, () => {

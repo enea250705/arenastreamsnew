@@ -15,7 +15,7 @@ I've built you a complete, production-ready sports streaming aggregator with all
 
 #### ✅ **2. SEO Optimization (10/10)**
 - **Auto-generated SEO pages**: Each match gets unique static page
-- **Clean URLs**: `team-a-vs-team-b-live-2024-01-15.html`
+- **Clean URLs**: `team-a-vs-team-b-live-2025-01-15.html`
 - **Meta tags**: Dynamic titles, descriptions, Open Graph
 - **Schema markup**: JSON-LD structured data for sports events
 - **Breadcrumbs**: Home > Sport > Competition > Match
@@ -108,7 +108,7 @@ arenastreams/
 ### 🎯 **Key Features**
 
 #### **SEO Pages**
-- Each match gets: `team-a-vs-team-b-live-2024-01-15.html`
+- Each match gets: `team-a-vs-team-b-live-2025-01-15.html`
 - Complete meta tags and schema markup
 - Breadcrumb navigation
 - Match preview content
@@ -155,12 +155,12 @@ arenastreams/
     "teamA": "Manchester United",
     "teamB": "Liverpool",
     "competition": "Premier League",
-    "date": "2024-01-15T15:30:00Z",
+    "date": "2025-01-15T15:30:00Z",
     "embedUrls": ["url1", "url2", "url3"],
     "teamABadge": "badge-url",
     "teamBBadge": "badge-url",
     "status": "upcoming",
-    "slug": "manchester-united-vs-liverpool-live-2024-01-15"
+    "slug": "manchester-united-vs-liverpool-live-2025-01-15"
   }
 ]
 ```
