@@ -175,6 +175,8 @@
                     <a href="/" class="text-2xl font-bold text-primary">🏟️ ArenaStreams</a>
                     <span class="text-gray-400 text-sm hidden md:block">Live Sports Streaming</span>
                 </div>
+                
+                <!-- Desktop Navigation -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="/" class="text-gray-400 hover:text-primary transition-colors">Home</a>
                     <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
@@ -183,6 +185,26 @@
                     <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                     <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                     <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
+                </nav>
+                
+                <!-- Mobile Hamburger Menu -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-400 hover:text-primary transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="md:hidden hidden mt-4 pb-4">
+                <nav class="flex flex-col space-y-3">
+                    <a href="/" class="text-gray-400 hover:text-primary transition-colors py-2">Home</a>
+                    <a href="/football" class="text-gray-400 hover:text-primary transition-colors py-2">⚽ Football</a>
+                    <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors py-2">🏀 Basketball</a>
+                    <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors py-2">🎾 Tennis</a>
+                    <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors py-2">🥊 UFC</a>
+                    <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors py-2">🏉 Rugby</a>
+                    <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors py-2">⚾ Baseball</a>
                 </nav>
             </div>
         </div>
@@ -586,9 +608,9 @@
                     // Generate default 3 player tabs
                     generatePlayerTabs(3);
                 }
-            } catch (error) {
-                console.error('❌ Failed to load real streams:', error);
-                // Generate default 3 player tabs on error
+                } catch (error) {
+                    console.error('❌ Failed to load real streams:', error);
+                    // Generate default 3 player tabs on error
                 generatePlayerTabs(3);
             }
         }
@@ -671,6 +693,17 @@
             let isStreamPlaying = false;
             let hasPlayedBefore = false;
 
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    console.log('📱 Mobile menu toggled');
+                });
+            }
+
             // Initialize popup tracking from localStorage
             const sessionKey = 'arenastreams_popups_' + window.match.id;
             let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
@@ -680,14 +713,14 @@
 
             // Generate default tabs first, then load real streams
             try {
-                generatePlayerTabs(3); // Default 3 tabs
+            generatePlayerTabs(3); // Default 3 tabs
                 console.log('✅ Player tabs generated successfully');
             } catch (error) {
                 console.error('❌ Error generating player tabs:', error);
             }
             
             try {
-                loadRealStreams();
+            loadRealStreams();
                 console.log('✅ Real streams loading initiated');
             } catch (error) {
                 console.error('❌ Error loading real streams:', error);
