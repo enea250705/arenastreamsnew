@@ -117,7 +117,7 @@
                 </nav>
                 
                 <!-- Mobile Hamburger Menu -->
-                <button id="mobile-menu-button" class="md:hidden text-gray-400 hover:text-primary transition-colors">
+                <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-primary transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -622,14 +622,40 @@
             let isStreamPlaying = false;
             let hasPlayedBefore = false;
 
-            // Mobile menu functionality
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            // Mobile menu functionality - robust fallback for production
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
+            console.log('🔍 Match page - Mobile menu elements:', { mobileMenuBtn, mobileMenu });
+            
+            if (mobileMenuBtn && mobileMenu) {
+                // Remove any existing listeners first
+                const newMobileMenuBtn = mobileMenuBtn.cloneNode(true);
+                mobileMenuBtn.parentNode.replaceChild(newMobileMenuBtn, mobileMenuBtn);
+                
+                // Add robust event listener
+                newMobileMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('📱 Match - Mobile menu button clicked');
                     mobileMenu.classList.toggle('hidden');
-                    console.log('📱 Mobile menu toggled');
+                    console.log('📱 Match - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                });
+                
+                // Also add touch event for mobile devices
+                newMobileMenuBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('📱 Match - Mobile menu button touched');
+                    mobileMenu.classList.toggle('hidden');
+                    console.log('📱 Match - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                });
+                
+                console.log('✅ Match - Mobile menu fallback initialized with robust event listeners');
+            } else {
+                console.log('❌ Match - Mobile menu elements not found:', { 
+                    mobileMenuBtn: !!mobileMenuBtn, 
+                    mobileMenu: !!mobileMenu 
                 });
             }
 
