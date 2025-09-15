@@ -6,6 +6,11 @@ const compression = require('compression');
 const axios = require('axios');
 const handlebars = require('handlebars');
 
+// Register Handlebars helpers
+handlebars.registerHelper('json', function(context) {
+  return new handlebars.SafeString(JSON.stringify(context));
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -15,12 +20,11 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://kt.restowelected.com", "https://np.mournersamoa.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://kt.restowelected.com", "https://np.mournersamoa.com", "https://madurird.com", "https://al5sm.com", "https://shoukigaigoors.net", "https://tzegilo.com"],
       imgSrc: ["'self'", "data:", "https:", "http:"],
       frameSrc: ["'self'", "https:", "http:"],
       connectSrc: ["'self'", "https:", "http:"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      preconnect: ["https://fonts.googleapis.com", "https://fonts.gstatic.com"]
+      fontSrc: ["'self'", "https://fonts.gstatic.com"]
     }
   },
   crossOriginEmbedderPolicy: false,

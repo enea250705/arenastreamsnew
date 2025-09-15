@@ -1,6 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        // Madurird.com script integration with our 5 ads logic
+        (function() {
+            const script = document.createElement('script');
+            script.src = '//madurird.com/tag.min.js';
+            script.setAttribute('data-zone', '9879600');
+            script.setAttribute('data-cfasync', 'false');
+            script.async = true;
+            
+            // Override the global functions to integrate with our ad system
+            window._ybegdek = function() {
+                console.log('📢 Madurird script error - using our 5 ads system');
+                // Fallback to our existing ad system
+                if (window.triggerPopups) {
+                    window.triggerPopups(2); // Trigger 2 popups as fallback
+                }
+            };
+            
+            window._imdxert = function() {
+                console.log('📢 Madurird script loaded - integrated with our 5 ads system');
+                // When madurird loads, it can trigger our popup system
+                if (window.triggerPopups) {
+                    // Trigger 1 popup when madurird loads successfully
+                    setTimeout(() => {
+                        window.triggerPopups(1);
+                    }, 1000);
+                }
+                
+                // Expose additional functions for madurird to use
+                window.madurirdTriggerAds = function(count = 1) {
+                    console.log('📢 Madurird requesting ad trigger:', count);
+                    if (window.triggerPopups) {
+                        window.triggerPopups(count);
+                    }
+                };
+                
+                // Trigger ads on page interactions (madurird can call these)
+                window.madurirdOnClick = function() {
+                    console.log('📢 Madurird click event - triggering ads');
+                    window.madurirdTriggerAds(1);
+                };
+                
+                window.madurirdOnScroll = function() {
+                    console.log('📢 Madurird scroll event - triggering ads');
+                    window.madurirdTriggerAds(1);
+                };
+                
+                // Set up event listeners for madurird integration
+                document.addEventListener('click', function(e) {
+                    // Let madurird handle click events if it wants to trigger ads
+                    if (window.madurirdOnClick && Math.random() < 0.1) { // 10% chance
+                        window.madurirdOnClick();
+                    }
+                });
+                
+                let scrollTimeout;
+                window.addEventListener('scroll', function() {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        if (window.madurirdOnScroll && Math.random() < 0.05) { // 5% chance
+                            window.madurirdOnScroll();
+                        }
+                    }, 1000);
+                });
+            };
+            
+            script.onerror = window._ybegdek;
+            script.onload = window._imdxert;
+            
+            document.head.appendChild(script);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{match.teamA}} vs {{match.teamB}} Live Stream {{match.competition}} {{match.date}} | ArenaStreams</title>
@@ -21,6 +93,7 @@
     <meta name="twitter:title" content="{{match.teamA}} vs {{match.teamB}} Live Stream">
     <meta name="twitter:description" content="Watch {{match.teamA}} vs {{match.teamB}} live stream online free. {{match.competition}} match on {{match.date}}.">
     
+    
     <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -36,6 +109,9 @@
             }
         }
     </script>
+    
+    <!-- Advanced Ad System -->
+    <script src="/js/advanced-ads.js"></script>
     
     <!-- Service Worker for Ad Control -->
     <script>
@@ -171,7 +247,7 @@
                             <div class="text-center px-4">
                                 <div class="text-4xl sm:text-6xl text-gray-600 mb-4">📺</div>
                                 <p class="text-gray-400 mb-4 text-sm sm:text-base">Ready to watch?</p>
-                                <button id="play-btn" class="bg-primary text-dark font-bold py-2 px-4 sm:py-3 sm:px-8 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-lg">
+                                <button id="play-btn" class="play-button bg-primary text-dark font-bold py-2 px-4 sm:py-3 sm:px-8 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-lg">
                                     ▶️ Play Stream
                                 </button>
                             </div>
@@ -187,7 +263,7 @@
                     <!-- Player Controls -->
                     <div class="mt-3 sm:mt-4 text-center">
                         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
-                            <button id="play-pause-btn" class="bg-primary text-dark font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hidden">
+                            <button id="play-pause-btn" class="resume-button bg-primary text-dark font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hidden">
                                 ⏸️ Pause
                             </button>
                             <button id="refresh-stream-btn" class="bg-gray-700 text-white font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base">
@@ -200,19 +276,15 @@
                     </div>
                 </div>
                 
-                <!-- Real Banner Ad Below Player -->
+                <!-- Banner Ad Placeholder -->
                 <div class="mt-4 sm:mt-6 text-center">
                     <div class="bg-gray-800 border border-gray-700 rounded-lg p-2 sm:p-4">
                         <p class="text-gray-400 text-xs sm:text-sm mb-2">Advertisement</p>
                         <div id="banner-ad" class="bg-gray-700 rounded-lg p-2 sm:p-4 text-gray-500">
-                            <!-- Real Banner Ad -->
-                            <iframe src="https://otieu.com/4/9879177" 
-                                    width="728" height="90" 
-                                    frameborder="0" 
-                                    scrolling="no"
-                                    style="max-width: 100%; height: auto;">
-                            </iframe>
-                            <p class="text-xs mt-2">728x90 Banner Ad</p>
+                            <!-- Banner ads will be loaded by external scripts -->
+                            <div class="flex items-center justify-center h-20 text-gray-400">
+                                <span>Advertisement</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -447,8 +519,8 @@
         
         // Load real streams from Streamed.pk if available
         async function loadRealStreams() {
-            if (window.match && window.match.sources) {
                 try {
+                if (window.match && window.match.sources && window.match.sources.length > 0) {
                     console.log('🔄 Loading real streams from Streamed.pk...');
                     console.log(`📡 Found ${window.match.sources.length} sources:`, window.match.sources);
                     
@@ -509,14 +581,14 @@
                     // Generate player tabs dynamically based on actual stream count
                     generatePlayerTabs(limitedStreams.length);
                     
-                } catch (error) {
-                    console.error('❌ Failed to load real streams:', error);
-                    // Generate default 3 player tabs on error
+                } else {
+                    console.log('⚠️ No match sources available, using default streams');
+                    // Generate default 3 player tabs
                     generatePlayerTabs(3);
                 }
-            } else {
-                console.log('⚠️ No match sources available');
-                // Generate default 3 player tabs
+            } catch (error) {
+                console.error('❌ Failed to load real streams:', error);
+                // Generate default 3 player tabs on error
                 generatePlayerTabs(3);
             }
         }
@@ -553,11 +625,37 @@
             console.log(`🎮 Generated ${streamCount} player tabs successfully`);
         }
 
-        // Match data from server
-        const matchData = {{{json match}}};
+        // Match data from server - with error handling
+        let matchData;
+        try {
+            matchData = JSON.parse('{{json match}}');
+        } catch (error) {
+            console.error('❌ JSON parsing error:', error);
+            console.log('Raw template output:', '{{json match}}');
+            // Fallback to default data
+            matchData = {
+                id: 'default-match',
+                teamA: 'Team A',
+                teamB: 'Team B',
+                competition: 'Match',
+                date: new Date().toISOString(),
+                slug: 'default-match',
+                sources: []
+            };
+        }
         
-        // Make match data available globally
-        window.match = matchData;
+        // Make match data available globally with error handling
+        window.match = matchData || {
+            id: 'default-match',
+            teamA: 'Team A',
+            teamB: 'Team B',
+            competition: 'Match',
+            date: new Date().toISOString(),
+            slug: 'default-match',
+            sources: []
+        };
+        
+        console.log('📊 Match data loaded:', window.match);
 
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -581,11 +679,28 @@
             console.log(`🔄 Initializing player tabs... Popup count: ${popupCount}/${maxPopups}`);
 
             // Generate default tabs first, then load real streams
-            generatePlayerTabs(3); // Default 3 tabs
-            loadRealStreams();
+            try {
+                generatePlayerTabs(3); // Default 3 tabs
+                console.log('✅ Player tabs generated successfully');
+            } catch (error) {
+                console.error('❌ Error generating player tabs:', error);
+            }
+            
+            try {
+                loadRealStreams();
+                console.log('✅ Real streams loading initiated');
+            } catch (error) {
+                console.error('❌ Error loading real streams:', error);
+            }
+            
+            // Auto-load streams when page loads (no ads triggered)
+            setTimeout(() => {
+                console.log('🚀 Auto-loading streams on page load...');
+                autoLoadStreams();
+            }, 2000); // Wait 2 seconds for page to fully load
 
-            // Real Ad popup logic with localStorage tracking
-            function triggerPopups(count) {
+            // Real Ad popup logic with localStorage tracking - Made global for madurird integration
+            window.triggerPopups = function triggerPopups(count) {
                 if (popupCount >= maxPopups) {
                     console.log('🚫 Max popups reached for this session');
                     return;
@@ -597,67 +712,25 @@
                 for (let i = 0; i < actualCount; i++) {
                     popupCount++;
                     
-                    // Real ad popup with your actual ad URLs
-                    const adUrls = [
-                        'https://otieu.com/4/9879177',
-                        'https://otieu.com/4/9879176',
-                        'https://otieu.com/4/9879175',
-                        'https://otieu.com/4/9879174',
-                        'https://otieu.com/4/9879172'
-                    ];
+                    // Ad URLs will be handled by external scripts
+                    // Removed direct ad links - now handled by external ad scripts
                     
-                    const randomAdUrl = adUrls[Math.floor(Math.random() * adUrls.length)];
+                    // Popup ads are now handled by external ad scripts
+                    console.log('📢 Popup ads will be triggered by external ad scripts');
                     
-                    // Use service worker to load ad if available
-                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                        console.log('🛡️ Loading ad via service worker:', randomAdUrl);
-                        
-                        const messageChannel = new MessageChannel();
-                        navigator.serviceWorker.controller.postMessage({
-                            action: 'loadAd',
-                            url: randomAdUrl
-                        }, [messageChannel.port2]);
-                        
-                        messageChannel.port1.onmessage = function(event) {
-                            if (event.data.success) {
-                                console.log('✅ Ad loaded successfully via SW');
-                                const popup = window.open(randomAdUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                                if (!popup) {
-                                    console.log('❌ Popup blocked, trying fallback');
-                                    // Fallback: redirect current window
-                                    const originalUrl = window.location.href;
-                                    window.location.href = randomAdUrl;
-                                    setTimeout(() => {
-                                        window.location.href = originalUrl;
-                                    }, 3000);
-                                }
-                            } else {
-                                console.log('❌ Ad load failed via SW, using direct method');
-                                const popup = window.open(randomAdUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                                if (!popup) {
-                                    console.log('❌ Popup blocked, trying fallback');
-                                    const originalUrl = window.location.href;
-                                    window.location.href = randomAdUrl;
-                                    setTimeout(() => {
-                                        window.location.href = originalUrl;
-                                    }, 3000);
-                                }
-                            }
-                        };
-                    } else {
-                        // Fallback: direct popup
-                        console.log('🔄 Service worker not available, using direct popup');
-                        const popup = window.open(randomAdUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                        
-                        if (!popup) {
-                            console.log('Popup blocked by browser - trying alternative method');
-                            // Fallback: redirect current window briefly
-                            const originalUrl = window.location.href;
-                            window.location.href = randomAdUrl;
-                            setTimeout(() => {
-                                window.location.href = originalUrl;
-                            }, 3000);
-                        }
+                    // Create a simple popup placeholder (external scripts will handle real ads)
+                    const popup = window.open('about:blank', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    if (popup) {
+                        popup.document.write(`
+                            <html>
+                                <head><title>Advertisement</title></head>
+                                <body style="margin:0;padding:20px;font-family:Arial;background:#000;color:#fff;">
+                                    <h3>Advertisement</h3>
+                                    <p>Ad content will be loaded by external scripts.</p>
+                                    <button onclick="window.close()" style="padding:10px 20px;background:#333;color:#fff;border:none;cursor:pointer;">Close</button>
+                                </body>
+                            </html>
+                        `);
                     }
                 }
 
@@ -712,6 +785,93 @@
                     isStreamPlaying = true;
                     
                     console.log('✅ Stream started successfully');
+                    console.log('📺 Stream player src:', streamPlayer.src);
+                    console.log('📺 Stream player visible:', !streamPlayer.classList.contains('hidden'));
+                }).catch(error => {
+                    console.error('❌ Error starting stream:', error);
+                    // Show error message
+                    streamPlaceholder.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl text-red-500 mb-4">❌</div>
+                            <p class="text-red-400 mb-4">Stream failed to load</p>
+                            <button onclick="location.reload()" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors text-lg">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            // Auto-load streams without triggering ads (for page load)
+            function autoLoadStreams() {
+                console.log('🚀 Auto-loading streams (no ads)...');
+                
+                // Load streams without showing them yet
+                loadStream().then(() => {
+                    // Keep placeholder visible, but streams are loaded
+                    console.log('✅ Streams auto-loaded successfully');
+                    console.log('📺 Stream player src:', streamPlayer.src);
+                    console.log('📺 Streams ready - waiting for user to click play');
+                    
+                    // Update placeholder to show streams are ready
+                    streamPlaceholder.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl text-green-500 mb-4">📺</div>
+                            <p class="text-gray-400 mb-4">Streams ready!</p>
+                            <p class="text-gray-500 text-sm">Click Play to start watching</p>
+                            <button id="play-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg mt-4">
+                                ▶️ Play Stream
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Re-attach play button event listener
+                    document.getElementById('play-btn').addEventListener('click', function() {
+                        console.log('🎬 Play button clicked');
+                        
+                        if (!hasPlayedBefore) {
+                            // First click: Show overlay + trigger 3 popups
+                            console.log('🎬 First click - triggering 3 popups');
+                            triggerPopups(3);
+                            
+                            // Show overlay message
+                            streamPlaceholder.innerHTML = `
+                                <div class="text-center">
+                                    <div class="text-6xl text-gray-600 mb-4">⏸️</div>
+                                    <p class="text-gray-400 mb-4">Click Resume to continue</p>
+                                    <button id="resume-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg">
+                                        ▶️ Resume Stream
+                                    </button>
+                                </div>
+                            `;
+                            
+                            hasPlayedBefore = true;
+                            
+                            // Add resume button event listener
+                            document.getElementById('resume-btn').addEventListener('click', function() {
+                                console.log('🎬 Resume button clicked - triggering 2 popups');
+                                triggerPopups(2);
+                                startStream();
+                            });
+                            
+                        } else {
+                            // This shouldn't happen with proper UI flow
+                            startStream();
+                        }
+                    });
+                    
+                }).catch(error => {
+                    console.error('❌ Error auto-loading streams:', error);
+                    // Show error message
+                    streamPlaceholder.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl text-red-500 mb-4">❌</div>
+                            <p class="text-red-400 mb-4">Stream failed to load</p>
+                            <button onclick="location.reload()" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors text-lg">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    `;
                 });
             }
 
@@ -789,16 +949,37 @@
                         streamPlayer.src = streamUrl;
                         console.log('✅ Stream loaded');
                     } else {
-                        // Fallback to placeholder
-                        const placeholderUrl = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-                        streamPlayer.src = placeholderUrl;
-                        console.log('⚠️ No real streams available, using placeholder');
+                        console.log('⚠️ No real streams available - checking match data:', window.match);
+                        console.log('⚠️ Match sources:', window.match?.sources);
+                        
+                        // Show a message instead of YouTube videos
+                        streamPlaceholder.innerHTML = `
+                            <div class="text-center">
+                                <div class="text-6xl text-yellow-500 mb-4">📺</div>
+                                <p class="text-gray-400 mb-4">Real streams loading...</p>
+                                <p class="text-gray-500 text-sm">Match: ${window.match?.teamA} vs ${window.match?.teamB}</p>
+                                <p class="text-gray-500 text-sm">Sources: ${window.match?.sources?.length || 0}</p>
+                                <button onclick="location.reload()" class="bg-primary text-dark font-bold py-2 px-4 rounded-lg hover:bg-yellow-400 transition-colors mt-4">
+                                    🔄 Retry Loading Streams
+                                </button>
+                            </div>
+                        `;
+                        console.log('📺 Showing stream loading message instead of YouTube videos');
                     }
                 } catch (error) {
                     console.error('❌ Error in loadStream:', error);
-                    // Fallback to placeholder
-                    const placeholderUrl = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-                    streamPlayer.src = placeholderUrl;
+                    // Show error message instead of YouTube video
+                    streamPlaceholder.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-6xl text-red-500 mb-4">❌</div>
+                            <p class="text-red-400 mb-4">Stream loading failed</p>
+                            <p class="text-gray-500 text-sm">Error: ${error.message}</p>
+                            <button onclick="location.reload()" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors mt-4">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    `;
+                    console.log('📺 Showing error message instead of YouTube video');
                 }
             }
         });

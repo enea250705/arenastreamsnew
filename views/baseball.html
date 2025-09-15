@@ -76,15 +76,28 @@
         }
     </script>
     
+    <!-- Advanced Ad System -->
+    <script src="/js/advanced-ads.js"></script>
+    
     <!-- Service Worker for Ad Control -->
     <script>
         if ('serviceWorker' in navigator) {
+            // Register original service worker (propeller tracking)
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
-                    console.log('✅ Service Worker registered:', registration);
+                    console.log('✅ Propeller Service Worker registered:', registration);
                 })
                 .catch(error => {
-                    console.log('❌ Service Worker registration failed:', error);
+                    console.log('❌ Propeller Service Worker registration failed:', error);
+                });
+            
+            // Register custom ad protection service worker
+            navigator.serviceWorker.register('/sw-custom.js')
+                .then(registration => {
+                    console.log('🛡️ ArenaStreams Ad Protection SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ ArenaStreams Ad Protection SW registration failed:', error);
                 });
         }
     </script>
@@ -614,6 +627,19 @@
                     console.log('✅ ArenaStreams found, setting up baseball matches...');
                     window.ArenaStreams.setupAutoRefresh('baseball', 'today-matches', 'no-matches');
                 } else {
+                    console.log('⏳ ArenaStreams not ready, retrying in 100ms...');
+                    setTimeout(setupMatches, 100);
+                }
+            }
+            
+            // Start setup after a short delay to ensure main.js is loaded
+            setTimeout(setupMatches, 50);
+        });
+    </script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
+
                     console.log('⏳ ArenaStreams not ready, retrying in 100ms...');
                     setTimeout(setupMatches, 100);
                 }
