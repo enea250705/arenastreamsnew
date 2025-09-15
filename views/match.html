@@ -128,25 +128,25 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <!-- Match Header -->
-        <section class="text-center mb-8">
-            <h1 class="text-3xl md:text-5xl font-bold mb-4">
+        <section class="text-center mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 px-4">
                 {{match.teamA}} <span class="text-primary">vs</span> {{match.teamB}}
             </h1>
-            <div class="flex items-center justify-center space-x-4 mb-4">
+            <div class="flex items-center justify-center space-x-2 sm:space-x-4 mb-4 px-4">
                 {{#if match.teamABadge}}
-                <img src="{{match.teamABadge}}" alt="{{match.teamA}}" class="w-12 h-12 rounded-full">
+                <img src="{{match.teamABadge}}" alt="{{match.teamA}}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full">
                 {{/if}}
                 <div class="text-center">
-                    <p class="text-xl font-semibold text-primary">{{match.competition}}</p>
-                    <p class="text-gray-400">{{match.date}}</p>
+                    <p class="text-lg sm:text-xl font-semibold text-primary">{{match.competition}}</p>
+                    <p class="text-gray-400 text-sm sm:text-base">{{match.date}}</p>
                 </div>
                 {{#if match.teamBBadge}}
-                <img src="{{match.teamBBadge}}" alt="{{match.teamB}}" class="w-12 h-12 rounded-full">
+                <img src="{{match.teamBBadge}}" alt="{{match.teamB}}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full">
                 {{/if}}
             </div>
-            <div class="flex items-center justify-center space-x-2 text-sm text-gray-400">
+            <div class="flex items-center justify-center space-x-2 text-xs sm:text-sm text-gray-400">
                 <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span>Live Stream Available</span>
             </div>
@@ -156,22 +156,22 @@
         <section class="mb-8">
             <div class="bg-dark border border-gray-800 rounded-lg overflow-hidden">
                 <!-- Server Buttons -->
-                <div class="border-b border-gray-800">
-                    <div class="flex flex-wrap justify-center py-4" id="player-tabs-container">
+                <div class="border-b border-gray-800 px-2 sm:px-4">
+                    <div class="flex flex-wrap justify-center gap-2 py-3 sm:py-4" id="player-tabs-container">
                         <!-- Server buttons will be dynamically generated here -->
                     </div>
                 </div>
 
             <!-- Player Content -->
-            <div class="p-6">
+            <div class="p-3 sm:p-6">
                 <!-- Player Container -->
                 <div id="player-container">
                     <div class="aspect-video bg-black rounded-lg overflow-hidden relative">
                         <div id="stream-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-900">
-                            <div class="text-center">
-                                <div class="text-6xl text-gray-600 mb-4">📺</div>
-                                <p class="text-gray-400 mb-4">Ready to watch?</p>
-                                <button id="play-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg">
+                            <div class="text-center px-4">
+                                <div class="text-4xl sm:text-6xl text-gray-600 mb-4">📺</div>
+                                <p class="text-gray-400 mb-4 text-sm sm:text-base">Ready to watch?</p>
+                                <button id="play-btn" class="bg-primary text-dark font-bold py-2 px-4 sm:py-3 sm:px-8 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-lg">
                                     ▶️ Play Stream
                                 </button>
                             </div>
@@ -185,24 +185,26 @@
                     </div>
                     
                     <!-- Player Controls -->
-                    <div class="mt-4 text-center">
-                        <button id="play-pause-btn" class="bg-primary text-dark font-bold py-2 px-6 rounded-lg hover:bg-yellow-400 transition-colors mr-4 hidden">
-                            ⏸️ Pause
-                        </button>
-                        <button id="refresh-stream-btn" class="bg-gray-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors">
-                            🔄 Refresh Stream
-                        </button>
-                        <p class="text-gray-400 text-sm mt-2">
+                    <div class="mt-3 sm:mt-4 text-center">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
+                            <button id="play-pause-btn" class="bg-primary text-dark font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hidden">
+                                ⏸️ Pause
+                            </button>
+                            <button id="refresh-stream-btn" class="bg-gray-700 text-white font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base">
+                                🔄 Refresh Stream
+                            </button>
+                        </div>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-2 px-4">
                             Click Play to start streaming. Ads may appear to support free service.
                         </p>
                     </div>
                 </div>
                 
                 <!-- Real Banner Ad Below Player -->
-                <div class="mt-6 text-center">
-                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
-                        <p class="text-gray-400 text-sm mb-2">Advertisement</p>
-                        <div id="banner-ad" class="bg-gray-700 rounded-lg p-4 text-gray-500">
+                <div class="mt-4 sm:mt-6 text-center">
+                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-2 sm:p-4">
+                        <p class="text-gray-400 text-xs sm:text-sm mb-2">Advertisement</p>
+                        <div id="banner-ad" class="bg-gray-700 rounded-lg p-2 sm:p-4 text-gray-500">
                             <!-- Real Banner Ad -->
                             <iframe src="https://otieu.com/4/9879177" 
                                     width="728" height="90" 
@@ -539,9 +541,10 @@
             for (let i = 1; i <= streamCount; i++) {
                 const tab = document.createElement('button');
                 const isActive = i === 1;
-                tab.className = `player-tab px-4 py-2 mx-2 rounded-lg font-semibold transition-all duration-300 ${isActive ? 'bg-primary text-dark shadow-lg transform scale-105' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'}`;
+                // Mobile-friendly button styling with responsive classes
+                tab.className = `player-tab px-2 py-1 sm:px-4 sm:py-2 mx-1 sm:mx-2 rounded-lg font-semibold transition-all duration-300 text-xs sm:text-sm ${isActive ? 'bg-primary text-dark shadow-lg transform scale-105' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'}`;
                 tab.dataset.player = i;
-                tab.textContent = `Server ${i}`;
+                tab.textContent = `S${i}`; // Shorter text for mobile
                 container.appendChild(tab);
                 
                 console.log(`✅ Created Server ${i} button${isActive ? ' (active)' : ''}`);
@@ -550,24 +553,13 @@
             console.log(`🎮 Generated ${streamCount} player tabs successfully`);
         }
 
+        // Match data from server
+        const matchData = {{{json match}}};
+        
+        // Make match data available globally
+        window.match = matchData;
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Make match data available globally
-            window.match = {
-                id: '{{match.id}}',
-                teamA: '{{match.teamA}}',
-                teamB: '{{match.teamB}}',
-                competition: '{{match.competition}}',
-                date: '{{match.date}}',
-                slug: '{{match.slug}}',
-                teamABadge: '{{match.teamABadge}}',
-                teamBBadge: '{{match.teamBBadge}}',
-                status: '{{match.status}}',
-                poster: '{{match.poster}}',
-                popular: {{match.popular}},
-                sources: {{#if match.sources}}[{{#each match.sources}}{"source":"{{source}}","id":"{{id}}"}{{#unless @last}},{{/unless}}{{/each}}]{{else}}[]{{/if}},
-                category: '{{match.category}}',
-                sport: '{{match.sport}}'
-            };
 
             const playBtn = document.getElementById('play-btn');
             const playPauseBtn = document.getElementById('play-pause-btn');
