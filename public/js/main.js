@@ -331,7 +331,22 @@ function getMatchStatus(matchDate) {
     }
 }
 
-// Render matches in the UI
+// Helper function to truncate team names intelligently
+function truncateTeamName(name, maxLength = 20) {
+    if (name.length <= maxLength) return name;
+    
+    // Try to truncate at a space if possible
+    const truncated = name.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    
+    if (lastSpace > maxLength * 0.7) {
+        return truncated.substring(0, lastSpace) + '...';
+    }
+    
+    return truncated + '...';
+}
+
+// Render matches in the UI with improved mobile responsiveness
 function renderMatches(matches, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -348,39 +363,83 @@ function renderMatches(matches, containerId) {
     }
     
     container.innerHTML = matches.map(match => `
-        <div class="bg-dark border border-gray-800 rounded-lg p-6 hover:border-primary transition-colors">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-3">
-                    ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-8 h-8 rounded-full" onerror="this.style.display='none'">` : ''}
-                    <span class="font-semibold">${match.teamA}</span>
-                </div>
+        <div class="bg-dark border border-gray-800 rounded-lg p-4 sm:p-6 hover:border-primary transition-colors">
+            <!-- Mobile-friendly team display with better long name handling -->
+            <div class="mb-4">
                 ${match.teamB !== 'vs Opponent' ? `
-                <span class="text-primary font-bold">VS</span>
-                <div class="flex items-center space-x-3">
-                    <span class="font-semibold">${match.teamB}</span>
-                    ${match.teamBBadge ? `<img src="${match.teamBBadge}" alt="${match.teamB}" class="w-8 h-8 rounded-full" onerror="this.style.display='none'">` : ''}
+                <!-- Two team match -->
+                <div class="flex flex-col space-y-2">
+                    <!-- Team A -->
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
+                        <div class="flex-1 min-w-0">
+                            <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamA}">${truncateTeamName(match.teamA)}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- VS separator -->
+                    <div class="flex justify-center">
+                        <span class="text-primary font-bold text-xs sm:text-sm bg-gray-800 px-2 py-1 rounded-full">VS</span>
+                    </div>
+                    
+                    <!-- Team B -->
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        ${match.teamBBadge ? `<img src="${match.teamBBadge}" alt="${match.teamB}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
+                        <div class="flex-1 min-w-0">
+                            <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamB}">${truncateTeamName(match.teamB)}</span>
+                        </div>
+                    </div>
                 </div>
                 ` : `
-                <div class="text-center">
-                    <span class="text-gray-400 text-sm">Live Channel</span>
+                <!-- Single team/channel -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    ${match.teamABadge ? `<img src="${match.teamABadge}" alt="${match.teamA}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0" onerror="this.style.display='none'">` : ''}
+                    <div class="flex-1 min-w-0">
+                        <span class="font-semibold text-sm sm:text-base block truncate" title="${match.teamA}">${truncateTeamName(match.teamA)}</span>
+                    </div>
+                    <span class="text-gray-400 text-xs">Live Channel</span>
                 </div>
                 `}
             </div>
             
+            <!-- Match info -->
             <div class="text-center mb-4">
-                <p class="text-gray-400 text-sm">${match.competition}</p>
-                <p class="text-gray-300">${new Date(match.date).toLocaleString()}</p>
-                ${match.status === 'live' ? '<span class="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full mt-1">LIVE</span>' : ''}
-                ${match.status === 'starting-soon' ? '<span class="inline-block bg-yellow-500 text-dark text-xs px-2 py-1 rounded-full mt-1">Starting Soon</span>' : ''}
-                ${match.status === 'ended' ? '<span class="inline-block bg-gray-500 text-white text-xs px-2 py-1 rounded-full mt-1">Ended</span>' : ''}
-                ${match.status === 'upcoming' ? '<span class="inline-block bg-blue-500 text-white text-xs px-2 py-1 rounded-full mt-1">Upcoming</span>' : ''}
+                <p class="text-gray-400 text-xs sm:text-sm mb-1">${match.competition}</p>
+                <p class="text-gray-300 text-xs sm:text-sm mb-2">${new Date(match.date).toLocaleString()}</p>
+                ${match.status === 'live' ? '<span class="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full">LIVE</span>' : ''}
+                ${match.status === 'starting-soon' ? '<span class="inline-block bg-yellow-500 text-dark text-xs px-2 py-1 rounded-full">Starting Soon</span>' : ''}
+                ${match.status === 'ended' ? '<span class="inline-block bg-gray-500 text-white text-xs px-2 py-1 rounded-full">Ended</span>' : ''}
+                ${match.status === 'upcoming' ? '<span class="inline-block bg-blue-500 text-white text-xs px-2 py-1 rounded-full">Upcoming</span>' : ''}
             </div>
             
-            <a href="/match/${match.slug}" class="block w-full bg-primary text-dark font-bold py-3 px-4 rounded-lg text-center hover:bg-yellow-400 transition-colors">
+            <!-- Watch button -->
+            <a href="/match/${match.slug}" class="block w-full bg-primary text-dark font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-center hover:bg-yellow-400 transition-colors text-sm sm:text-base">
                 ${match.status === 'live' ? 'Watch Live' : match.status === 'starting-soon' ? 'Watch Soon' : 'Watch Stream'}
             </a>
         </div>
     `).join('');
+    
+    // Update live match count
+    updateLiveMatchCount(matches);
+}
+
+// Update live match count display
+function updateLiveMatchCount(matches) {
+    const liveMatches = matches.filter(match => match.status === 'live');
+    const liveCount = liveMatches.length;
+    
+    // Update all live count elements
+    document.querySelectorAll('#live-count').forEach(element => {
+        element.textContent = liveCount;
+    });
+    
+    // Update totalMatches if it exists
+    const totalMatchesElement = document.querySelector('[data-match-count]');
+    if (totalMatchesElement) {
+        totalMatchesElement.textContent = matches.length;
+    }
+    
+    console.log(`📊 Updated live match count: ${liveCount} live matches, ${matches.length} total matches`);
 }
 
 // Search and filter functionality

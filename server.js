@@ -620,53 +620,63 @@ app.get('/api/streamed/images/:type/:id', async (req, res) => {
   }
 });
 
-// Sitemap route
+// Advanced Sitemap route with dynamic content
 app.get('/sitemap.xml', async (req, res) => {
   try {
+    const baseUrl = 'https://arenastreams.com';
+    const currentDate = new Date().toISOString();
+    
+    // Get live matches for dynamic content
+    let liveMatches = [];
+    try {
+      const response = await fetch('https://streamed.pk/api/matches/live');
+      const data = await response.json();
+      liveMatches = data.matches || [];
+    } catch (error) {
+      console.log('Could not fetch live matches for sitemap');
+    }
+    
+    // Static pages
+    const staticPages = [
+      { url: '/', priority: '1.0', changefreq: 'hourly' },
+      { url: '/football', priority: '0.9', changefreq: 'daily' },
+      { url: '/basketball', priority: '0.9', changefreq: 'daily' },
+      { url: '/tennis', priority: '0.9', changefreq: 'daily' },
+      { url: '/ufc', priority: '0.9', changefreq: 'daily' },
+      { url: '/rugby', priority: '0.9', changefreq: 'daily' },
+      { url: '/baseball', priority: '0.9', changefreq: 'daily' },
+      { url: '/privacy', priority: '0.3', changefreq: 'monthly' },
+      { url: '/terms', priority: '0.3', changefreq: 'monthly' },
+      { url: '/contact', priority: '0.4', changefreq: 'monthly' }
+    ];
+    
+    // Generate URLs for live matches
+    const matchUrls = liveMatches.map(match => {
+      const slug = match.title ? match.title.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim() : `match-${match.id}`;
+      
+      return {
+        url: `/match/${slug}-${match.id}`,
+        priority: '0.8',
+        changefreq: 'hourly',
+        lastmod: match.date || currentDate
+      };
+    });
+    
+    // Combine all URLs
+    const allUrls = [...staticPages, ...matchUrls];
+    
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://arenasports.com/</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/football</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/basketball</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/tennis</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/ufc</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/rugby</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://arenasports.com/baseball</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
+${allUrls.map(page => `  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <lastmod>${page.lastmod || currentDate}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`).join('\n')}
 </urlset>`;
     
     res.set('Content-Type', 'application/xml');
@@ -682,7 +692,7 @@ app.get('/sitemap-sports.xml', async (req, res) => {
   try {
     const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball'];
     const urls = sports.map(sport => ({
-      loc: `https://arenasports.com/${sport}`,
+      loc: `https://arenastreams.com/${sport}`,
       lastmod: new Date().toISOString(),
       changefreq: 'daily',
       priority: '0.9'
@@ -708,31 +718,74 @@ ${urls.map(url => `  <url>
 
 app.get('/sitemap-images.xml', async (req, res) => {
   try {
-    const images = [
-      { loc: 'https://arenasports.com/images/football-og.jpg', caption: 'Football Live Streaming' },
-      { loc: 'https://arenasports.com/images/basketball-og.jpg', caption: 'Basketball Live Streaming' },
-      { loc: 'https://arenasports.com/images/tennis-og.jpg', caption: 'Tennis Live Streaming' },
-      { loc: 'https://arenasports.com/images/ufc-og.jpg', caption: 'UFC Live Streaming' },
-      { loc: 'https://arenasports.com/images/rugby-og.jpg', caption: 'Rugby Live Streaming' },
-      { loc: 'https://arenasports.com/images/baseball-og.jpg', caption: 'Baseball Live Streaming' }
+    const sports = [
+      { sport: 'football', name: 'Football', image: 'https://arenastreams.com/images/football-og.jpg' },
+      { sport: 'basketball', name: 'Basketball', image: 'https://arenastreams.com/images/basketball-og.jpg' },
+      { sport: 'tennis', name: 'Tennis', image: 'https://arenastreams.com/images/tennis-og.jpg' },
+      { sport: 'ufc', name: 'UFC', image: 'https://arenastreams.com/images/ufc-og.jpg' },
+      { sport: 'rugby', name: 'Rugby', image: 'https://arenastreams.com/images/rugby-og.jpg' },
+      { sport: 'baseball', name: 'Baseball', image: 'https://arenastreams.com/images/baseball-og.jpg' }
     ];
+    
+    // Get live matches for dynamic image content
+    let liveMatches = [];
+    try {
+      const response = await fetch('https://streamed.pk/api/matches/live');
+      const data = await response.json();
+      liveMatches = data.matches || [];
+    } catch (error) {
+      console.log('Could not fetch live matches for image sitemap');
+    }
     
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Homepage images -->
   <url>
-    <loc>https://arenasports.com/</loc>
+    <loc>https://arenastreams.com/</loc>
     <image:image>
-      <image:loc>${images[0].loc}</image:loc>
-      <image:caption>${images[0].caption}</image:caption>
+      <image:loc>https://arenastreams.com/images/arenastreams-logo.png</image:loc>
+      <image:caption>ArenaStreams - Live Sports Streaming Platform</image:caption>
+      <image:title>ArenaStreams Logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://arenastreams.com/images/football-og.jpg</image:loc>
+      <image:caption>Football Live Streaming on ArenaStreams</image:caption>
+      <image:title>Football Live Streaming</image:title>
     </image:image>
   </url>
-${images.slice(1).map(img => `  <url>
-    <loc>https://arenasports.com/</loc>
+  
+  <!-- Sport pages with relevant images -->
+${sports.map(sport => `  <url>
+    <loc>https://arenastreams.com/${sport.sport}</loc>
     <image:image>
-      <image:loc>${img.loc}</image:loc>
-      <image:caption>${img.caption}</image:caption>
+      <image:loc>${sport.image}</image:loc>
+      <image:caption>${sport.name} Live Streaming - Watch ${sport.name} matches live on ArenaStreams</image:caption>
+      <image:title>${sport.name} Live Streaming</image:title>
     </image:image>
   </url>`).join('\n')}
+  
+  <!-- Live match images -->
+${liveMatches.slice(0, 50).map(match => {
+  const slug = match.title ? match.title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim() : `match-${match.id}`;
+  
+  return `  <url>
+    <loc>https://arenastreams.com/match/${slug}-${match.id}</loc>
+    ${match.teamABadge ? `<image:image>
+      <image:loc>${match.teamABadge}</image:loc>
+      <image:caption>${match.teamA} vs ${match.teamB} - Live Match</image:caption>
+      <image:title>${match.teamA} Team Badge</image:title>
+    </image:image>` : ''}
+    ${match.teamBBadge ? `<image:image>
+      <image:loc>${match.teamBBadge}</image:loc>
+      <image:caption>${match.teamA} vs ${match.teamB} - Live Match</image:caption>
+      <image:title>${match.teamB} Team Badge</image:title>
+    </image:image>` : ''}
+  </url>`;
+}).join('\n')}
 </urlset>`;
     
     res.set('Content-Type', 'application/xml');
@@ -743,6 +796,28 @@ ${images.slice(1).map(img => `  <url>
   }
 });
 
+// Sitemap Index route
+app.get('/sitemap-index.xml', (req, res) => {
+  const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://arenastreams.com/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://arenastreams.com/sitemap-sports.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://arenastreams.com/sitemap-images.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+  
+  res.set('Content-Type', 'application/xml');
+  res.send(sitemapIndex);
+});
+
 // Advanced Robots.txt route
 app.get('/robots.txt', (req, res) => {
   res.set('Content-Type', 'text/plain');
@@ -750,16 +825,22 @@ app.get('/robots.txt', (req, res) => {
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /add-match
+Disallow: /update-match
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
 
-# Sitemap location
-Sitemap: ${seoConfig.siteUrl}/sitemap.xml
+# Sitemap location - Main sitemap index
+Sitemap: https://arenastreams.com/sitemap-index.xml
 
-# Additional sitemaps for different content types
-Sitemap: ${seoConfig.siteUrl}/sitemap-sports.xml
-Sitemap: ${seoConfig.siteUrl}/sitemap-matches.xml`);
+# Individual sitemaps for different content types
+Sitemap: https://arenastreams.com/sitemap.xml
+Sitemap: https://arenastreams.com/sitemap-sports.xml
+Sitemap: https://arenastreams.com/sitemap-images.xml
+
+# Host directive for canonical domain
+Host: https://arenastreams.com`);
 });
 
 // Privacy Policy route

@@ -107,7 +107,7 @@
             <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
                 <span class="flex items-center">
                     <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                    Live Now: {{totalMatches}} matches
+                    Live Now: <span id="live-count">0</span> matches
                 </span>
                 <span class="flex items-center">
                     <span class="w-2 h-2 bg-primary rounded-full mr-2"></span>
@@ -134,20 +134,34 @@
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {{#each this}}
-                        <div class="bg-dark border border-gray-800 rounded-lg p-6 hover:border-primary transition-colors">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center space-x-3">
-                                    {{#if teamABadge}}
-                                    <img src="{{teamABadge}}" alt="{{teamA}}" class="w-8 h-8 rounded-full">
-                                    {{/if}}
-                                    <span class="font-semibold">{{teamA}}</span>
-                                </div>
-                                <span class="text-primary font-bold">VS</span>
-                                <div class="flex items-center space-x-3">
-                                    <span class="font-semibold">{{teamB}}</span>
-                                    {{#if teamBBadge}}
-                                    <img src="{{teamBBadge}}" alt="{{teamB}}" class="w-8 h-8 rounded-full">
-                                    {{/if}}
+                        <div class="bg-dark border border-gray-800 rounded-lg p-4 sm:p-6 hover:border-primary transition-colors">
+                            <!-- Mobile-friendly team display with better long name handling -->
+                            <div class="mb-4">
+                                <div class="flex flex-col space-y-2">
+                                    <!-- Team A -->
+                                    <div class="flex items-center space-x-2 sm:space-x-3">
+                                        {{#if teamABadge}}
+                                        <img src="{{teamABadge}}" alt="{{teamA}}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
+                                        {{/if}}
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-semibold text-sm sm:text-base block truncate" title="{{teamA}}">{{teamA}}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- VS separator -->
+                                    <div class="flex justify-center">
+                                        <span class="text-primary font-bold text-xs sm:text-sm bg-gray-800 px-2 py-1 rounded-full">VS</span>
+                                    </div>
+                                    
+                                    <!-- Team B -->
+                                    <div class="flex items-center space-x-2 sm:space-x-3">
+                                        {{#if teamBBadge}}
+                                        <img src="{{teamBBadge}}" alt="{{teamB}}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
+                                        {{/if}}
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-semibold text-sm sm:text-base block truncate" title="{{teamB}}">{{teamB}}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -298,6 +312,39 @@
                 });
             }
         });
+        
+        // Load live matches count for homepage
+        async function loadHomepageLiveCount() {
+            try {
+                console.log('🔄 Loading live matches for homepage...');
+                const response = await fetch('/api/streamed/matches/live');
+                const data = await response.json();
+                
+                let matches = [];
+                if (data.value && Array.isArray(data.value)) {
+                    matches = data.value;
+                } else if (Array.isArray(data)) {
+                    matches = data;
+                }
+                
+                // Count live matches
+                const liveCount = matches.length;
+                const liveCountElement = document.getElementById('live-count');
+                if (liveCountElement) {
+                    liveCountElement.textContent = liveCount;
+                    console.log(`📊 Homepage live count updated: ${liveCount} matches`);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading live matches for homepage:', error);
+            }
+        }
+        
+        // Load live count when page loads
+        loadHomepageLiveCount();
+        
+        // Auto-refresh live count every 30 seconds
+        setInterval(loadHomepageLiveCount, 30000);
     </script>
     <script src="/js/main.js"></script>
 </body>
