@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TM2J2414Z9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-TM2J2414Z9', {
+            page_title: '{{seo.title}}',
+            page_location: '{{seo.canonical}}'
+        });
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{seo.title}}</title>
@@ -352,7 +364,15 @@
         // Add click tracking for sport selection
         function trackSportSelection(sport) {
             console.log(`🎯 User selected sport: ${sport}`);
-            // You can add analytics tracking here if needed
+            
+            // Google Analytics event tracking
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'sport_selection', {
+                    event_category: 'Navigation',
+                    event_label: sport,
+                    value: 1
+                });
+            }
         }
 
         // Global search functionality
@@ -365,18 +385,38 @@
                 return;
             }
 
+            // Track search event in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'search', {
+                    event_category: 'Search',
+                    event_label: searchTerm,
+                    search_term: searchTerm
+                });
+            }
+
             // For now, redirect to football page with search parameter
             // In a full implementation, this would search across all sports
             const searchUrl = `/football?search=${encodeURIComponent(searchTerm)}`;
             document.getElementById('global-search-results').innerHTML = `
                 <div class="text-center">
                     <p class="text-gray-400">Searching for "${searchTerm}"...</p>
-                    <a href="${searchUrl}" class="text-primary hover:underline mt-2 inline-block">
+                    <a href="${searchUrl}" class="text-primary hover:underline mt-2 inline-block" onclick="trackSearchNavigation('${searchTerm}')">
                         Go to Football Matches →
                     </a>
                 </div>
             `;
             document.getElementById('global-search-results').style.display = 'block';
+        }
+
+        // Track search navigation clicks
+        function trackSearchNavigation(searchTerm) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'search_navigation', {
+                    event_category: 'Search',
+                    event_label: searchTerm,
+                    search_term: searchTerm
+                });
+            }
         }
 
         // Initialize homepage

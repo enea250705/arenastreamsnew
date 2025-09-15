@@ -359,6 +359,29 @@ function getMobileTeamName(name) {
 let allMatches = [];
 let searchTimeout;
 
+// Google Analytics helper functions
+function trackAnalyticsEvent(eventName, category, label, value) {
+    if (typeof gtag !== 'undefined') {
+        gtag('event', eventName, {
+            event_category: category,
+            event_label: label,
+            value: value
+        });
+    }
+}
+
+function trackMatchClick(matchId, teamA, teamB, competition) {
+    trackAnalyticsEvent('match_click', 'Match Interaction', `${teamA} vs ${teamB}`, 1);
+}
+
+function trackStreamPlay(matchId, teamA, teamB) {
+    trackAnalyticsEvent('stream_play', 'Streaming', `${teamA} vs ${teamB}`, 1);
+}
+
+function trackSearchUsage(searchTerm, resultsCount) {
+    trackAnalyticsEvent('search_usage', 'Search', searchTerm, resultsCount);
+}
+
 // Search function to filter matches by team names
 function searchMatches(searchTerm, containerId) {
     console.log(`🔍 Searching for "${searchTerm}" in container ${containerId} with ${allMatches.length} matches`);
@@ -391,6 +414,9 @@ function searchMatches(searchTerm, containerId) {
     
     console.log(`🎯 Found ${filteredMatches.length} matches for "${searchTerm}"`);
     renderMatches(filteredMatches, containerId);
+    
+    // Track search usage in Google Analytics
+    trackSearchUsage(searchTerm, filteredMatches.length);
     
     // Show search results count
     const container = document.getElementById(containerId);
@@ -591,7 +617,7 @@ function renderMatches(matches, containerId) {
             </div>
             
             <!-- Watch button -->
-            <a href="/match/${match.slug}" class="block w-full bg-primary text-dark font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-center hover:bg-yellow-400 transition-colors text-sm sm:text-base">
+            <a href="/match/${match.slug}" class="block w-full bg-primary text-dark font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-center hover:bg-yellow-400 transition-colors text-sm sm:text-base" onclick="trackMatchClick('${match.id}', '${match.teamA}', '${match.teamB}', '${match.competition}')">
                 ${match.status === 'live' ? 'Watch Live' : match.status === 'starting-soon' ? 'Watch Soon' : 'Watch Stream'}
             </a>
         </div>
