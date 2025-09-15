@@ -149,30 +149,44 @@
                 <li class="text-gray-400">/</li>
                 <li><a href="/{{match.sport}}/{{match.competition}}" class="text-primary hover:text-yellow-400">{{match.competition}}</a></li>
                 <li class="text-gray-400">/</li>
-                <li class="text-white">{{match.teamA}} vs {{match.teamB}}</li>
+                <li class="text-white truncate">{{match.teamA}} vs {{match.teamB}}</li>
             </ol>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <!-- Match Header -->
-        <section class="text-center mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 px-4">
-                {{match.teamA}} <span class="text-primary">vs</span> {{match.teamB}}
-            </h1>
-            <div class="flex items-center justify-center space-x-2 sm:space-x-4 mb-4 px-4">
-                {{#if match.teamABadge}}
-                <img src="{{match.teamABadge}}" alt="{{match.teamA}}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full">
-                {{/if}}
-                <div class="text-center">
-                    <p class="text-lg sm:text-xl font-semibold text-primary">{{match.competition}}</p>
-                    <p class="text-gray-400 text-sm sm:text-base">{{match.date}}</p>
+        <!-- Match Header - Optimized for Mobile -->
+        <section class="mb-6 sm:mb-8">
+            <!-- Team Names - Horizontal Layout -->
+            <div class="flex items-center justify-between space-x-2 sm:space-x-4 mb-4 px-4">
+                <!-- Team A -->
+                <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                    {{#if match.teamABadge}}
+                    <img src="{{match.teamABadge}}" alt="{{match.teamA}}" class="w-6 h-6 sm:w-12 sm:h-12 rounded-full flex-shrink-0">
+                    {{/if}}
+                    <span class="font-bold text-sm sm:text-2xl md:text-3xl truncate" title="{{match.teamA}}">{{match.teamA}}</span>
                 </div>
-                {{#if match.teamBBadge}}
-                <img src="{{match.teamBBadge}}" alt="{{match.teamB}}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full">
-                {{/if}}
+                
+                <!-- VS separator -->
+                <span class="text-primary font-bold text-xs sm:text-lg md:text-xl flex-shrink-0">VS</span>
+                
+                <!-- Team B -->
+                <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 justify-end">
+                    <span class="font-bold text-sm sm:text-2xl md:text-3xl truncate" title="{{match.teamB}}">{{match.teamB}}</span>
+                    {{#if match.teamBBadge}}
+                    <img src="{{match.teamBBadge}}" alt="{{match.teamB}}" class="w-6 h-6 sm:w-12 sm:h-12 rounded-full flex-shrink-0">
+                    {{/if}}
+                </div>
             </div>
+            
+            <!-- Match Info -->
+            <div class="text-center mb-4 px-4">
+                <p class="text-lg sm:text-xl font-semibold text-primary">{{match.competition}}</p>
+                <p class="text-gray-400 text-sm sm:text-base">{{match.date}}</p>
+            </div>
+            
+            <!-- Live Status -->
             <div class="flex items-center justify-center space-x-2 text-xs sm:text-sm text-gray-400">
                 <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span>Live Stream Available</span>
@@ -302,9 +316,9 @@
                 <div class="bg-dark border border-gray-800 rounded-lg p-6">
                     <h3 class="text-xl font-bold mb-4">Match Details</h3>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Teams:</span>
-                            <span class="text-white">{{match.teamA}} vs {{match.teamB}}</span>
+                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                            <span class="text-gray-400 mb-1 sm:mb-0">Teams:</span>
+                            <span class="text-white text-sm sm:text-base truncate">{{match.teamA}} vs {{match.teamB}}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400">Competition:</span>

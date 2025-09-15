@@ -355,6 +355,133 @@ function getMobileTeamName(name) {
     return truncateTeamName(name, 18);
 }
 
+// Search functionality for teams and matches
+let allMatches = [];
+let searchTimeout;
+
+// Search function to filter matches by team names
+function searchMatches(searchTerm, containerId) {
+    if (!searchTerm.trim()) {
+        // If search is empty, show all matches
+        renderMatches(allMatches, containerId);
+        return;
+    }
+    
+    const filteredMatches = allMatches.filter(match => {
+        const searchLower = searchTerm.toLowerCase();
+        const teamA = match.teamA ? match.teamA.toLowerCase() : '';
+        const teamB = match.teamB ? match.teamB.toLowerCase() : '';
+        const competition = match.competition ? match.competition.toLowerCase() : '';
+        const title = match.title ? match.title.toLowerCase() : '';
+        
+        return teamA.includes(searchLower) || 
+               teamB.includes(searchLower) || 
+               competition.includes(searchLower) ||
+               title.includes(searchLower);
+    });
+    
+    renderMatches(filteredMatches, containerId);
+    
+    // Show search results count
+    const container = document.getElementById(containerId);
+    if (container && container.previousElementSibling) {
+        const resultsInfo = container.previousElementSibling.querySelector('.search-results-info');
+        if (resultsInfo) {
+            resultsInfo.textContent = `Found ${filteredMatches.length} match${filteredMatches.length !== 1 ? 'es' : ''} for "${searchTerm}"`;
+            resultsInfo.style.display = filteredMatches.length > 0 ? 'block' : 'none';
+        }
+    }
+}
+
+// Create search input component
+function createSearchInput(containerId, placeholder = "Search teams or matches...") {
+    return `
+        <div class="mb-4">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="search-input-${containerId}" 
+                    class="w-full px-4 py-2 pl-10 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none transition-colors"
+                    placeholder="${placeholder}"
+                    autocomplete="off"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button 
+                    id="clear-search-${containerId}" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                    style="display: none;"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="search-results-info text-sm text-gray-400 mt-2" style="display: none;"></div>
+        </div>
+    `;
+}
+
+// Initialize search functionality
+function initializeSearch(containerId, placeholder) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Add search input before the container
+    const searchHTML = createSearchInput(containerId, placeholder);
+    container.insertAdjacentHTML('beforebegin', searchHTML);
+    
+    const searchInput = document.getElementById(`search-input-${containerId}`);
+    const clearButton = document.getElementById(`clear-search-${containerId}`);
+    
+    if (!searchInput) return;
+    
+    // Search input event listener
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        
+        // Show/hide clear button
+        clearButton.style.display = searchTerm ? 'flex' : 'none';
+        
+        // Debounce search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchMatches(searchTerm, containerId);
+        }, 300);
+    });
+    
+    // Clear button event listener
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        this.style.display = 'none';
+        searchMatches('', containerId);
+        searchInput.focus();
+    });
+    
+    // Store original matches when first loaded
+    if (allMatches.length === 0 && container.innerHTML.trim()) {
+        // We'll populate allMatches when matches are loaded
+    }
+}
+
+// Enhanced renderMatches function with search support
+function renderMatchesWithSearch(matches, containerId, placeholder = "Search teams or matches...") {
+    // Store all matches for search functionality
+    allMatches = matches;
+    
+    // Initialize search if not already done
+    const searchInput = document.getElementById(`search-input-${containerId}`);
+    if (!searchInput) {
+        initializeSearch(containerId, placeholder);
+    }
+    
+    // Render matches
+    renderMatches(matches, containerId);
+}
+
 // Force re-render on window resize to update mobile layout
 let resizeTimeout;
 window.addEventListener('resize', function() {
@@ -542,7 +669,7 @@ async function loadAndRenderSportMatches(sport, containerId, noMatchesId) {
         
         if (matches.length > 0) {
             console.log(`🎯 Rendering ${matches.length} matches in container ${containerId}`);
-            renderMatches(matches, containerId);
+            renderMatchesWithSearch(matches, containerId, `Search ${sport} matches...`);
             // Hide no matches message
             const noMatchesEl = document.getElementById(noMatchesId);
             if (noMatchesEl) {
@@ -570,6 +697,9 @@ window.ArenaStreams = {
     loadLiveMatches,
     loadTodaysMatches,
     renderMatches,
+    renderMatchesWithSearch,
+    searchMatches,
+    initializeSearch,
     getMatchStatus,
     setupAutoRefresh,
     loadAndRenderSportMatches
