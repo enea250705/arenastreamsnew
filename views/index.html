@@ -356,5 +356,10 @@
     
     <!-- Load obfuscated main code -->
     <script src="/js/app.min.js"></script>
+    <script>
+      if (!window.ArenaStreams) {
+        document.write('<script src="/js/main.js"><\\/script>');
+      }
+    </script>
 </body>
 </html>

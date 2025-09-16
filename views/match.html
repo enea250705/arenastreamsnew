@@ -1063,7 +1063,11 @@
     </script>
 
     <!-- Main JavaScript -->
-    <!-- Load obfuscated main code -->
-    <script src="/js/obfuscated-main.js"></script>
+    <script src="/js/app.min.js"></script>
+    <script>
+      if (!window.ArenaStreams) {
+        document.write('<script src="/js/main.js"><\\/script>');
+      }
+    </script>
 </body>
 </html>
