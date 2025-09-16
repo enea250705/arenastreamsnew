@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const axios = require('axios');
 const handlebars = require('handlebars');
+const { minify } = require('html-minifier-terser');
 
 // Register Handlebars helpers
 handlebars.registerHelper('json', function(context) {
@@ -71,6 +72,34 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
   }
 }));
+
+// HTML minification middleware (after static, before routes)
+app.use(async (req, res, next) => {
+  // Only minify HTML responses
+  const send = res.send.bind(res);
+  res.send = async (body) => {
+    try {
+      if (typeof body === 'string' && body.trim().startsWith('<!DOCTYPE html')) {
+        const minified = await minify(body, {
+          collapseWhitespace: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeEmptyAttributes: true,
+          minifyCSS: true,
+          minifyJS: true,
+          keepClosingSlash: true,
+          sortAttributes: true,
+          sortClassName: true
+        });
+        return send(minified);
+      }
+    } catch (e) {
+      console.warn('HTML minify failed, sending original:', e.message);
+    }
+    return send(body);
+  };
+  next();
+});
 
 // Serve service worker from root
 app.get('/sw.js', (req, res) => {

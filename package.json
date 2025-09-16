@@ -23,7 +23,8 @@
     "compression": "^1.7.4",
     "handlebars": "^4.7.8",
     "@modelcontextprotocol/server-puppeteer": "^2025.5.12",
-    "puppeteer": "^24.20.0"
+    "puppeteer": "^24.20.0",
+    "html-minifier-terser": "^7.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
