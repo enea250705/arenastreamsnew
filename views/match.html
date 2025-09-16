@@ -432,18 +432,7 @@
         </div>
     </footer>
 
-    <!-- Service Worker for Ad Control -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('✅ Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.log('❌ Service Worker registration failed:', error);
-                });
-        }
-    </script>
+    
     
     <!-- Ad Scripts -->
     <script>
@@ -1065,6 +1054,13 @@
     <!-- Main JavaScript -->
     <script src="/js/app.min.js"></script>
     <script>
+      // Ensure no stale service workers interfere with streaming
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister().catch(()=>{}));
+        });
+      }
+      
       if (!window.ArenaStreams) {
         document.write('<script src="/js/main.js"><\\/script>');
       }

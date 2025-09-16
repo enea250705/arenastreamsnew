@@ -21,10 +21,30 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://kt.restowelected.com", "https://np.mournersamoa.com", "https://madurird.com", "https://al5sm.com", "https://shoukigaigoors.net", "https://tzegilo.com"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://cdn.tailwindcss.com",
+        // Ads / partners
+        "https://kt.restowelected.com",
+        "https://np.mournersamoa.com",
+        "https://madurird.com",
+        "https://al5sm.com",
+        "https://shoukigaigoors.net",
+        "https://tzegilo.com",
+        // Google Analytics / Tag Manager
+        "https://www.googletagmanager.com",
+        "https://www.google-analytics.com"
+      ],
       imgSrc: ["'self'", "data:", "https:", "http:"],
       frameSrc: ["'self'", "https:", "http:"],
-      connectSrc: ["'self'", "https:", "http:"],
+      connectSrc: [
+        "'self'",
+        "https:",
+        "http:",
+        // Google Analytics beacons
+        "https://www.google-analytics.com"
+      ],
       fontSrc: ["'self'", "https://fonts.gstatic.com"]
     }
   },
@@ -86,7 +106,7 @@ app.use(async (req, res, next) => {
           removeRedundantAttributes: true,
           removeEmptyAttributes: true,
           minifyCSS: true,
-          minifyJS: true,
+          minifyJS: false,
           keepClosingSlash: true,
           sortAttributes: true,
           sortClassName: true
