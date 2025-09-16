@@ -54,28 +54,7 @@
     <!-- Advanced Ad System -->
     <script src="/js/advanced-ads.js"></script>
     
-    <!-- Service Worker for Ad Control -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            // Register original service worker (propeller tracking)
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('✅ Propeller Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.log('❌ Propeller Service Worker registration failed:', error);
-                });
-            
-            // Register custom ad protection service worker
-            navigator.serviceWorker.register('/sw-custom.js')
-                .then(registration => {
-                    console.log('🛡️ ArenaStreams Ad Protection SW registered:', registration);
-                })
-                .catch(error => {
-                    console.log('❌ ArenaStreams Ad Protection SW registration failed:', error);
-                });
-        }
-    </script>
+    
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
