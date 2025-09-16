@@ -63,6 +63,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, path) => {
     if (path.endsWith('.css') || path.endsWith('.js')) {
       res.setHeader('Cache-Control', 'public, max-age=31536000');
+      // Discourage source inspection and disable source maps
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      if (path.endsWith('.map')) {
+        res.setHeader('Cache-Control', 'no-store');
+      }
     }
   }
 }));
