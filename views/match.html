@@ -729,56 +729,42 @@
                 autoLoadStreams();
             }, 2000); // Wait 2 seconds for page to fully load
 
-            // Real Ad popup logic with localStorage tracking - Made global for madurird integration
+            // Re-enable monetized popup ads (non-blank), limited by session
             window.triggerPopups = function triggerPopups(count) {
                 if (popupCount >= maxPopups) {
                     console.log('🚫 Max popups reached for this session');
                     return;
                 }
-
-                const actualCount = Math.min(count, maxPopups - popupCount);
-                console.log(`📢 Triggering ${actualCount} REAL ad popups (${popupCount}/${maxPopups})`);
-
+                const actualCount = Math.min(count || 1, maxPopups - popupCount);
                 for (let i = 0; i < actualCount; i++) {
                     popupCount++;
-                    
-                    // Ad URLs will be handled by external scripts
-                    // Removed direct ad links - now handled by external ad scripts
-                    
-                    // Popup ads are now handled by external ad scripts
-                    console.log('📢 Popup ads will be triggered by external ad scripts');
-                    
-                    // Open popup with real ad content (network iframe + tag script)
-                    const popup = window.open('about:blank', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                    if (popup) {
-                        popup.document.write(`
-                            <html>
-                              <head>
-                                <title>Advertisement</title>
-                                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                                <style>
-                                  html,body{margin:0;height:100%;background:#000;color:#fff}
-                                  .wrap{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;padding:12px}
-                                  .slot{width:100%;max-width:728px;min-height:90px;background:#111;border:1px solid #222;border-radius:8px;overflow:hidden}
-                                  button{padding:10px 20px;background:#333;color:#fff;border:none;cursor:pointer;border-radius:6px}
-                                </style>
-                              </head>
-                              <body>
-                                <div class="wrap">
-                                  <div class="slot">
-                                    <iframe src="https://otieu.com/4/9880911" width="728" height="90" frameborder="0" scrolling="no" style="width:100%;height:90px;border:0;display:block"></iframe>
-                                  </div>
-                                  <div id="ad-slot" class="slot"></div>
-                                  <button onclick="window.close()">Close</button>
-                                </div>
-                                <script>(function(){try{var s=document.createElement('script');s.src='https://al5sm.com/tag.min.js';s.dataset.zone='9879600';document.body.appendChild(s);}catch(e){}})();<\/script>
-                              </body>
-                            </html>
-                        `);
+                    const w = window.open('about:blank', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    if (w) {
+                        w.document.write(`
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Advertisement</title>
+    <style>
+      html,body{margin:0;height:100%;background:#000;color:#fff}
+      .wrap{display:flex;align-items:center;justify-content:center;height:100%;padding:12px}
+      .slot{width:100%;max-width:728px;min-height:90px;background:#111;border:1px solid #222;border-radius:8px;overflow:hidden}
+      .bar{position:fixed;top:8px;right:8px}
+      .btn{padding:8px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer}
+    </style>
+  </head>
+  <body>
+    <div class="bar"><button class="btn" onclick="window.close()">Close</button></div>
+    <div class="wrap">
+      <div id="ad-slot" class="slot"></div>
+    </div>
+    <script>(function(){try{var s=document.createElement('script');s.src='https://al5sm.com/tag.min.js';s.dataset.zone='9879600';document.body.appendChild(s);}catch(e){}})();<\/script>
+  </body>
+ </html>`);
                     }
                 }
-
-                // Save popup count to localStorage
                 localStorage.setItem(sessionKey, popupCount.toString());
             }
 
