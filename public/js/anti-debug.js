@@ -2,7 +2,10 @@
 (function() {
     'use strict';
     
-    // Anti-debugging techniques
+    // Check if device is mobile - don't apply aggressive protection on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Anti-debugging techniques (only for desktop)
     let debuggerDetected = false;
     
     // Method 1: Console.log detection
@@ -103,60 +106,67 @@
         console.log('%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a ArenaStreams feature or "hack" someone\'s account, it is a scam and will give them access to your account.', 'color: red; font-size: 16px;');
     }
     
-    // Run all detection methods
+    // Run all detection methods (only on desktop)
     function runDetection() {
-        detectDebugger();
-        detectDevTools();
-        checkWindowSize();
-        detectPerformanceDebug();
-        detectStackTrace();
+        if (!isMobile) {
+            detectDebugger();
+            detectDevTools();
+            checkWindowSize();
+            detectPerformanceDebug();
+            detectStackTrace();
+        }
     }
     
-    // Continuous monitoring
-    setInterval(runDetection, 1000);
-    setInterval(checkWindowSize, 500);
+    // Continuous monitoring (only on desktop)
+    if (!isMobile) {
+        setInterval(runDetection, 1000);
+        setInterval(checkWindowSize, 500);
+        
+        // Disable common debugging shortcuts
+        document.addEventListener('keydown', function(e) {
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            if (e.keyCode === 123 || // F12
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+                (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
+                (e.ctrlKey && e.keyCode === 83)) { // Ctrl+S
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        });
+        
+        // Clear console periodically
+        setInterval(function() {
+            console.clear();
+            console.log('%cArenaStreams - Protected Code', 'color: #00ff00; font-size: 20px; font-weight: bold;');
+            console.log('%cUnauthorized access is prohibited', 'color: #ff4444; font-size: 14px;');
+        }, 2000);
+    }
     
-    // Disable common debugging shortcuts
-    document.addEventListener('keydown', function(e) {
-        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
-        if (e.keyCode === 123 || // F12
-            (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-            (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
-            (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
-            (e.ctrlKey && e.keyCode === 83)) { // Ctrl+S
+    // Disable right-click (only on desktop)
+    if (!isMobile) {
+        document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            e.stopPropagation();
             return false;
-        }
-    });
-    
-    // Disable right-click
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Disable text selection
-    document.addEventListener('selectstart', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Disable drag
-    document.addEventListener('dragstart', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Clear console periodically
-    setInterval(function() {
-        console.clear();
-        console.log('%cArenaStreams - Protected Code', 'color: #00ff00; font-size: 20px; font-weight: bold;');
-        console.log('%cUnauthorized access is prohibited', 'color: #ff4444; font-size: 14px;');
-    }, 2000);
+        });
+        
+        // Disable text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable drag
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    }
     
     // Export protection functions
     window.ArenaAntiDebug = {
+        isMobile: isMobile,
         detectDebugger: detectDebugger,
         detectDevTools: detectDevTools,
         checkWindowSize: checkWindowSize,
@@ -164,7 +174,9 @@
         runDetection: runDetection
     };
     
-    // Run initial detection
-    runDetection();
+    // Run initial detection (only on desktop)
+    if (!isMobile) {
+        runDetection();
+    }
     
 })();
