@@ -141,6 +141,13 @@ app.get('/sw-custom.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'sw-custom.js'));
 });
 
+// Serve adblock-specific service worker
+app.get('/sw.adblock.js', (req, res) => {
+  res.set('Content-Type', 'application/javascript');
+  res.set('Service-Worker-Allowed', '/');
+  res.sendFile(path.join(__dirname, 'sw.adblock.js'));
+});
+
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
