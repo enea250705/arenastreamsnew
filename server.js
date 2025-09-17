@@ -539,6 +539,19 @@ app.get('/match/:slug', async (req, res) => {
     }
     
     console.log(`📊 Rendering match page for: ${matchData.teamA} vs ${matchData.teamB}`);
+
+    // Apply server overrides if exist (admin-provided extra embed URLs by slug)
+    try {
+      const overridesRaw = await fs.readFile(path.join(__dirname, 'data', 'overrides.json'), 'utf8');
+      const overrides = JSON.parse(overridesRaw || '[]');
+      const foundOverride = overrides.find(o => o.slug === slug);
+      if (foundOverride && Array.isArray(foundOverride.embedUrls) && foundOverride.embedUrls.length > 0) {
+        matchData.embedUrls = foundOverride.embedUrls;
+        console.log(`✅ Applied ${foundOverride.embedUrls.length} override server(s) for slug ${slug}`);
+      }
+    } catch (e) {
+      console.log('No overrides file found or failed to read overrides:', e.message);
+    }
     
     const html = await renderTemplate('match', {
       match: matchData

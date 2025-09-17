@@ -49,6 +49,11 @@
             }
         }
     </script>
+    <style>
+        /* Show the adblock banner only when adblock is detected (class added by advanced-ads.js) */
+        #adblock-banner { display: none; }
+        body.adblock-on #adblock-banner { display: block; }
+    </style>
     
     <!-- Advanced Ad System -->
     <script src="/js/advanced-ads.js"></script>
@@ -99,6 +104,77 @@
             </div>
         </div>
     </header>
+
+    <!-- AdBlock Banner (only visible when AdBlock is ON) -->
+    <div id="adblock-banner" class="bg-dark border-b border-yellow-500">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="text-sm md:text-base text-gray-200 leading-snug">
+                    <span class="mr-2">❤️</span>
+                    We keep streams alive with ads.
+                    <span class="hidden md:inline">Turn off AdBlock for ArenaStreams and unlock the cleaner version → just 5 ads per match.</span>
+                    <span class="md:hidden block mt-1">Turn off AdBlock for ArenaStreams and unlock the cleaner version → just 5 ads per match.</span>
+                </div>
+                <a href="#" id="whitelist-btn" class="bg-primary text-dark font-bold px-4 py-2 rounded-lg hover:bg-yellow-400 transition-colors text-sm md:text-base">
+                    Whitelist Us for Fewer Ads
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Whitelist Modal -->
+    <div id="whitelist-modal" class="fixed inset-0 bg-black/70 hidden z-50">
+        <div class="absolute inset-0 flex items-center justify-center px-4">
+            <div class="bg-dark border border-gray-800 rounded-xl max-w-2xl w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-white">Whitelist ArenaStreams</h3>
+                    <button id="whitelist-close" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">
+                    Turn off your ad blocker on this site to unlock the cleaner version (just 5 ads per match). Here are quick steps for popular blockers:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">uBlock Origin</h4>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Click the uBlock Origin icon.</li>
+                            <li>Click the large power button to disable on this site.</li>
+                            <li>Refresh the page.</li>
+                        </ol>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">Adblock / Adblock Plus</h4>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Click the Adblock(Plus) icon.</li>
+                            <li>Select “Don’t run on pages on this site” or “Pause on this site”.</li>
+                            <li>Refresh the page.</li>
+                        </ol>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">AdGuard</h4>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Click the AdGuard icon.</li>
+                            <li>Toggle off on this site (whitelist).</li>
+                            <li>Refresh the page.</li>
+                        </ol>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">Safari iOS / iPadOS</h4>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Tap “aA” in the address bar.</li>
+                            <li>Turn off content blockers.</li>
+                            <li>Reload the page.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button id="whitelist-copy" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">Copy domain</button>
+                    <button id="whitelist-recheck" class="bg-primary text-dark font-bold px-4 py-2 rounded-lg hover:bg-yellow-400 text-sm">I’ve whitelisted – Recheck</button>
+                </div>
+                <p id="whitelist-feedback" class="text-green-500 text-sm mt-3 hidden">Copied!</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="md:hidden bg-dark border-b border-gray-800 hidden">
@@ -195,7 +271,7 @@
                 <p class="text-gray-400 text-sm mb-2 text-center">Advertisement</p>
                 <div class="text-center">
                     <!-- Real Banner Ad -->
-                    <iframe src="https://otieu.com/4/9880911" 
+                    <iframe src="https://otieu.com/4/9889886" 
                             width="728" height="90" 
                             frameborder="0" 
                             scrolling="no"

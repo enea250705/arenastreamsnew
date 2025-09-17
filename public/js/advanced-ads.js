@@ -190,6 +190,62 @@
           } catch (e) {}
         }
       }
+
+      // Wire up whitelist modal and actions (homepage banner)
+      try {
+        const openBtn = document.getElementById('whitelist-btn');
+        const modal = document.getElementById('whitelist-modal');
+        const closeBtn = document.getElementById('whitelist-close');
+        const copyBtn = document.getElementById('whitelist-copy');
+        const recheckBtn = document.getElementById('whitelist-recheck');
+        const feedback = document.getElementById('whitelist-feedback');
+        const domain = location.hostname.replace(/^www\./, '');
+
+        if (openBtn && modal) {
+          openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.classList.remove('hidden');
+          });
+        }
+        if (closeBtn && modal) {
+          closeBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+          });
+          modal.addEventListener('click', function(e) {
+            if (e.target === modal) modal.classList.add('hidden');
+          });
+        }
+        if (copyBtn) {
+          copyBtn.addEventListener('click', async function() {
+            try {
+              await navigator.clipboard.writeText(domain);
+              if (feedback) {
+                feedback.textContent = 'Copied!';
+                feedback.classList.remove('hidden');
+                setTimeout(()=>feedback.classList.add('hidden'), 1500);
+              }
+            } catch (e) {}
+          });
+        }
+        if (recheckBtn) {
+          recheckBtn.addEventListener('click', function() {
+            detectAdblock(800).then(isBlocked => {
+              if (!isBlocked) {
+                document.body.classList.remove('adblock-on');
+                document.body.classList.add('adblock-off');
+                if (modal) modal.classList.add('hidden');
+                const banner = document.getElementById('adblock-banner');
+                if (banner) banner.style.display = 'none';
+              } else {
+                if (feedback) {
+                  feedback.textContent = 'Still blocked. Please whitelist and try again.';
+                  feedback.classList.remove('hidden');
+                }
+              }
+            });
+          });
+        }
+      } catch (e) {}
     }).catch(() => {});
   }
 

@@ -22,6 +22,21 @@ async function loadMatches() {
 // Initialize data
 loadMatches();
 
+// Overrides (extra servers for fetched matches)
+const overridesPath = path.join(__dirname, '..', 'data', 'overrides.json');
+let overridesData = [];
+async function loadOverrides() {
+  try {
+    const data = await fs.readFile(overridesPath, 'utf8');
+    overridesData = JSON.parse(data);
+  } catch (e) {
+    overridesData = [];
+  }
+}
+async function saveOverrides() {
+  await fs.writeFile(overridesPath, JSON.stringify(overridesData, null, 2));
+}
+
 // Multer storage for team logos
 const logosDir = path.join(__dirname, '..', 'public', 'images', 'logos');
 const storage = multer.diskStorage({
@@ -114,6 +129,53 @@ router.get('/add-match', async (req, res) => {
   } catch (error) {
     console.error('Error loading add match form:', error);
     res.status(500).send('Error loading add match form');
+  }
+});
+
+// Add extra server for fetched matches (by slug)
+router.get('/add-server', async (req, res) => {
+  try {
+    await loadOverrides();
+    const { slug = '' } = req.query || {};
+    const html = await renderTemplate('add-server', { slug, error: null });
+    res.send(html);
+  } catch (error) {
+    console.error('Error loading add server form:', error);
+    res.status(500).send('Error loading add server form');
+  }
+});
+
+router.post('/add-server', async (req, res) => {
+  try {
+    await loadOverrides();
+    const { slug, embedUrls } = req.body;
+
+    if (!slug || !embedUrls) {
+      const html = await renderTemplate('add-server', {
+        slug,
+        error: 'Please provide both the match slug and at least one embed URL'
+      });
+      return res.send(html);
+    }
+
+    const urls = embedUrls.split('\n').map(u => u.trim()).filter(Boolean);
+    const idx = overridesData.findIndex(o => o.slug === slug);
+    const now = new Date().toISOString();
+    if (idx >= 0) {
+      overridesData[idx] = { ...overridesData[idx], embedUrls: urls, updatedAt: now };
+    } else {
+      overridesData.push({ slug, embedUrls: urls, createdAt: now, updatedAt: now });
+    }
+    await saveOverrides();
+
+    res.redirect('/admin?success=Server links saved for match');
+  } catch (error) {
+    console.error('Error saving server override:', error);
+    const html = await renderTemplate('add-server', {
+      slug: req.body.slug,
+      error: 'Error saving: ' + error.message
+    });
+    res.send(html);
   }
 });
 
