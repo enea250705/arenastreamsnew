@@ -31,6 +31,7 @@
       let done = false;
       let networkBlocked = false;
       let imageLoaded = false;
+      let scriptBlocked = false;
 
       // Bait element test
       const bait = document.createElement('div');
@@ -50,16 +51,31 @@
       };
       img.src = '/ads/ad.gif?ts=' + Date.now();
 
+      // Script probe test
+      const script = document.createElement('script');
+      script.onload = function() {
+        log('Ad probe script loaded successfully');
+      };
+      script.onerror = function() {
+        scriptBlocked = true;
+        log('Ad probe script blocked');
+      };
+      script.src = '/ads/test.js?ts=' + Date.now();
+      document.head.appendChild(script);
+
       setTimeout(function() {
         if (done) return;
         const blockedByStyle = getComputedStyle(bait).display === 'none' || bait.offsetParent === null || bait.offsetHeight === 0;
         try { document.body.removeChild(bait); } catch(e) {}
         done = true;
         
-        log('Detection results:', { blockedByStyle, networkBlocked, imageLoaded });
+        // Clean up script probe
+        try { document.head.removeChild(script); } catch(e) {}
         
-        // More lenient detection: if style bait is hidden OR network is blocked, consider AdBlock ON
-        const isBlocked = !!(blockedByStyle || networkBlocked || !imageLoaded);
+        log('Detection results:', { blockedByStyle, networkBlocked, imageLoaded, scriptBlocked });
+        
+        // Strict detection: require style bait to be hidden AND (network OR script blocked)
+        const isBlocked = !!(blockedByStyle && (networkBlocked || !imageLoaded || scriptBlocked));
         log('Final AdBlock detection:', isBlocked);
         resolve(isBlocked);
       }, timeoutMs);

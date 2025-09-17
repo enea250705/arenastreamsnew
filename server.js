@@ -115,6 +115,17 @@ app.get('/ads/ad.gif', (req, res) => {
   }
 });
 
+// Serve a test script for adblock detection
+app.get('/ads/test.js', (req, res) => {
+  res.set({
+    'Content-Type': 'application/javascript',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
+  res.send('// Adblock detection test script\nwindow.adblockTest = true;');
+});
+
 // HTML minification middleware (after static, before routes)
 app.use(async (req, res, next) => {
   // Only minify HTML responses
