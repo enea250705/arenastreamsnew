@@ -632,6 +632,188 @@ app.get('/baseball', async (req, res) => {
   }
 });
 
+// AdBlock version routes - ad-heavy versions for AdBlock users
+app.get('/homepageadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('homepageadblock', {
+      sports: sportsData.map(s => s.name || s),
+      seo: {
+        title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC - AdBlock Version`,
+        description: `${seoConfig.siteName} - Live sports streaming platform for football, basketball, tennis, UFC, rugby and baseball - AdBlock version with ads everywhere`,
+        keywords: 'live sports streaming, football, basketball, tennis, ufc, rugby, baseball, adblock version',
+        canonical: `${seoConfig.baseUrl}/homepageadblock`,
+        ogTitle: `${seoConfig.siteName} - Live Sports Streaming - AdBlock Version`,
+        ogDescription: 'Live sports streaming platform - AdBlock version with ads everywhere',
+        ogImage: `${seoConfig.baseUrl}/images/og-image.jpg`,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${seoConfig.siteName} - Live Sports Streaming - AdBlock Version`,
+        twitterDescription: 'Live sports streaming platform - AdBlock version with ads everywhere',
+        twitterImage: `${seoConfig.baseUrl}/images/og-image.jpg`
+      }
+    });
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering homepageadblock:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/footballadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('footballadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering footballadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/basketballadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('basketballadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering basketballadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/tennisadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('tennisadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering tennisadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/ufcadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('ufcadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering ufcadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/rugbyadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('rugbyadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering rugbyadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/baseballadblock', async (req, res) => {
+  try {
+    const html = await renderTemplate('baseballadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering baseballadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// AdBlock match page route
+app.get('/matchadblock/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    console.log(`🔍 Loading AdBlock match page for slug: ${slug}`);
+    
+    // Try to find the match by searching through all sports
+    let matchData = null;
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball'];
+    
+    for (const sport of sports) {
+      try {
+        const response = await axios.get(`${STREAMED_API_BASE}/matches/${sport}`, {
+          timeout: 10000
+        });
+        
+        if (response.data && Array.isArray(response.data)) {
+          const match = response.data.find(m => m.slug === slug);
+          if (match) {
+            matchData = { ...match, sport };
+            break;
+          }
+        }
+      } catch (error) {
+        console.log(`No matches found for ${sport}`);
+      }
+    }
+    
+    // If not found in API, check admin-added matches
+    if (!matchData) {
+      try {
+        const supabase = getSupabaseClient();
+        const { data: adminMatches } = await supabase
+          .from('matches')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+        
+        if (adminMatches) {
+          matchData = adminMatches;
+        }
+      } catch (error) {
+        console.log('No admin match found for slug:', slug);
+      }
+    }
+    
+    if (!matchData) {
+      console.log(`❌ No match found for slug: ${slug}`);
+      return res.status(404).send('Match not found');
+    }
+    
+    console.log(`✅ Found match data:`, matchData);
+    
+    // Check for server overrides
+    let embedUrls = matchData.embedUrls || [];
+    try {
+      const supabase = getSupabaseClient();
+      const { data: overrides } = await supabase
+        .from('overrides')
+        .select('embedUrls')
+        .eq('slug', slug)
+        .single();
+      
+      if (overrides && overrides.embedUrls) {
+        embedUrls = overrides.embedUrls;
+        console.log(`✅ Using override embed URLs for ${slug}`);
+      }
+    } catch (error) {
+      console.log('No overrides found for slug:', slug);
+    }
+    
+    const html = await renderTemplate('matchadblock', {
+      match: matchData,
+      embedUrls: embedUrls,
+      seo: {
+        title: `${matchData.teamA} vs ${matchData.teamB} - Live Stream | ${seoConfig.siteName} - AdBlock Version`,
+        description: `Watch ${matchData.teamA} vs ${matchData.teamB} live stream in HD quality. Free streaming with no registration required - AdBlock version`,
+        keywords: `${matchData.teamA}, ${matchData.teamB}, live stream, ${matchData.sport}, adblock version`,
+        canonical: `${seoConfig.baseUrl}/matchadblock/${slug}`,
+        ogTitle: `${matchData.teamA} vs ${matchData.teamB} - Live Stream - AdBlock Version`,
+        ogDescription: `Watch ${matchData.teamA} vs ${matchData.teamB} live stream - AdBlock version`,
+        ogImage: `${seoConfig.baseUrl}/images/og-image.jpg`,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${matchData.teamA} vs ${matchData.teamB} - Live Stream - AdBlock Version`,
+        twitterDescription: `Watch ${matchData.teamA} vs ${matchData.teamB} live stream - AdBlock version`,
+        twitterImage: `${seoConfig.baseUrl}/images/og-image.jpg`
+      }
+    });
+    
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering AdBlock match page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // Streamed.pk API proxy endpoints
 app.get('/api/streamed/sports', async (req, res) => {
   try {

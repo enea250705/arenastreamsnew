@@ -91,46 +91,37 @@
         log('Error setting body class:', e);
       }
       if (blocked) {
-        // Note: House ads removed - only provider script for AdBlock ON users
-
-        // Register adblock-specific Service Worker (only for adblock users)
-        if ('serviceWorker' in navigator) {
-          try {
-            navigator.serviceWorker.getRegistration('/')
-              .then(reg => {
-                const isAdblockSW = !!(reg && reg.active && typeof reg.active.scriptURL === 'string' && reg.active.scriptURL.indexOf('/sw.adblock.js') !== -1);
-                if (!isAdblockSW) {
-                  navigator.serviceWorker.register('/sw.adblock.js', { scope: '/' })
-                    .then(r => log('Adblock SW registered:', r.scope))
-                    .catch(() => {});
-                }
-              })
-              .catch(() => {
-                navigator.serviceWorker.register('/sw.adblock.js', { scope: '/' }).catch(() => {});
-              });
-          } catch (e) {}
+        // Redirect AdBlock users to ad-heavy version
+        log('AdBlock detected - redirecting to ad-heavy version');
+        
+        // Get current path and redirect to AdBlock version
+        const currentPath = window.location.pathname;
+        let redirectPath = '/homepageadblock'; // Default to homepage
+        
+        if (currentPath === '/' || currentPath === '/homepageadblock') {
+          redirectPath = '/homepageadblock';
+        } else if (currentPath.includes('/football')) {
+          redirectPath = '/footballadblock';
+        } else if (currentPath.includes('/basketball')) {
+          redirectPath = '/basketballadblock';
+        } else if (currentPath.includes('/tennis')) {
+          redirectPath = '/tennisadblock';
+        } else if (currentPath.includes('/ufc')) {
+          redirectPath = '/ufcadblock';
+        } else if (currentPath.includes('/rugby')) {
+          redirectPath = '/rugbyadblock';
+        } else if (currentPath.includes('/baseball')) {
+          redirectPath = '/baseballadblock';
+        } else if (currentPath.includes('/match/')) {
+          // For match pages, redirect to AdBlock version
+          redirectPath = currentPath.replace('/match/', '/matchadblock/');
         }
-
-        // Activate provider script for adblock users (site-wide)
-        try {
-          const providerScript = document.getElementById('adblock-provider-script');
-          if (providerScript && !window.__adblockProviderLoaded) {
-            // Set the src attribute to actually load the script
-            providerScript.src = providerScript.dataset.src;
-            providerScript.async = true;
-            providerScript.setAttribute('data-cfasync', providerScript.dataset.cfasync);
-            providerScript.dataset.zone = providerScript.dataset.zone;
-            providerScript.onload = function() {
-              log('Provider script loaded successfully');
-            };
-            providerScript.onerror = function() {
-              log('Provider script failed to load');
-            };
-            window.__adblockProviderLoaded = true;
-            log('Activated adblock provider script for site-wide ads');
-          }
-        } catch (e) {
-          log('Error activating provider script:', e);
+        
+        // Only redirect if we're not already on an AdBlock version
+        if (!currentPath.includes('adblock')) {
+          log('Redirecting to:', redirectPath);
+          window.location.href = redirectPath;
+          return; // Stop execution to prevent further processing
         }
       } else {
         // Keep existing behavior (roughly 5 ads on match page only)
