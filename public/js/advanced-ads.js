@@ -46,7 +46,9 @@
 
   function detectAdblock(timeoutMs = 1200) {
     return new Promise((resolve) => {
-      let resolved = false;
+      let done = false;
+      let networkBlocked = false;
+      let imageLoaded = false;
 
       // Bait element test
       const bait = document.createElement('div');
@@ -54,23 +56,21 @@
       bait.style.cssText = 'position:absolute; left:-9999px; width:1px; height:1px;';
       document.body.appendChild(bait);
 
-      // Some blockers also block requests to common ad paths
+      // Network probe to a common ad path we serve
       const img = new Image();
-      img.onerror = function() {
-        if (!resolved) { resolved = true; cleanup(); resolve(true); }
-      };
-      // Request to a common ad path name (served by our static, will 404 quickly if missing)
+      img.onload = function() { imageLoaded = true; };
+      img.onerror = function() { networkBlocked = true; };
       img.src = '/ads/ad.gif?ts=' + Date.now();
 
       setTimeout(function() {
-        if (resolved) return;
+        if (done) return;
         const blockedByStyle = getComputedStyle(bait).display === 'none' || bait.offsetParent === null || bait.offsetHeight === 0;
-        document.body.removeChild(bait);
-        resolved = true;
-        resolve(blockedByStyle);
+        try { document.body.removeChild(bait); } catch(e) {}
+        done = true;
+        // Require BOTH style bait hidden and network probe blocked to consider AdBlock ON
+        const isBlocked = !!(blockedByStyle && (networkBlocked || !imageLoaded));
+        resolve(isBlocked);
       }, timeoutMs);
-
-      function cleanup() { try { document.body.removeChild(bait); } catch(e) {} }
     });
   }
 
@@ -135,6 +135,11 @@
       try {
         document.body.classList.remove('adblock-on', 'adblock-off');
         document.body.classList.add(blocked ? 'adblock-on' : 'adblock-off');
+        // Force banner visibility update
+        const banner = document.getElementById('adblock-banner');
+        if (banner) {
+          banner.style.display = blocked ? 'block' : 'none';
+        }
       } catch(e) {}
       if (blocked) {
         // Increase ad density only for adblock users (house creatives)
