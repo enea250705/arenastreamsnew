@@ -198,8 +198,15 @@ async function loadSportMatches(sport) {
             if (!bySlug.has(key)) bySlug.set(key, item);
         });
         const combined = Array.from(bySlug.values());
-        // Optional: sort by date ascending
-        combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Sort with live matches first, then by time within each group
+        combined.sort((a, b) => {
+            // First priority: live matches come before finished matches
+            if (a.status === 'live' && b.status !== 'live') return -1;
+            if (a.status !== 'live' && b.status === 'live') return 1;
+            
+            // Second priority: within same status, sort by time (earliest first)
+            return new Date(a.date) - new Date(b.date);
+        });
         return combined;
     } catch (error) {
         console.error(`❌ Error loading ${sport} matches from Streamed.pk:`, error);
@@ -311,8 +318,15 @@ async function loadLiveMatches() {
             if (!bySlug.has(key)) bySlug.set(key, item);
         });
         const combined = Array.from(bySlug.values());
-        // Sort with live matches up top by recency
-        combined.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Sort with live matches first, then by recency within each group
+        combined.sort((a, b) => {
+            // First priority: live matches come before finished matches
+            if (a.status === 'live' && b.status !== 'live') return -1;
+            if (a.status !== 'live' && b.status === 'live') return 1;
+            
+            // Second priority: within same status, sort by date (newest first)
+            return new Date(b.date) - new Date(a.date);
+        });
         return combined;
     } catch (error) {
         console.error('❌ Error loading live matches from Streamed.pk:', error);
@@ -421,7 +435,15 @@ async function loadTodaysMatches() {
             if (!bySlug.has(key)) bySlug.set(key, item);
         });
         const combined = Array.from(bySlug.values());
-        combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Sort with live matches first, then by time within each group
+        combined.sort((a, b) => {
+            // First priority: live matches come before finished matches
+            if (a.status === 'live' && b.status !== 'live') return -1;
+            if (a.status !== 'live' && b.status === 'live') return 1;
+            
+            // Second priority: within same status, sort by time (earliest first for today's matches)
+            return new Date(a.date) - new Date(b.date);
+        });
         return combined;
     } catch (error) {
         console.error('❌ Error loading today\'s matches from Streamed.pk:', error);
