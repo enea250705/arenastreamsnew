@@ -1453,6 +1453,22 @@ app.get('/terms', async (req, res) => {
   }
 });
 
+// API endpoint for client to track AdBlock status
+app.post('/api/track-adblock', (req, res) => {
+  try {
+    const { adblock, page, timestamp } = req.body;
+    console.log(`📊 Client tracking AdBlock status: ${adblock ? 'ON' : 'OFF'} on page: ${page}`);
+    
+    // Track the visit
+    trackAdblockVisit(adblock);
+    
+    res.json({ success: true, tracked: true });
+  } catch (error) {
+    console.error('Error tracking AdBlock status:', error);
+    res.status(500).json({ error: 'Failed to track AdBlock status' });
+  }
+});
+
 // API endpoint for admin to get AdBlock statistics
 app.get('/api/admin/adblock-stats', (req, res) => {
   try {

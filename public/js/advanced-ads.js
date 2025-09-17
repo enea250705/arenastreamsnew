@@ -94,6 +94,32 @@
       window.adConfig.adBlockDetected = !!blocked;
       log('AdBlock detection completed. Result:', blocked);
       log('Setting body class to:', blocked ? 'adblock-on' : 'adblock-off');
+      
+      // Track AdBlock status on server
+      try {
+        fetch('/api/track-adblock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            adblock: blocked,
+            page: window.location.pathname,
+            timestamp: new Date().toISOString()
+          })
+        }).then(response => {
+          if (response.ok) {
+            log('AdBlock status tracked on server');
+          } else {
+            log('Failed to track AdBlock status');
+          }
+        }).catch(error => {
+          log('Error tracking AdBlock status:', error);
+        });
+      } catch (e) {
+        log('Error sending AdBlock tracking request:', e);
+      }
+      
       try {
         document.body.classList.remove('adblock-on', 'adblock-off');
         document.body.classList.add(blocked ? 'adblock-on' : 'adblock-off');
