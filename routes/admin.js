@@ -2,6 +2,9 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const handlebars = require('handlebars');
+const multer = require('multer');
+const slugify = require('slugify');
+const moment = require('moment');
 
 const router = express.Router();
 
@@ -18,6 +21,23 @@ async function loadMatches() {
 
 // Initialize data
 loadMatches();
+
+// Multer storage for team logos
+const logosDir = path.join(__dirname, '..', 'public', 'images', 'logos');
+const storage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    try {
+      await fs.mkdir(logosDir, { recursive: true });
+    } catch (e) {}
+    cb(null, logosDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = (file.originalname && file.originalname.split('.').pop()) || 'png';
+    const safe = (file.fieldname === 'teamALogo' ? 'teamA' : 'teamB') + '-' + Date.now();
+    cb(null, `${safe}.${ext}`);
+  }
+});
+const upload = multer({ storage });
 
 // Template rendering function
 async function renderTemplate(templateName, data) {
@@ -98,7 +118,7 @@ router.get('/add-match', async (req, res) => {
 });
 
 // Handle add match form submission
-router.post('/add-match', async (req, res) => {
+router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLogo' }]), async (req, res) => {
   try {
     await loadMatches();
     
@@ -130,6 +150,18 @@ router.post('/add-match', async (req, res) => {
     // Generate unique ID
     const id = `${sport}-${Date.now()}`;
     
+    // Determine logo URLs if files uploaded
+    let uploadedTeamALogo = '';
+    let uploadedTeamBLogo = '';
+    try {
+      if (req.files && req.files.teamALogo && req.files.teamALogo[0]) {
+        uploadedTeamALogo = `/images/logos/${req.files.teamALogo[0].filename}`;
+      }
+      if (req.files && req.files.teamBLogo && req.files.teamBLogo[0]) {
+        uploadedTeamBLogo = `/images/logos/${req.files.teamBLogo[0].filename}`;
+      }
+    } catch (e) {}
+
     // Create match object
     const newMatch = {
       id,
@@ -139,12 +171,18 @@ router.post('/add-match', async (req, res) => {
       competition,
       date: fullDate,
       embedUrls: embedUrls ? embedUrls.split('\n').filter(url => url.trim()) : [],
-      teamABadge,
-      teamBBadge,
+      teamABadge: uploadedTeamALogo || teamABadge,
+      teamBBadge: uploadedTeamBLogo || teamBBadge,
       status: 'upcoming',
       createdAt: new Date().toISOString(),
-      source: 'admin'
+    source: 'admin'
     };
+    
+    // Generate SEO-friendly slug
+    newMatch.slug = slugify(`${teamA}-vs-${teamB}-live-${moment(fullDate).format('YYYY-MM-DD')}`, {
+      lower: true,
+      strict: true
+    });
     
     // Add to matches
     matchesData.push(newMatch);
@@ -186,7 +224,7 @@ router.get('/edit-match/:id', async (req, res) => {
 });
 
 // Handle edit match form submission
-router.post('/edit-match/:id', async (req, res) => {
+router.post('/edit-match/:id', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLogo' }]), async (req, res) => {
   try {
     await loadMatches();
     
@@ -213,6 +251,18 @@ router.post('/edit-match/:id', async (req, res) => {
     // Update match
     const fullDate = time ? `${date}T${time}` : date;
     
+    // Determine logo URLs if files uploaded
+    let uploadedTeamALogo = '';
+    let uploadedTeamBLogo = '';
+    try {
+      if (req.files && req.files.teamALogo && req.files.teamALogo[0]) {
+        uploadedTeamALogo = `/images/logos/${req.files.teamALogo[0].filename}`;
+      }
+      if (req.files && req.files.teamBLogo && req.files.teamBLogo[0]) {
+        uploadedTeamBLogo = `/images/logos/${req.files.teamBLogo[0].filename}`;
+      }
+    } catch (e) {}
+
     matchesData[matchIndex] = {
       ...matchesData[matchIndex],
       sport: sport.toLowerCase(),
@@ -221,11 +271,17 @@ router.post('/edit-match/:id', async (req, res) => {
       competition,
       date: fullDate,
       embedUrls: embedUrls ? embedUrls.split('\n').filter(url => url.trim()) : [],
-      teamABadge,
-      teamBBadge,
+      teamABadge: uploadedTeamALogo || teamABadge || matchesData[matchIndex].teamABadge,
+      teamBBadge: uploadedTeamBLogo || teamBBadge || matchesData[matchIndex].teamBBadge,
       status: status || 'upcoming',
-      updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString()
     };
+    
+    // Regenerate slug if key fields changed
+    matchesData[matchIndex].slug = slugify(`${teamA}-vs-${teamB}-live-${moment(fullDate).format('YYYY-MM-DD')}`, {
+      lower: true,
+      strict: true
+    });
     
     await fs.writeFile('./data/matches.json', JSON.stringify(matchesData, null, 2));
     

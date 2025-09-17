@@ -6,6 +6,8 @@ const compression = require('compression');
 const axios = require('axios');
 const handlebars = require('handlebars');
 const { minify } = require('html-minifier-terser');
+const fs = require('fs').promises;
+const http = require('http');
 
 // Register Handlebars helpers
 handlebars.registerHelper('json', function(context) {
@@ -69,9 +71,13 @@ app.use(compression({
   level: 6,
   threshold: 1024,
   filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
-      return false;
-    }
+    try {
+      // Do not compress Server-Sent Events (viewer counts)
+      const isSse = (req.path && req.path.startsWith('/api/viewers')) ||
+                    (req.headers && req.headers.accept && req.headers.accept.includes('text/event-stream'));
+      if (isSse) return false;
+      if (req.headers['x-no-compression']) return false;
+    } catch (e) {}
     return compression.filter(req, res);
   }
 }));
@@ -145,7 +151,36 @@ const adminRoutes = require('./routes/admin');
 
 // Use routes
 app.use('/api/matches', matchRoutes);
-app.use('/admin', adminRoutes);
+
+// Simple HTTP Basic Auth for admin
+const ADMIN_USER = process.env.ADMIN_USER || process.env.ADMIN_USERNAME;
+const ADMIN_PASS = process.env.ADMIN_PASS || process.env.ADMIN_PASSWORD;
+
+function adminAuth(req, res, next) {
+  try {
+    if (!ADMIN_USER || !ADMIN_PASS) {
+      console.warn('⚠️ ADMIN_USER/ADMIN_PASS not set. Admin is locked. Set env vars to enable access.');
+      res.set('WWW-Authenticate', 'Basic realm="Admin"');
+      return res.status(401).send('Admin locked. Set ADMIN_USER and ADMIN_PASS.');
+    }
+    const header = req.headers['authorization'] || '';
+    const token = header.split(' ')[1] || '';
+    const decoded = Buffer.from(token, 'base64').toString();
+    const sep = decoded.indexOf(':');
+    const user = sep >= 0 ? decoded.slice(0, sep) : '';
+    const pass = sep >= 0 ? decoded.slice(sep + 1) : '';
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      return next();
+    }
+    res.set('WWW-Authenticate', 'Basic realm="Admin"');
+    return res.status(401).send('Authentication required');
+  } catch (e) {
+    res.set('WWW-Authenticate', 'Basic realm="Admin"');
+    return res.status(401).send('Authentication required');
+  }
+}
+
+app.use('/admin', adminAuth, adminRoutes);
 
 // Streamed.pk API integration
 const STREAMED_API_BASE = 'https://streamed.pk/api';
@@ -441,6 +476,46 @@ app.get('/match/:slug', async (req, res) => {
       }
     }
     
+    // Local fallback: search stored admin matches by slug
+    if (!matchData) {
+      try {
+        const localRaw = await fs.readFile(path.join(__dirname, 'data', 'matches.json'), 'utf8');
+        const localMatches = JSON.parse(localRaw || '[]');
+        const foundLocal = localMatches.find(m => m.slug === slug) || localMatches.find(m => {
+          try {
+            const dateStr = (m.date ? new Date(m.date) : new Date()).toISOString().split('T')[0];
+            const candidate = `${(m.teamA || 'Team A')}-vs-${(m.teamB || 'Team B')}-live-${dateStr}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            return candidate === slug;
+          } catch (e) {
+            return false;
+          }
+        });
+        if (foundLocal) {
+          console.log(`✅ Found local admin match: ${foundLocal.teamA} vs ${foundLocal.teamB}`);
+          const dateIso = foundLocal.date ? new Date(foundLocal.date).toISOString() : new Date().toISOString();
+          matchData = {
+            id: foundLocal.id,
+            teamA: foundLocal.teamA,
+            teamB: foundLocal.teamB,
+            competition: foundLocal.competition,
+            date: dateIso,
+            slug: foundLocal.slug || slug,
+            teamABadge: foundLocal.teamABadge || '',
+            teamBBadge: foundLocal.teamBBadge || '',
+            status: foundLocal.status || 'upcoming',
+            poster: '',
+            popular: false,
+            sources: [],
+            category: foundLocal.sport || 'football',
+            sport: foundLocal.sport || 'football',
+            embedUrls: Array.isArray(foundLocal.embedUrls) ? foundLocal.embedUrls : []
+          };
+        }
+      } catch (e) {
+        console.log('⚠️ Local matches fallback failed:', e.message);
+      }
+    }
+
     if (!matchData) {
       console.log(`❌ No match found for slug: ${slug}`);
       return res.status(404).send(`
@@ -672,6 +747,94 @@ app.get('/api/streamed/images/:type/:id', async (req, res) => {
     console.error(`Error fetching image ${type}/${id}:`, error);
     res.status(500).json({ error: 'Failed to fetch image' });
   }
+});
+
+// Live viewer counts (in-memory)
+const viewerClientsBySlug = new Map(); // slug -> Set<res>
+
+function getViewerCount(slug) {
+  const set = viewerClientsBySlug.get(slug);
+  return set ? set.size : 0;
+}
+
+function broadcastViewerCount(slug) {
+  const set = viewerClientsBySlug.get(slug);
+  if (!set) return;
+  const payload = `data: ${JSON.stringify({ slug, count: getViewerCount(slug) })}\n\n`;
+  for (const client of set) {
+    try {
+      client.write(payload);
+    } catch (e) {
+      // Ignore write errors
+    }
+  }
+}
+
+// SSE endpoint for a single match slug
+app.get('/api/viewers/:slug/stream', (req, res) => {
+  try {
+    const { slug } = req.params;
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Nginx
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.flushHeaders && res.flushHeaders();
+
+    if (!viewerClientsBySlug.has(slug)) {
+      viewerClientsBySlug.set(slug, new Set());
+    }
+    const clients = viewerClientsBySlug.get(slug);
+    clients.add(res);
+
+    // Send initial count immediately and a comment to open the stream
+    res.write(': connected\n\n');
+    res.write(`data: ${JSON.stringify({ slug, count: getViewerCount(slug) })}\n\n`);
+
+    // Heartbeat to keep connection alive (and bypass proxies)
+    const ping = setInterval(() => {
+      try {
+        res.write(': ping\n\n');
+      } catch (e) {
+        // noop
+      }
+    }, 25000);
+
+    req.on('close', () => {
+      clearInterval(ping);
+      const set = viewerClientsBySlug.get(slug);
+      if (set) {
+        set.delete(res);
+        if (set.size === 0) {
+          viewerClientsBySlug.delete(slug);
+        } else {
+          broadcastViewerCount(slug);
+        }
+      }
+    });
+
+    // Notify others of new viewer
+    broadcastViewerCount(slug);
+  } catch (error) {
+    try { res.end(); } catch (e) {}
+  }
+});
+
+// Basic GET: current viewer count for a slug
+app.get('/api/viewers/:slug', (req, res) => {
+  const { slug } = req.params;
+  res.json({ slug, count: getViewerCount(slug) });
+});
+
+// Bulk GET: counts for many slugs (comma-separated)
+app.get('/api/viewers/bulk', (req, res) => {
+  const slugsParam = req.query.slugs || '';
+  const slugs = slugsParam.split(',').map(s => s.trim()).filter(Boolean).slice(0, 200);
+  const counts = {};
+  for (const slug of slugs) {
+    counts[slug] = getViewerCount(slug);
+  }
+  res.json({ counts });
 });
 
 // Advanced Sitemap route with dynamic content

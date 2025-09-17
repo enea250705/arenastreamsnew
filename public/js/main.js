@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Streamed.pk API only - no local data
+// Merge Streamed.pk data with locally added admin matches
 async function loadSportMatches(sport) {
     try {
         console.log(`🔄 Loading ${sport} matches from Streamed.pk...`);
@@ -76,8 +76,9 @@ async function loadSportMatches(sport) {
             matches = streamedData;
         }
         
+        let streamedProcessed = [];
         if (matches.length > 0) {
-            const processedMatches = matches.map(match => {
+            streamedProcessed = matches.map(match => {
                 // Handle different match structures
                 let homeTeam = 'Team A';
                 let awayTeam = 'Team B';
@@ -154,19 +155,59 @@ async function loadSportMatches(sport) {
                     category: match.category || sport
                 };
             });
-            console.log(`📊 Found ${processedMatches.length} ${sport} matches from Streamed.pk`);
-            return processedMatches;
+            console.log(`📊 Found ${streamedProcessed.length} ${sport} matches from Streamed.pk`);
         } else {
             console.log(`⚠️ No ${sport} matches found in Streamed.pk`);
-            return [];
         }
+
+        // Load locally added admin matches for this sport
+        let localProcessed = [];
+        try {
+            const localRes = await fetch(`/api/matches/sport/${sport}`);
+            const localJson = await localRes.json();
+            const localMatches = (localJson && Array.isArray(localJson.matches)) ? localJson.matches : [];
+            localProcessed = localMatches.map(m => {
+                const iso = m.date ? new Date(m.date).toISOString() : new Date().toISOString();
+                const slugBase = `${(m.teamA || 'Team A')}-vs-${(m.teamB || 'Team B')}-live-${iso.split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                return {
+                    id: m.id,
+                    teamA: m.teamA,
+                    teamB: m.teamB,
+                    competition: m.competition || `${sport.charAt(0).toUpperCase() + sport.slice(1)} Match`,
+                    date: iso,
+                    slug: m.slug || slugBase,
+                    teamABadge: m.teamABadge || '',
+                    teamBBadge: m.teamBBadge || '',
+                    status: m.status || getMatchStatus(m.date),
+                    poster: '',
+                    popular: false,
+                    sources: [],
+                    category: m.sport || sport
+                };
+            });
+            console.log(`📝 Added ${localProcessed.length} local ${sport} matches from admin`);
+        } catch (e) {
+            console.log(`⚠️ Could not load local ${sport} matches:`, e);
+        }
+
+        // Deduplicate by slug (prefer Streamed.pk first, then local)
+        const bySlug = new Map();
+        [...streamedProcessed, ...localProcessed].forEach(item => {
+            if (!item) return;
+            const key = item.slug || `${item.teamA}-${item.teamB}-${item.date}`;
+            if (!bySlug.has(key)) bySlug.set(key, item);
+        });
+        const combined = Array.from(bySlug.values());
+        // Optional: sort by date ascending
+        combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+        return combined;
     } catch (error) {
         console.error(`❌ Error loading ${sport} matches from Streamed.pk:`, error);
         return [];
     }
 }
 
-// Load live matches from Streamed.pk API only
+// Load live matches from both Streamed.pk and local admin data
 async function loadLiveMatches() {
     try {
         console.log('🔴 Loading live matches from Streamed.pk...');
@@ -182,8 +223,9 @@ async function loadLiveMatches() {
             matches = data;
         }
         
+        let streamedProcessed = [];
         if (matches.length > 0) {
-            const processedMatches = matches.map(match => {
+            streamedProcessed = matches.map(match => {
                 let homeTeam = 'Team A';
                 let awayTeam = 'Team B';
                 let teamABadge = '';
@@ -223,19 +265,62 @@ async function loadLiveMatches() {
                     category: match.category || 'live'
                 };
             });
-            console.log(`🔴 Found ${processedMatches.length} live matches from Streamed.pk`);
-            return processedMatches;
+            console.log(`🔴 Found ${streamedProcessed.length} live matches from Streamed.pk`);
         } else {
             console.log('⚠️ No live matches found in Streamed.pk');
-            return [];
         }
+
+        // Load local matches and filter those currently live
+        let localLive = [];
+        try {
+            const localRes = await fetch('/api/matches');
+            const localJson = await localRes.json();
+            const localMatches = (localJson && Array.isArray(localJson.matches)) ? localJson.matches : [];
+            localLive = localMatches
+                .map(m => {
+                    const iso = m.date ? new Date(m.date).toISOString() : new Date().toISOString();
+                    const status = (m.status && m.status.toLowerCase() === 'live') ? 'live' : getMatchStatus(m.date);
+                    const slugBase = `${(m.teamA || 'Team A')}-vs-${(m.teamB || 'Team B')}-live-${iso.split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                    return {
+                        id: m.id,
+                        teamA: m.teamA,
+                        teamB: m.teamB,
+                        competition: m.competition || 'Live Match',
+                        date: iso,
+                        slug: m.slug || slugBase,
+                        teamABadge: m.teamABadge || '',
+                        teamBBadge: m.teamBBadge || '',
+                        status: status,
+                        poster: '',
+                        popular: false,
+                        sources: [],
+                        category: m.sport || 'live'
+                    };
+                })
+                .filter(m => m.status === 'live');
+            console.log(`📝 Added ${localLive.length} local live matches from admin`);
+        } catch (e) {
+            console.log('⚠️ Could not load local matches for live list:', e);
+        }
+
+        // Deduplicate by slug
+        const bySlug = new Map();
+        [...streamedProcessed, ...localLive].forEach(item => {
+            if (!item) return;
+            const key = item.slug || `${item.teamA}-${item.teamB}-${item.date}`;
+            if (!bySlug.has(key)) bySlug.set(key, item);
+        });
+        const combined = Array.from(bySlug.values());
+        // Sort with live matches up top by recency
+        combined.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return combined;
     } catch (error) {
         console.error('❌ Error loading live matches from Streamed.pk:', error);
         return [];
     }
 }
 
-// Load today's matches from Streamed.pk API only
+// Load today's matches from both Streamed.pk and local admin data
 async function loadTodaysMatches() {
     try {
         console.log('📅 Loading today\'s matches from Streamed.pk...');
@@ -251,8 +336,9 @@ async function loadTodaysMatches() {
             matches = data;
         }
         
+        let streamedProcessed = [];
         if (matches.length > 0) {
-            const processedMatches = matches.map(match => {
+            streamedProcessed = matches.map(match => {
                 let homeTeam = 'Team A';
                 let awayTeam = 'Team B';
                 let teamABadge = '';
@@ -292,12 +378,51 @@ async function loadTodaysMatches() {
                     category: match.category || 'today'
                 };
             });
-            console.log(`📅 Found ${processedMatches.length} today's matches from Streamed.pk`);
-            return processedMatches;
+            console.log(`📅 Found ${streamedProcessed.length} today's matches from Streamed.pk`);
         } else {
             console.log('⚠️ No today\'s matches found in Streamed.pk');
-            return [];
         }
+
+        // Load local today's matches
+        let localToday = [];
+        try {
+            const localRes = await fetch('/api/matches/today');
+            const localJson = await localRes.json();
+            const localMatches = (localJson && Array.isArray(localJson.matches)) ? localJson.matches : [];
+            localToday = localMatches.map(m => {
+                const iso = m.date ? new Date(m.date).toISOString() : new Date().toISOString();
+                const slugBase = `${(m.teamA || 'Team A')}-vs-${(m.teamB || 'Team B')}-live-${iso.split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                return {
+                    id: m.id,
+                    teamA: m.teamA,
+                    teamB: m.teamB,
+                    competition: m.competition || 'Today\'s Match',
+                    date: iso,
+                    slug: m.slug || slugBase,
+                    teamABadge: m.teamABadge || '',
+                    teamBBadge: m.teamBBadge || '',
+                    status: m.status || getMatchStatus(m.date),
+                    poster: '',
+                    popular: false,
+                    sources: [],
+                    category: m.sport || 'today'
+                };
+            });
+            console.log(`📝 Added ${localToday.length} local today's matches from admin`);
+        } catch (e) {
+            console.log('⚠️ Could not load local today\'s matches:', e);
+        }
+
+        // Deduplicate by slug
+        const bySlug = new Map();
+        [...streamedProcessed, ...localToday].forEach(item => {
+            if (!item) return;
+            const key = item.slug || `${item.teamA}-${item.teamB}-${item.date}`;
+            if (!bySlug.has(key)) bySlug.set(key, item);
+        });
+        const combined = Array.from(bySlug.values());
+        combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+        return combined;
     } catch (error) {
         console.error('❌ Error loading today\'s matches from Streamed.pk:', error);
         return [];
@@ -306,25 +431,37 @@ async function loadTodaysMatches() {
 
 // Get match status based on date
 function getMatchStatus(matchDate) {
-    const now = new Date();
-    let match;
-    
-    // Handle invalid dates (like date: 0)
-    if (matchDate && matchDate > 0) {
-        match = new Date(matchDate);
-    } else {
-        // For invalid dates, treat as upcoming
-        match = new Date();
-        match.setHours(match.getHours() + 2);
+    const now = Date.now();
+    let timestampMs;
+
+    // Normalize various date formats (ISO string, seconds, milliseconds)
+    if (typeof matchDate === 'string') {
+        const parsed = Date.parse(matchDate);
+        if (!isNaN(parsed)) {
+            timestampMs = parsed;
+        } else if (!isNaN(Number(matchDate))) {
+            const n = Number(matchDate);
+            timestampMs = n > 0 && n < 1e12 ? n * 1000 : n;
+        }
+    } else if (typeof matchDate === 'number') {
+        timestampMs = matchDate > 0 && matchDate < 1e12 ? matchDate * 1000 : matchDate;
     }
-    
-    const diffMinutes = (match - now) / (1000 * 60);
-    
-    if (diffMinutes < -90) {
+
+    // Fallback: if invalid/missing date, treat as upcoming in ~2 hours
+    if (!(timestampMs > 0)) {
+        const fallback = new Date();
+        fallback.setHours(fallback.getHours() + 2);
+        timestampMs = fallback.getTime();
+    }
+
+    const diffMinutes = (timestampMs - now) / (1000 * 60);
+
+    // Allow longer live window to account for OT/halftime delays etc.
+    if (diffMinutes < -180) {
         return 'ended';
     } else if (diffMinutes < 0) {
         return 'live';
-    } else if (diffMinutes < 30) {
+    } else if (diffMinutes < 45) {
         return 'starting-soon';
     } else {
         return 'upcoming';
@@ -610,6 +747,7 @@ function renderMatches(matches, containerId) {
             <div class="text-center mb-4">
                 <p class="text-gray-400 text-xs sm:text-sm mb-1">${match.competition}</p>
                 <p class="text-gray-300 text-xs sm:text-sm mb-2">${new Date(match.date).toLocaleString()}</p>
+                <p class="text-gray-400 text-[11px] sm:text-xs">👀 <span class="viewer-count" data-slug="${match.slug}">0</span> watching</p>
                 ${match.status === 'live' ? '<span class="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full">LIVE</span>' : ''}
                 ${match.status === 'starting-soon' ? '<span class="inline-block bg-yellow-500 text-dark text-xs px-2 py-1 rounded-full">Starting Soon</span>' : ''}
                 ${match.status === 'ended' ? '<span class="inline-block bg-gray-500 text-white text-xs px-2 py-1 rounded-full">Ended</span>' : ''}
@@ -625,6 +763,27 @@ function renderMatches(matches, containerId) {
     
     // Update live match count
     updateLiveMatchCount(matches);
+
+    // After rendering, bulk load viewer counts for displayed slugs
+    try {
+        const viewerEls = container.querySelectorAll('.viewer-count[data-slug]');
+        const slugs = Array.from(viewerEls).map(el => el.getAttribute('data-slug'));
+        const unique = Array.from(new Set(slugs)).slice(0, 200);
+        if (unique.length > 0) {
+            fetch(`/api/viewers/bulk?slugs=${encodeURIComponent(unique.join(','))}`)
+                .then(r => r.json())
+                .then(data => {
+                    const counts = (data && data.counts) || {};
+                    viewerEls.forEach(el => {
+                        const s = el.getAttribute('data-slug');
+                        if (s && typeof counts[s] === 'number') {
+                            el.textContent = counts[s];
+                        }
+                    });
+                })
+                .catch(() => {});
+        }
+    } catch (e) {}
 }
 
 // Update live match count display

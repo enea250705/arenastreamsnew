@@ -47,7 +47,7 @@
 
             <!-- Edit Match Form -->
             <div class="bg-dark border border-gray-800 rounded-lg p-8">
-                <form method="POST" action="/admin/edit-match/{{match.id}}" class="space-y-6">
+                <form method="POST" action="/admin/edit-match/{{match.id}}" class="space-y-6" enctype="multipart/form-data">
                     <!-- Basic Match Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -96,6 +96,13 @@
                                    value="{{match.teamABadge}}"
                                    placeholder="https://example.com/team-a-badge.png"
                                    class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">
+                            <div class="mt-2">
+                                <label class="block text-sm font-semibold mb-2">Or upload Team A Logo</label>
+                                <input type="file" name="teamALogo" accept="image/*" class="w-full text-sm text-gray-300">
+                                {{#if match.teamABadge}}
+                                <p class="text-xs text-gray-400 mt-1">Current: <a href="{{match.teamABadge}}" target="_blank" class="text-primary">view</a></p>
+                                {{/if}}
+                            </div>
                         </div>
 
                         <div>
@@ -104,6 +111,13 @@
                                    value="{{match.teamBBadge}}"
                                    placeholder="https://example.com/team-b-badge.png"
                                    class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">
+                            <div class="mt-2">
+                                <label class="block text-sm font-semibold mb-2">Or upload Team B Logo</label>
+                                <input type="file" name="teamBLogo" accept="image/*" class="w-full text-sm text-gray-300">
+                                {{#if match.teamBBadge}}
+                                <p class="text-xs text-gray-400 mt-1">Current: <a href="{{match.teamBBadge}}" target="_blank" class="text-primary">view</a></p>
+                                {{/if}}
+                            </div>
                         </div>
                     </div>
 
@@ -139,7 +153,8 @@
                         <label for="embedUrls" class="block text-sm font-semibold mb-2">Stream URLs (one per line)</label>
                         <textarea id="embedUrls" name="embedUrls" rows="4" 
                                   placeholder="https://stream1.example.com/embed&#10;https://stream2.example.com/embed&#10;https://stream3.example.com/embed"
-                                  class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">{{match.embedUrls}}</textarea>
+                                  class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">{{#if match.embedUrls}}{{#each match.embedUrls}}{{this}}
+{{/each}}{{/if}}</textarea>
                         <p class="text-gray-400 text-sm mt-2">Enter one stream URL per line. These will be used for Player 1, Player 2, and Player 3 respectively.</p>
                     </div>
 

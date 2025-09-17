@@ -182,6 +182,7 @@
                     </button>
                 </div>
                 <div id="global-search-results" class="mt-4 text-sm text-gray-400" style="display: none;"></div>
+                <div id="global-search-results-grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></div>
                 <div class="text-center mt-4">
                     <p class="text-gray-500 text-sm">Search across all sports and competitions</p>
                 </div>
@@ -358,12 +359,52 @@
         let globalSearchTimeout;
         let allGlobalMatches = [];
 
-        function performGlobalSearch(searchTerm) {
+        async function ensureGlobalMatchesLoaded() {
+            if (allGlobalMatches.length > 0) return;
+            if (!window.ArenaStreams) return;
+            try {
+                const [today, live] = await Promise.all([
+                    window.ArenaStreams.loadTodaysMatches(),
+                    window.ArenaStreams.loadLiveMatches()
+                ]);
+                const bySlug = new Map();
+                const addAll = (arr) => {
+                    if (Array.isArray(arr)) {
+                        arr.forEach(m => {
+                            const key = m.slug || `${m.teamA}-${m.teamB}-${m.date}`;
+                            if (!bySlug.has(key)) bySlug.set(key, m);
+                        });
+                    }
+                };
+                addAll(today);
+                addAll(live);
+                allGlobalMatches = Array.from(bySlug.values());
+            } catch (e) {
+                console.error('❌ Failed to load global matches:', e);
+            }
+        }
+
+        function renderGlobalResults(matches, searchTerm) {
+            const infoEl = document.getElementById('global-search-results');
+            const gridEl = document.getElementById('global-search-results-grid');
+            if (!gridEl || !window.ArenaStreams) return;
             if (!searchTerm.trim()) {
-                document.getElementById('global-search-results').style.display = 'none';
+                infoEl.style.display = 'none';
+                gridEl.style.display = 'none';
+                gridEl.innerHTML = '';
                 return;
             }
+            infoEl.textContent = `Found ${matches.length} match${matches.length !== 1 ? 'es' : ''} for "${searchTerm}"`;
+            infoEl.style.display = 'block';
+            window.ArenaStreams.renderMatches(matches, 'global-search-results-grid');
+            gridEl.style.display = matches.length ? 'grid' : 'none';
+        }
 
+        async function performGlobalSearch(searchTerm) {
+            if (!searchTerm.trim()) {
+                renderGlobalResults([], '');
+                return;
+            }
             // Track search event in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'search', {
@@ -372,19 +413,16 @@
                     search_term: searchTerm
                 });
             }
-
-            // For now, redirect to football page with search parameter
-            // In a full implementation, this would search across all sports
-            const searchUrl = `/football?search=${encodeURIComponent(searchTerm)}`;
-            document.getElementById('global-search-results').innerHTML = `
-                <div class="text-center">
-                    <p class="text-gray-400">Searching for "${searchTerm}"...</p>
-                    <a href="${searchUrl}" class="text-primary hover:underline mt-2 inline-block" onclick="trackSearchNavigation('${searchTerm}')">
-                        Go to Football Matches →
-                    </a>
-                </div>
-            `;
-            document.getElementById('global-search-results').style.display = 'block';
+            await ensureGlobalMatchesLoaded();
+            const q = searchTerm.toLowerCase();
+            const filtered = allGlobalMatches.filter(m => {
+                const teamA = (m.teamA || '').toLowerCase();
+                const teamB = (m.teamB || '').toLowerCase();
+                const comp = (m.competition || '').toLowerCase();
+                const title = (m.title || '').toLowerCase();
+                return teamA.includes(q) || teamB.includes(q) || comp.includes(q) || title.includes(q);
+            });
+            renderGlobalResults(filtered, searchTerm);
         }
 
         // Track search navigation clicks

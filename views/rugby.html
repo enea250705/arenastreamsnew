@@ -677,6 +677,30 @@
                 if (window.ArenaStreams) {
                     console.log('✅ ArenaStreams found, setting up rugby matches...');
                     window.ArenaStreams.setupAutoRefresh('rugby', 'today-matches', 'no-matches');
+                    // Wire up search input to real filtering
+                    function wireSearch() {
+                        const input = document.getElementById('search-input-today-matches');
+                        const clearBtn = document.getElementById('clear-search-today-matches');
+                        if (!input || !window.ArenaStreams) { setTimeout(wireSearch, 100); return; }
+                        let debounceId;
+                        input.addEventListener('input', function() {
+                            const term = this.value.trim();
+                            if (clearBtn) clearBtn.style.display = term ? 'flex' : 'none';
+                            clearTimeout(debounceId);
+                            debounceId = setTimeout(() => {
+                                window.ArenaStreams.searchMatches(term, 'today-matches');
+                            }, 300);
+                        });
+                        if (clearBtn) {
+                            clearBtn.addEventListener('click', function() {
+                                input.value = '';
+                                this.style.display = 'none';
+                                window.ArenaStreams.searchMatches('', 'today-matches');
+                                input.focus();
+                            });
+                        }
+                    }
+                    wireSearch();
                 } else {
                     console.log('⏳ ArenaStreams not ready, retrying in 100ms...');
                     setTimeout(setupMatches, 100);

@@ -54,7 +54,7 @@
 
             <!-- Add Match Form -->
             <div class="bg-dark border border-gray-800 rounded-lg p-8">
-                <form method="POST" action="/admin/add-match" class="space-y-6">
+                <form method="POST" action="/admin/add-match" class="space-y-6" enctype="multipart/form-data">
                     <!-- Basic Match Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -103,6 +103,10 @@
                                    value="{{formData.teamABadge}}"
                                    placeholder="https://example.com/team-a-badge.png"
                                    class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">
+                            <div class="mt-2">
+                                <label class="block text-sm font-semibold mb-2">Or upload Team A Logo</label>
+                                <input type="file" name="teamALogo" accept="image/*" class="w-full text-sm text-gray-300">
+                            </div>
                         </div>
 
                         <div>
@@ -111,6 +115,10 @@
                                    value="{{formData.teamBBadge}}"
                                    placeholder="https://example.com/team-b-badge.png"
                                    class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none">
+                            <div class="mt-2">
+                                <label class="block text-sm font-semibold mb-2">Or upload Team B Logo</label>
+                                <input type="file" name="teamBLogo" accept="image/*" class="w-full text-sm text-gray-300">
+                            </div>
                         </div>
                     </div>
 

@@ -60,7 +60,7 @@
                 <p class="text-gray-400">Upcoming</p>
             </div>
             <div class="bg-dark border border-gray-800 rounded-lg p-6">
-                <h3 class="text-2xl font-bold text-purple-500">{{stats.matchesBySport.football || 0}}</h3>
+                <h3 class="text-2xl font-bold text-purple-500">{{#if stats.matchesBySport.football}}{{stats.matchesBySport.football}}{{else}}0{{/if}}</h3>
                 <p class="text-gray-400">Football Matches</p>
             </div>
         </div>
@@ -157,12 +157,12 @@
                 {{#each stats.matchesBySport}}
                 <div class="text-center">
                     <div class="text-3xl mb-2">
-                        {{#if @key 'football'}}⚽{{/if}}
-                        {{#if @key 'basketball'}}🏀{{/if}}
-                        {{#if @key 'tennis'}}🎾{{/if}}
-                        {{#if @key 'ufc'}}🥊{{/if}}
-                        {{#if @key 'rugby'}}🏉{{/if}}
-                        {{#if @key 'baseball'}}⚾{{/if}}
+                        {{#if (eq @key 'football')}}⚽{{/if}}
+                        {{#if (eq @key 'basketball')}}🏀{{/if}}
+                        {{#if (eq @key 'tennis')}}🎾{{/if}}
+                        {{#if (eq @key 'ufc')}}🥊{{/if}}
+                        {{#if (eq @key 'rugby')}}🏉{{/if}}
+                        {{#if (eq @key 'baseball')}}⚾{{/if}}
                     </div>
                     <h3 class="font-semibold capitalize">{{@key}}</h3>
                     <p class="text-primary text-xl font-bold">{{this}}</p>
