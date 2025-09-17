@@ -124,6 +124,37 @@
           return; // Stop execution to prevent further processing
         }
       } else {
+        // Clean experience for non-adblock users
+        log('AdBlock OFF - Clean experience');
+        
+        // If user is on an AdBlock version, redirect to normal version
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('adblock')) {
+          let redirectPath = '/'; // Default to homepage
+          
+          if (currentPath === '/homepageadblock') {
+            redirectPath = '/';
+          } else if (currentPath.includes('/footballadblock')) {
+            redirectPath = '/football';
+          } else if (currentPath.includes('/basketballadblock')) {
+            redirectPath = '/basketball';
+          } else if (currentPath.includes('/tennisadblock')) {
+            redirectPath = '/tennis';
+          } else if (currentPath.includes('/ufcadblock')) {
+            redirectPath = '/ufc';
+          } else if (currentPath.includes('/rugbyadblock')) {
+            redirectPath = '/rugby';
+          } else if (currentPath.includes('/baseballadblock')) {
+            redirectPath = '/baseball';
+          } else if (currentPath.includes('/matchadblock/')) {
+            redirectPath = currentPath.replace('/matchadblock/', '/match/');
+          }
+          
+          log('AdBlock turned OFF - redirecting to clean version:', redirectPath);
+          window.location.href = redirectPath;
+          return; // Stop execution to prevent further processing
+        }
+        
         // Keep existing behavior (roughly 5 ads on match page only)
         // Hide non-match ad blocks to ensure ads only appear on match pages for non-adblock users
         const isMatchPage = /^\/match\//.test(location.pathname);
@@ -215,6 +246,28 @@
             });
           };
           document.body.appendChild(statusBtn);
+          
+          // Add a button to simulate AdBlock OFF (for testing redirect back)
+          const offBtn = document.createElement('button');
+          offBtn.textContent = 'TEST: Force AdBlock OFF';
+          offBtn.style.cssText = 'position:fixed;top:90px;right:10px;z-index:99999;background:green;color:white;padding:5px;border:none;cursor:pointer;';
+          offBtn.onclick = () => {
+            document.body.classList.remove('adblock-on');
+            document.body.classList.add('adblock-off');
+            const banner = document.getElementById('adblock-banner');
+            if (banner) banner.style.display = 'none';
+            log('Manual AdBlock OFF test activated - should redirect to clean version');
+            // Trigger detection again to test redirect
+            setTimeout(() => {
+              detectAdblock().then(blocked => {
+                log('Re-detection result:', blocked);
+                if (!blocked && window.location.pathname.includes('adblock')) {
+                  log('Should redirect to clean version now');
+                }
+              });
+            }, 100);
+          };
+          document.body.appendChild(offBtn);
         }
 
         if (openBtn && modal) {
@@ -252,6 +305,35 @@
                 if (modal) modal.classList.add('hidden');
                 const banner = document.getElementById('adblock-banner');
                 if (banner) banner.style.display = 'none';
+                
+                // Redirect to clean version if on AdBlock version
+                const currentPath = window.location.pathname;
+                if (currentPath.includes('adblock')) {
+                  let redirectPath = '/'; // Default to homepage
+                  
+                  if (currentPath === '/homepageadblock') {
+                    redirectPath = '/';
+                  } else if (currentPath.includes('/footballadblock')) {
+                    redirectPath = '/football';
+                  } else if (currentPath.includes('/basketballadblock')) {
+                    redirectPath = '/basketball';
+                  } else if (currentPath.includes('/tennisadblock')) {
+                    redirectPath = '/tennis';
+                  } else if (currentPath.includes('/ufcadblock')) {
+                    redirectPath = '/ufc';
+                  } else if (currentPath.includes('/rugbyadblock')) {
+                    redirectPath = '/rugby';
+                  } else if (currentPath.includes('/baseballadblock')) {
+                    redirectPath = '/baseball';
+                  } else if (currentPath.includes('/matchadblock/')) {
+                    redirectPath = currentPath.replace('/matchadblock/', '/match/');
+                  }
+                  
+                  log('AdBlock disabled - redirecting to clean version:', redirectPath);
+                  setTimeout(() => {
+                    window.location.href = redirectPath;
+                  }, 500);
+                }
               } else {
                 if (feedback) {
                   feedback.textContent = 'Still blocked. Please whitelist and try again.';
