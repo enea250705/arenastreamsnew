@@ -7,7 +7,7 @@
   window.__advancedAdsInitialized = true;
 
   // Basic config
-  const MAX_INLINE_ADS_DENSE = 8; // rough "all over" without breaking UX
+  const MAX_INLINE_ADS_DENSE = 12; // more ads for AdBlock ON users
 
   function log() {
     try { console.log.apply(console, ['[ads]'].concat([].slice.call(arguments))); } catch(e) {}
@@ -121,7 +121,7 @@
   function insertInlineDense() {
     const anchors = [];
     // Reasonable anchor points across pages
-    document.querySelectorAll('main section, .container > section, .container > div').forEach(n => anchors.push(n));
+    document.querySelectorAll('main section, .container > section, .container > div, .grid > div, .flex > div').forEach(n => anchors.push(n));
     if (anchors.length === 0) return;
     let inserted = 0;
     for (let i = 1; i < anchors.length && inserted < MAX_INLINE_ADS_DENSE; i += 2) {
@@ -134,12 +134,32 @@
     log('Inserted inline ads:', inserted);
   }
 
+  function insertAdditionalAds() {
+    // Add ads in more strategic locations for AdBlock ON users
+    const locations = [
+      'header', 'footer', 'nav', '.hero', '.banner', '.content', '.main'
+    ];
+    
+    locations.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element && !element.querySelector('.ad-inline')) {
+        const ad = document.createElement('div');
+        ad.className = 'ad-inline';
+        ad.style.margin = '10px 0';
+        ad.appendChild(buildHouseAdContent());
+        element.insertAdjacentElement('afterbegin', ad);
+        log('Added ad to:', selector);
+      }
+    });
+  }
+
   function applyAdDensityDense() {
     log('Applying dense ad density for AdBlock users');
     createStyleOnce();
     insertSticky('top');
     insertSticky('bottom');
     insertInlineDense();
+    insertAdditionalAds();
     log('Dense ad density applied');
   }
 
@@ -188,11 +208,19 @@
             s.async = true;
             s.setAttribute('data-cfasync', 'false');
             s.dataset.zone = '171670';
-            (document.body || document.head || document.documentElement).appendChild(s);
+            s.onload = function() {
+              log('Provider script loaded successfully');
+            };
+            s.onerror = function() {
+              log('Provider script failed to load');
+            };
+            (document.head || document.body || document.documentElement).appendChild(s);
             window.__adblockProviderLoaded = true;
-            log('Injected adblock provider script');
+            log('Injected adblock provider script for site-wide ads');
           }
-        } catch (e) {}
+        } catch (e) {
+          log('Error injecting provider script:', e);
+        }
       } else {
         // Keep existing behavior (roughly 5 ads on match page only)
         // Hide non-match ad blocks to ensure ads only appear on match pages for non-adblock users
