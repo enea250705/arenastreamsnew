@@ -65,6 +65,78 @@
             </div>
         </div>
 
+        <!-- AdBlock Statistics -->
+        <div class="bg-dark border border-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">🚫 AdBlock Statistics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                    <h3 class="text-xl font-bold text-primary">{{stats.adblock.totalVisits}}</h3>
+                    <p class="text-gray-400">Total Visits</p>
+                </div>
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                    <h3 class="text-xl font-bold text-red-500">{{stats.adblock.adblockVisits}}</h3>
+                    <p class="text-gray-400">AdBlock Users</p>
+                    <p class="text-sm text-red-400">{{stats.adblock.adblockPercentage}}%</p>
+                </div>
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                    <h3 class="text-xl font-bold text-green-500">{{stats.adblock.cleanVisits}}</h3>
+                    <p class="text-gray-400">Clean Users</p>
+                    <p class="text-sm text-green-400">{{stats.adblock.cleanPercentage}}%</p>
+                </div>
+            </div>
+            
+            <!-- Daily Stats -->
+            {{#if stats.adblock.dailyStats}}
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-3">📊 Daily Breakdown</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-2">Date</th>
+                                <th class="text-left py-2">AdBlock Users</th>
+                                <th class="text-left py-2">Clean Users</th>
+                                <th class="text-left py-2">Total</th>
+                                <th class="text-left py-2">AdBlock %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each stats.adblock.dailyStats}}
+                            <tr class="border-b border-gray-800">
+                                <td class="py-2">{{@key}}</td>
+                                <td class="py-2 text-red-400">{{this.adblock}}</td>
+                                <td class="py-2 text-green-400">{{this.clean}}</td>
+                                <td class="py-2">{{add this.adblock this.clean}}</td>
+                                <td class="py-2">
+                                    {{#if (gt (add this.adblock this.clean) 0)}}
+                                        {{round (multiply (divide this.adblock (add this.adblock this.clean)) 100)}}%
+                                    {{else}}
+                                        0%
+                                    {{/if}}
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- AdBlock Insights -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                <h3 class="text-lg font-semibold mb-2">💡 Insights</h3>
+                <div class="text-sm text-gray-300">
+                    {{#if (gt stats.adblock.adblockPercentage 50)}}
+                        <p class="text-red-400">⚠️ High AdBlock usage detected ({{stats.adblock.adblockPercentage}}%). Consider optimizing ad placement or implementing anti-AdBlock measures.</p>
+                    {{else if (gt stats.adblock.adblockPercentage 25)}}
+                        <p class="text-yellow-400">📊 Moderate AdBlock usage ({{stats.adblock.adblockPercentage}}%). Monitor trends and consider user experience improvements.</p>
+                    {{else}}
+                        <p class="text-green-400">✅ Low AdBlock usage ({{stats.adblock.adblockPercentage}}%). Good user experience with minimal ad blocking.</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="bg-dark border border-gray-800 rounded-lg p-6 mb-8">
             <h2 class="text-2xl font-bold mb-4">Quick Actions</h2>

@@ -9,6 +9,27 @@ const { getSupabaseClient } = require('../lib/supabase');
 
 const router = express.Router();
 
+// Register Handlebars helpers for math operations
+handlebars.registerHelper('add', function(a, b) {
+  return a + b;
+});
+
+handlebars.registerHelper('multiply', function(a, b) {
+  return a * b;
+});
+
+handlebars.registerHelper('divide', function(a, b) {
+  return b !== 0 ? a / b : 0;
+});
+
+handlebars.registerHelper('round', function(a) {
+  return Math.round(a);
+});
+
+handlebars.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
 // Load matches from Supabase
 async function loadMatches() {
   const supabase = getSupabaseClient();
@@ -88,11 +109,31 @@ router.get('/', async (req, res) => {
   try {
     const matchesData = await loadMatches();
     
+    // Fetch AdBlock statistics
+    let adblockStats = {
+      totalVisits: 0,
+      adblockVisits: 0,
+      cleanVisits: 0,
+      adblockPercentage: 0,
+      cleanPercentage: 0,
+      dailyStats: {}
+    };
+    
+    try {
+      const response = await fetch(`http://localhost:${process.env.PORT || 3000}/api/admin/adblock-stats`);
+      if (response.ok) {
+        adblockStats = await response.json();
+      }
+    } catch (error) {
+      console.error('Error fetching AdBlock stats:', error);
+    }
+    
     const stats = {
       totalMatches: matchesData.length,
       matchesBySport: {},
       todayMatches: 0,
-      upcomingMatches: 0
+      upcomingMatches: 0,
+      adblock: adblockStats
     };
     
     const today = new Date().toISOString().split('T')[0];
