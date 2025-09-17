@@ -58,8 +58,14 @@
 
       // Network probe to a common ad path we serve
       const img = new Image();
-      img.onload = function() { imageLoaded = true; };
-      img.onerror = function() { networkBlocked = true; };
+      img.onload = function() { 
+        imageLoaded = true; 
+        log('Ad probe image loaded successfully');
+      };
+      img.onerror = function() { 
+        networkBlocked = true; 
+        log('Ad probe image blocked');
+      };
       img.src = '/ads/ad.gif?ts=' + Date.now();
 
       setTimeout(function() {
@@ -67,8 +73,12 @@
         const blockedByStyle = getComputedStyle(bait).display === 'none' || bait.offsetParent === null || bait.offsetHeight === 0;
         try { document.body.removeChild(bait); } catch(e) {}
         done = true;
-        // Require BOTH style bait hidden and network probe blocked to consider AdBlock ON
-        const isBlocked = !!(blockedByStyle && (networkBlocked || !imageLoaded));
+        
+        log('Detection results:', { blockedByStyle, networkBlocked, imageLoaded });
+        
+        // More lenient detection: if style bait is hidden OR network is blocked, consider AdBlock ON
+        const isBlocked = !!(blockedByStyle || networkBlocked || !imageLoaded);
+        log('Final AdBlock detection:', isBlocked);
         resolve(isBlocked);
       }, timeoutMs);
     });
@@ -219,6 +229,22 @@
         const recheckBtn = document.getElementById('whitelist-recheck');
         const feedback = document.getElementById('whitelist-feedback');
         const domain = location.hostname.replace(/^www\./, '');
+
+        // Debug: Add manual test button (remove in production)
+        if (location.hostname === 'localhost' || location.hostname.includes('127.0.0.1')) {
+          const testBtn = document.createElement('button');
+          testBtn.textContent = 'TEST: Force AdBlock ON';
+          testBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:99999;background:red;color:white;padding:5px;border:none;cursor:pointer;';
+          testBtn.onclick = () => {
+            document.body.classList.remove('adblock-off');
+            document.body.classList.add('adblock-on');
+            const banner = document.getElementById('adblock-banner');
+            if (banner) banner.style.display = 'block';
+            applyAdDensityDense();
+            log('Manual AdBlock ON test activated');
+          };
+          document.body.appendChild(testBtn);
+        }
 
         if (openBtn && modal) {
           openBtn.addEventListener('click', function(e) {
