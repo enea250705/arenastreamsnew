@@ -1039,11 +1039,56 @@ app.get('/api/viewers/:slug', (req, res) => {
 app.get('/api/viewers/bulk', (req, res) => {
   const slugsParam = req.query.slugs || '';
   const slugs = slugsParam.split(',').map(s => s.trim()).filter(Boolean).slice(0, 200);
-  const counts = {};
-  for (const slug of slugs) {
-    counts[slug] = getViewerCount(slug);
+  const stream = req.query.stream === 'true';
+  
+  if (stream) {
+    // SSE streaming for real-time updates
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
+    });
+    
+    // Send initial data
+    const counts = {};
+    for (const slug of slugs) {
+      counts[slug] = getViewerCount(slug);
+    }
+    res.write(`data: ${JSON.stringify({ counts })}\n\n`);
+    
+    // Set up periodic updates every 3 seconds
+    const interval = setInterval(() => {
+      const counts = {};
+      for (const slug of slugs) {
+        counts[slug] = getViewerCount(slug);
+      }
+      res.write(`data: ${JSON.stringify({ counts })}\n\n`);
+    }, 3000);
+    
+    // Clean up on disconnect
+    req.on('close', () => {
+      clearInterval(interval);
+    });
+    
+    // Send heartbeat every 30 seconds
+    const heartbeat = setInterval(() => {
+      res.write(': heartbeat\n\n');
+    }, 30000);
+    
+    req.on('close', () => {
+      clearInterval(heartbeat);
+    });
+    
+  } else {
+    // Regular JSON response
+    const counts = {};
+    for (const slug of slugs) {
+      counts[slug] = getViewerCount(slug);
+    }
+    res.json({ counts });
   }
-  res.json({ counts });
 });
 
 // Advanced Sitemap route with dynamic content

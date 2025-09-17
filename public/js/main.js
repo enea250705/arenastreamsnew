@@ -804,6 +804,9 @@ function renderMatches(matches, containerId) {
                     });
                 })
                 .catch(() => {});
+            
+            // Set up real-time updates for viewer counts
+            setupRealTimeViewerUpdates(unique);
         }
     } catch (e) {}
 }
@@ -928,6 +931,64 @@ async function loadAndRenderSportMatches(sport, containerId, noMatchesId) {
     }
 }
 
+// Real-time viewer count updates
+let viewerEventSource = null;
+
+function setupRealTimeViewerUpdates(slugs) {
+    // Close existing connection if any
+    if (viewerEventSource) {
+        viewerEventSource.close();
+    }
+    
+    if (!slugs || slugs.length === 0) return;
+    
+    try {
+        // Create EventSource for real-time updates
+        const slugsParam = slugs.slice(0, 50).join(','); // Limit to 50 slugs to avoid URL length issues
+        viewerEventSource = new EventSource(`/api/viewers/bulk?slugs=${encodeURIComponent(slugsParam)}&stream=true`);
+        
+        viewerEventSource.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                if (data && data.counts) {
+                    // Update all viewer count elements
+                    const viewerEls = document.querySelectorAll('.viewer-count[data-slug]');
+                    viewerEls.forEach(el => {
+                        const slug = el.getAttribute('data-slug');
+                        if (slug && typeof data.counts[slug] === 'number') {
+                            el.textContent = data.counts[slug];
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn('Error parsing viewer count data:', e);
+            }
+        };
+        
+        viewerEventSource.onerror = function(event) {
+            console.warn('Viewer count SSE connection error:', event);
+            // Attempt to reconnect after 5 seconds
+            setTimeout(() => {
+                if (viewerEventSource && viewerEventSource.readyState === EventSource.CLOSED) {
+                    setupRealTimeViewerUpdates(slugs);
+                }
+            }, 5000);
+        };
+        
+        console.log(`📡 Started real-time viewer updates for ${slugs.length} matches`);
+        
+    } catch (e) {
+        console.warn('Failed to setup real-time viewer updates:', e);
+    }
+}
+
+// Clean up EventSource when page unloads
+window.addEventListener('beforeunload', function() {
+    if (viewerEventSource) {
+        viewerEventSource.close();
+    }
+});
+
 // Export functions for global use
 window.ArenaStreams = {
     loadSportMatches,
@@ -939,5 +1000,6 @@ window.ArenaStreams = {
     initializeSearch,
     getMatchStatus,
     setupAutoRefresh,
-    loadAndRenderSportMatches
+    loadAndRenderSportMatches,
+    setupRealTimeViewerUpdates
 };
