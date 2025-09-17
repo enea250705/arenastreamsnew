@@ -90,13 +90,17 @@
       <span class="ad-label">Advertisement</span>
       <div class="ad-house-creative">🔥 Exclusive Sports Streams</div>
       <div style="font-size:12px;color:#bbb;margin-top:4px;">Support our platform by whitelisting ads or checking these offers.</div>
+      <div style="font-size:10px;color:#666;margin-top:2px;">AdBlock Detected - Showing House Ads</div>
     `;
     return wrap;
   }
 
   function insertSticky(position) {
     const id = position === 'top' ? 'ad-sticky-top' : 'ad-sticky-bottom';
-    if (document.getElementById(id)) return;
+    if (document.getElementById(id)) {
+      log('Sticky ad already exists:', position);
+      return;
+    }
     const el = document.createElement('div');
     el.id = id;
     el.className = position === 'top' ? 'ad-sticky-top' : 'ad-sticky-bottom';
@@ -111,6 +115,7 @@
     el.appendChild(close);
     document.body.appendChild(el);
     document.body.classList.add(position === 'top' ? 'has-ad-sticky-top' : 'has-ad-sticky-bottom');
+    log('Inserted sticky ad:', position);
   }
 
   function insertInlineDense() {
@@ -130,10 +135,12 @@
   }
 
   function applyAdDensityDense() {
+    log('Applying dense ad density for AdBlock users');
     createStyleOnce();
     insertSticky('top');
     insertSticky('bottom');
     insertInlineDense();
+    log('Dense ad density applied');
   }
 
   function init() {
