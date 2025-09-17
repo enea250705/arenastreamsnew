@@ -176,7 +176,7 @@
                     <a href="/baseballadblock" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
                 </nav>
                 <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-white">
+                    <button id="mobile-menu-btn" class="text-white hover:text-primary transition-colors p-2 -mr-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -612,6 +612,21 @@
                     console.log('📱 Mobile menu button touched');
                     mobileMenu.classList.toggle('hidden');
                     console.log('📱 Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!newMobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Close menu when clicking on a link
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                    });
                 });
                 
                 console.log('✅ Mobile menu fallback initialized with robust event listeners');
