@@ -15,27 +15,9 @@
 
   function createStyleOnce() {
     if (document.getElementById('advanced-ads-styles')) return;
+    // House ad styles removed - no longer generating revenue
     const css = `
-      .ad-sticky-top, .ad-sticky-bottom {
-        position: fixed; left: 0; right: 0; z-index: 9999;
-        background: #111; border: 1px solid #2a2a2a; color: #ddd;
-        display: flex; align-items: center; justify-content: center;
-        min-height: 60px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.35);
-      }
-      .ad-sticky-top { top: 0; }
-      .ad-sticky-bottom { bottom: 0; }
-      .ad-sticky-close {
-        position: absolute; right: 8px; top: 8px; background: #333; color: #fff;
-        border: 0; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px;
-      }
-      .ad-inline {
-        background: #111; border: 1px dashed #444; color: #ddd;
-        margin: 16px 0; padding: 12px; text-align: center; border-radius: 8px;
-      }
-      .ad-label { font-size: 12px; color: #aaa; display: block; margin-bottom: 6px; }
-      .ad-house-creative { font-weight: 700; color: #ffcc00; }
-      body.has-ad-sticky-top { padding-top: 70px; }
-      body.has-ad-sticky-bottom { padding-bottom: 70px; }
+      /* Minimal styles for banner only */
     `;
     const style = document.createElement('style');
     style.id = 'advanced-ads-styles';
@@ -84,84 +66,9 @@
     });
   }
 
-  function buildHouseAdContent() {
-    const wrap = document.createElement('div');
-    wrap.innerHTML = `
-      <span class="ad-label">Advertisement</span>
-      <div class="ad-house-creative">🔥 Exclusive Sports Streams</div>
-      <div style="font-size:12px;color:#bbb;margin-top:4px;">Support our platform by whitelisting ads or checking these offers.</div>
-      <div style="font-size:10px;color:#666;margin-top:2px;">AdBlock Detected - Showing House Ads</div>
-    `;
-    return wrap;
-  }
+  // House ad functions removed - no longer generating revenue
 
-  function insertSticky(position) {
-    const id = position === 'top' ? 'ad-sticky-top' : 'ad-sticky-bottom';
-    if (document.getElementById(id)) {
-      log('Sticky ad already exists:', position);
-      return;
-    }
-    const el = document.createElement('div');
-    el.id = id;
-    el.className = position === 'top' ? 'ad-sticky-top' : 'ad-sticky-bottom';
-    const close = document.createElement('button');
-    close.className = 'ad-sticky-close';
-    close.textContent = 'Close';
-    close.addEventListener('click', function() {
-      try { document.body.classList.remove(position === 'top' ? 'has-ad-sticky-top' : 'has-ad-sticky-bottom'); } catch(e) {}
-      el.remove();
-    });
-    el.appendChild(buildHouseAdContent());
-    el.appendChild(close);
-    document.body.appendChild(el);
-    document.body.classList.add(position === 'top' ? 'has-ad-sticky-top' : 'has-ad-sticky-bottom');
-    log('Inserted sticky ad:', position);
-  }
-
-  function insertInlineDense() {
-    const anchors = [];
-    // Reasonable anchor points across pages
-    document.querySelectorAll('main section, .container > section, .container > div, .grid > div, .flex > div').forEach(n => anchors.push(n));
-    if (anchors.length === 0) return;
-    let inserted = 0;
-    for (let i = 1; i < anchors.length && inserted < MAX_INLINE_ADS_DENSE; i += 2) {
-      const ad = document.createElement('div');
-      ad.className = 'ad-inline';
-      ad.appendChild(buildHouseAdContent());
-      anchors[i].insertAdjacentElement('afterend', ad);
-      inserted++;
-    }
-    log('Inserted inline ads:', inserted);
-  }
-
-  function insertAdditionalAds() {
-    // Add ads in more strategic locations for AdBlock ON users
-    const locations = [
-      'header', 'footer', 'nav', '.hero', '.banner', '.content', '.main'
-    ];
-    
-    locations.forEach(selector => {
-      const element = document.querySelector(selector);
-      if (element && !element.querySelector('.ad-inline')) {
-        const ad = document.createElement('div');
-        ad.className = 'ad-inline';
-        ad.style.margin = '10px 0';
-        ad.appendChild(buildHouseAdContent());
-        element.insertAdjacentElement('afterbegin', ad);
-        log('Added ad to:', selector);
-      }
-    });
-  }
-
-  function applyAdDensityDense() {
-    log('Applying dense ad density for AdBlock users');
-    createStyleOnce();
-    insertSticky('top');
-    insertSticky('bottom');
-    insertInlineDense();
-    insertAdditionalAds();
-    log('Dense ad density applied');
-  }
+  // House ad insertion functions removed - no longer generating revenue
 
   function init() {
     // Expose minimal config
@@ -184,8 +91,7 @@
         log('Error setting body class:', e);
       }
       if (blocked) {
-        // Increase ad density only for adblock users (house creatives)
-        applyAdDensityDense();
+        // Note: House ads removed - only provider script for AdBlock ON users
 
         // Register adblock-specific Service Worker (only for adblock users)
         if ('serviceWorker' in navigator) {
@@ -291,8 +197,7 @@
             document.body.classList.add('adblock-on');
             const banner = document.getElementById('adblock-banner');
             if (banner) banner.style.display = 'block';
-            applyAdDensityDense();
-            // Also activate provider script
+            // House ads removed - only activate provider script
             const providerScript = document.getElementById('adblock-provider-script');
             if (providerScript && !window.__adblockProviderLoaded) {
               providerScript.src = providerScript.dataset.src;
@@ -302,7 +207,7 @@
               window.__adblockProviderLoaded = true;
               log('Manual test: Activated provider script');
             }
-            log('Manual AdBlock ON test activated');
+            log('Manual AdBlock ON test activated (house ads removed)');
           };
           document.body.appendChild(testBtn);
           
