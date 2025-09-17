@@ -200,26 +200,22 @@
           } catch (e) {}
         }
 
-        // Load provider script for adblock users (site-wide)
+        // Activate provider script for adblock users (site-wide)
         try {
-          if (!window.__adblockProviderLoaded) {
-            const s = document.createElement('script');
-            s.src = 'https://fpyf8.com/88/tag.min.js';
-            s.async = true;
-            s.setAttribute('data-cfasync', 'false');
-            s.dataset.zone = '171670';
-            s.onload = function() {
+          const providerScript = document.getElementById('adblock-provider-script');
+          if (providerScript && !window.__adblockProviderLoaded) {
+            providerScript.style.display = 'block';
+            providerScript.onload = function() {
               log('Provider script loaded successfully');
             };
-            s.onerror = function() {
+            providerScript.onerror = function() {
               log('Provider script failed to load');
             };
-            (document.head || document.body || document.documentElement).appendChild(s);
             window.__adblockProviderLoaded = true;
-            log('Injected adblock provider script for site-wide ads');
+            log('Activated adblock provider script for site-wide ads');
           }
         } catch (e) {
-          log('Error injecting provider script:', e);
+          log('Error activating provider script:', e);
         }
       } else {
         // Keep existing behavior (roughly 5 ads on match page only)
