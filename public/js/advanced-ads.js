@@ -204,7 +204,11 @@
         try {
           const providerScript = document.getElementById('adblock-provider-script');
           if (providerScript && !window.__adblockProviderLoaded) {
-            providerScript.style.display = 'block';
+            // Set the src attribute to actually load the script
+            providerScript.src = providerScript.dataset.src;
+            providerScript.async = true;
+            providerScript.setAttribute('data-cfasync', providerScript.dataset.cfasync);
+            providerScript.dataset.zone = providerScript.dataset.zone;
             providerScript.onload = function() {
               log('Provider script loaded successfully');
             };
@@ -248,6 +252,17 @@
               } catch(e) {}
             });
           } catch (e) {}
+        }
+        
+        // Remove provider script for AdBlock OFF users
+        try {
+          const providerScript = document.getElementById('adblock-provider-script');
+          if (providerScript) {
+            providerScript.remove();
+            log('Removed provider script for AdBlock OFF users');
+          }
+        } catch (e) {
+          log('Error removing provider script:', e);
         }
       }
 
