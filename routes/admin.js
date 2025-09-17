@@ -120,7 +120,9 @@ router.get('/', async (req, res) => {
     };
     
     try {
-      const response = await fetch(`http://localhost:${process.env.PORT || 3000}/api/admin/adblock-stats`);
+      // Use relative URL to work in both development and production
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const response = await fetch(`${baseUrl}/api/admin/adblock-stats`);
       if (response.ok) {
         adblockStats = await response.json();
       }

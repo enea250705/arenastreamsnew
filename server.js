@@ -43,8 +43,10 @@ function trackAdblockVisit(isAdblock) {
   adblockStats.totalVisits++;
   if (isAdblock) {
     adblockStats.adblockVisits++;
+    console.log(`🚫 AdBlock visit tracked - Total: ${adblockStats.totalVisits}, AdBlock: ${adblockStats.adblockVisits}`);
   } else {
     adblockStats.cleanVisits++;
+    console.log(`✅ Clean visit tracked - Total: ${adblockStats.totalVisits}, Clean: ${adblockStats.cleanVisits}`);
   }
   
   if (!adblockStats.dailyStats[today]) {
@@ -56,6 +58,8 @@ function trackAdblockVisit(isAdblock) {
   } else {
     adblockStats.dailyStats[today].clean++;
   }
+  
+  console.log(`📊 Daily stats for ${today}:`, adblockStats.dailyStats[today]);
 }
 
 // Get AdBlock statistics
@@ -671,6 +675,9 @@ app.get('/basketball', async (req, res) => {
 
 app.get('/tennis', async (req, res) => {
   try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
     const html = await renderTemplate('tennis', {});
     res.send(html);
   } catch (error) {
@@ -681,6 +688,9 @@ app.get('/tennis', async (req, res) => {
 
 app.get('/ufc', async (req, res) => {
   try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
     const html = await renderTemplate('ufc', {});
     res.send(html);
   } catch (error) {
@@ -691,6 +701,9 @@ app.get('/ufc', async (req, res) => {
 
 app.get('/rugby', async (req, res) => {
   try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
     const html = await renderTemplate('rugby', {});
     res.send(html);
   } catch (error) {
@@ -701,6 +714,9 @@ app.get('/rugby', async (req, res) => {
 
 app.get('/baseball', async (req, res) => {
   try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
     const html = await renderTemplate('baseball', {});
     res.send(html);
   } catch (error) {
@@ -766,6 +782,9 @@ app.get('/basketballadblock', async (req, res) => {
 
 app.get('/tennisadblock', async (req, res) => {
   try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
     const html = await renderTemplate('tennisadblock', {});
     res.send(html);
   } catch (error) {
@@ -776,6 +795,9 @@ app.get('/tennisadblock', async (req, res) => {
 
 app.get('/ufcadblock', async (req, res) => {
   try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
     const html = await renderTemplate('ufcadblock', {});
     res.send(html);
   } catch (error) {
@@ -786,6 +808,9 @@ app.get('/ufcadblock', async (req, res) => {
 
 app.get('/rugbyadblock', async (req, res) => {
   try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
     const html = await renderTemplate('rugbyadblock', {});
     res.send(html);
   } catch (error) {
@@ -796,6 +821,9 @@ app.get('/rugbyadblock', async (req, res) => {
 
 app.get('/baseballadblock', async (req, res) => {
   try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
     const html = await renderTemplate('baseballadblock', {});
     res.send(html);
   } catch (error) {
@@ -1429,6 +1457,7 @@ app.get('/terms', async (req, res) => {
 app.get('/api/admin/adblock-stats', (req, res) => {
   try {
     const stats = getAdblockStats();
+    console.log('📊 AdBlock stats requested:', stats);
     res.json(stats);
   } catch (error) {
     console.error('Error getting AdBlock stats:', error);
