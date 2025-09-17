@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/server-puppeteer": "^2025.5.12",
+    "@supabase/supabase-js": "^2.45.4",
     "axios": "^1.6.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",

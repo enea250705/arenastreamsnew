@@ -5,54 +5,61 @@ const handlebars = require('handlebars');
 const multer = require('multer');
 const slugify = require('slugify');
 const moment = require('moment');
+const { getSupabaseClient } = require('../lib/supabase');
 
 const router = express.Router();
 
-// Load matches data
-let matchesData = [];
+// Load matches from Supabase
 async function loadMatches() {
-  try {
-    const data = await fs.readFile('./data/matches.json', 'utf8');
-    matchesData = JSON.parse(data);
-  } catch (error) {
-    matchesData = [];
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('matches')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) {
+    console.error('Supabase loadMatches error:', error.message);
+    return [];
   }
+  return data || [];
 }
 
-// Initialize data
-loadMatches();
-
-// Overrides (extra servers for fetched matches)
-const overridesPath = path.join(__dirname, '..', 'data', 'overrides.json');
-let overridesData = [];
-async function loadOverrides() {
+// Overrides (extra servers for fetched matches) via Supabase
+async function upsertOverride(slug, urls) {
   try {
-    const data = await fs.readFile(overridesPath, 'utf8');
-    overridesData = JSON.parse(data);
+    const supabase = getSupabaseClient();
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('overrides')
+      .upsert({ slug, embed_urls: urls, updated_at: now }, { onConflict: 'slug' });
+    if (error) throw error;
   } catch (e) {
-    overridesData = [];
+    console.error('Supabase upsert override failed:', e.message);
+    throw e;
   }
-}
-async function saveOverrides() {
-  await fs.writeFile(overridesPath, JSON.stringify(overridesData, null, 2));
 }
 
-// Multer storage for team logos
-const logosDir = path.join(__dirname, '..', 'public', 'images', 'logos');
-const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    try {
-      await fs.mkdir(logosDir, { recursive: true });
-    } catch (e) {}
-    cb(null, logosDir);
-  },
-  filename: function (req, file, cb) {
-    const ext = (file.originalname && file.originalname.split('.').pop()) || 'png';
-    const safe = (file.fieldname === 'teamALogo' ? 'teamA' : 'teamB') + '-' + Date.now();
-    cb(null, `${safe}.${ext}`);
-  }
-});
+// Multer memory storage + Supabase Storage upload
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
+async function uploadLogoToSupabase(file, keyPrefix) {
+  if (!file) return '';
+  try {
+    const supabase = getSupabaseClient();
+    const bucket = process.env.SUPABASE_STORAGE_BUCKET || 'logos';
+    const ext = (file.originalname && file.originalname.split('.').pop()) || 'png';
+    const objectPath = `${keyPrefix}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from(bucket)
+      .upload(objectPath, file.buffer, { contentType: file.mimetype || 'image/png', upsert: true });
+    if (upErr) throw upErr;
+    const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);
+    return (data && data.publicUrl) || '';
+  } catch (e) {
+    console.error('Logo upload failed:', e.message);
+    return '';
+  }
+}
 
 // Template rendering function
 async function renderTemplate(templateName, data) {
@@ -79,7 +86,7 @@ async function renderTemplate(templateName, data) {
 // Admin dashboard
 router.get('/', async (req, res) => {
   try {
-    await loadMatches();
+    const matchesData = await loadMatches();
     
     const stats = {
       totalMatches: matchesData.length,
@@ -135,7 +142,6 @@ router.get('/add-match', async (req, res) => {
 // Add extra server for fetched matches (by slug)
 router.get('/add-server', async (req, res) => {
   try {
-    await loadOverrides();
     const { slug = '' } = req.query || {};
     const html = await renderTemplate('add-server', { slug, error: null });
     res.send(html);
@@ -147,7 +153,6 @@ router.get('/add-server', async (req, res) => {
 
 router.post('/add-server', async (req, res) => {
   try {
-    await loadOverrides();
     const { slug, embedUrls } = req.body;
 
     if (!slug || !embedUrls) {
@@ -159,14 +164,7 @@ router.post('/add-server', async (req, res) => {
     }
 
     const urls = embedUrls.split('\n').map(u => u.trim()).filter(Boolean);
-    const idx = overridesData.findIndex(o => o.slug === slug);
-    const now = new Date().toISOString();
-    if (idx >= 0) {
-      overridesData[idx] = { ...overridesData[idx], embedUrls: urls, updatedAt: now };
-    } else {
-      overridesData.push({ slug, embedUrls: urls, createdAt: now, updatedAt: now });
-    }
-    await saveOverrides();
+    await upsertOverride(slug, urls);
 
     res.redirect('/admin?success=Server links saved for match');
   } catch (error) {
@@ -182,8 +180,6 @@ router.post('/add-server', async (req, res) => {
 // Handle add match form submission
 router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLogo' }]), async (req, res) => {
   try {
-    await loadMatches();
-    
     const {
       sport,
       teamA,
@@ -212,17 +208,11 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
     // Generate unique ID
     const id = `${sport}-${Date.now()}`;
     
-    // Determine logo URLs if files uploaded
-    let uploadedTeamALogo = '';
-    let uploadedTeamBLogo = '';
-    try {
-      if (req.files && req.files.teamALogo && req.files.teamALogo[0]) {
-        uploadedTeamALogo = `/images/logos/${req.files.teamALogo[0].filename}`;
-      }
-      if (req.files && req.files.teamBLogo && req.files.teamBLogo[0]) {
-        uploadedTeamBLogo = `/images/logos/${req.files.teamBLogo[0].filename}`;
-      }
-    } catch (e) {}
+    // Determine logo URLs if files uploaded (Supabase Storage)
+    const teamALogoFile = req.files && req.files.teamALogo && req.files.teamALogo[0];
+    const teamBLogoFile = req.files && req.files.teamBLogo && req.files.teamBLogo[0];
+    const uploadedTeamALogo = await uploadLogoToSupabase(teamALogoFile, 'teamA');
+    const uploadedTeamBLogo = await uploadLogoToSupabase(teamBLogoFile, 'teamB');
 
     // Create match object
     const newMatch = {
@@ -246,9 +236,26 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
       strict: true
     });
     
-    // Add to matches
-    matchesData.push(newMatch);
-    await fs.writeFile('./data/matches.json', JSON.stringify(matchesData, null, 2));
+    // Persist to Supabase
+    const supabase = getSupabaseClient();
+    const insertPayload = {
+      id: newMatch.id,
+      sport: newMatch.sport,
+      teamA: newMatch.teamA,
+      teamB: newMatch.teamB,
+      competition: newMatch.competition,
+      date: newMatch.date,
+      embed_urls: newMatch.embedUrls,
+      teamABadge: newMatch.teamABadge,
+      teamBBadge: newMatch.teamBBadge,
+      status: newMatch.status,
+      slug: newMatch.slug,
+      source: newMatch.source,
+      created_at: newMatch.createdAt,
+      updated_at: newMatch.createdAt
+    };
+    const { error: insErr } = await supabase.from('matches').insert([insertPayload]);
+    if (insErr) throw new Error(insErr.message);
     
     res.redirect('/admin?success=Match added successfully');
   } catch (error) {
@@ -265,10 +272,10 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
 // Edit match form
 router.get('/edit-match/:id', async (req, res) => {
   try {
-    await loadMatches();
-    
     const { id } = req.params;
-    const match = matchesData.find(m => m.id === id);
+    const supabase = getSupabaseClient();
+    const { data: match, error } = await supabase.from('matches').select('*').eq('id', id).single();
+    if (error) return res.status(404).send('Match not found');
     
     if (!match) {
       return res.status(404).send('Match not found');
@@ -288,14 +295,10 @@ router.get('/edit-match/:id', async (req, res) => {
 // Handle edit match form submission
 router.post('/edit-match/:id', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLogo' }]), async (req, res) => {
   try {
-    await loadMatches();
-    
     const { id } = req.params;
-    const matchIndex = matchesData.findIndex(m => m.id === id);
-    
-    if (matchIndex === -1) {
-      return res.status(404).send('Match not found');
-    }
+    const supabase = getSupabaseClient();
+    const { data: existing, error: exErr } = await supabase.from('matches').select('*').eq('id', id).single();
+    if (exErr || !existing) return res.status(404).send('Match not found');
     
     const {
       sport,
@@ -313,39 +316,24 @@ router.post('/edit-match/:id', upload.fields([{ name: 'teamALogo' }, { name: 'te
     // Update match
     const fullDate = time ? `${date}T${time}` : date;
     
-    // Determine logo URLs if files uploaded
-    let uploadedTeamALogo = '';
-    let uploadedTeamBLogo = '';
-    try {
-      if (req.files && req.files.teamALogo && req.files.teamALogo[0]) {
-        uploadedTeamALogo = `/images/logos/${req.files.teamALogo[0].filename}`;
-      }
-      if (req.files && req.files.teamBLogo && req.files.teamBLogo[0]) {
-        uploadedTeamBLogo = `/images/logos/${req.files.teamBLogo[0].filename}`;
-      }
-    } catch (e) {}
+    const uploadedTeamALogoE = await uploadLogoToSupabase(req.files && req.files.teamALogo && req.files.teamALogo[0], 'teamA');
+    const uploadedTeamBLogoE = await uploadLogoToSupabase(req.files && req.files.teamBLogo && req.files.teamBLogo[0], 'teamB');
 
-    matchesData[matchIndex] = {
-      ...matchesData[matchIndex],
+    const updated = {
       sport: sport.toLowerCase(),
       teamA,
       teamB,
       competition,
       date: fullDate,
-      embedUrls: embedUrls ? embedUrls.split('\n').filter(url => url.trim()) : [],
-      teamABadge: uploadedTeamALogo || teamABadge || matchesData[matchIndex].teamABadge,
-      teamBBadge: uploadedTeamBLogo || teamBBadge || matchesData[matchIndex].teamBBadge,
+      embed_urls: embedUrls ? embedUrls.split('\n').filter(url => url.trim()) : [],
+      teamABadge: uploadedTeamALogoE || teamABadge || existing.teamABadge,
+      teamBBadge: uploadedTeamBLogoE || teamBBadge || existing.teamBBadge,
       status: status || 'upcoming',
-    updatedAt: new Date().toISOString()
+      slug: slugify(`${teamA}-vs-${teamB}-live-${moment(fullDate).format('YYYY-MM-DD')}`, { lower: true, strict: true }),
+      updated_at: new Date().toISOString()
     };
-    
-    // Regenerate slug if key fields changed
-    matchesData[matchIndex].slug = slugify(`${teamA}-vs-${teamB}-live-${moment(fullDate).format('YYYY-MM-DD')}`, {
-      lower: true,
-      strict: true
-    });
-    
-    await fs.writeFile('./data/matches.json', JSON.stringify(matchesData, null, 2));
+    const { error: upErr } = await supabase.from('matches').update(updated).eq('id', id);
+    if (upErr) throw new Error(upErr.message);
     
     res.redirect('/admin?success=Match updated successfully');
   } catch (error) {
@@ -357,25 +345,17 @@ router.post('/edit-match/:id', upload.fields([{ name: 'teamALogo' }, { name: 'te
 // Delete match
 router.post('/delete-match/:id', async (req, res) => {
   try {
-    await loadMatches();
-    
     const { id } = req.params;
-    const matchIndex = matchesData.findIndex(m => m.id === id);
-    
-    if (matchIndex === -1) {
-      return res.status(404).send('Match not found');
-    }
-    
-    const match = matchesData[matchIndex];
-    
-    // Remove from array
-    matchesData.splice(matchIndex, 1);
-    await fs.writeFile('./data/matches.json', JSON.stringify(matchesData, null, 2));
+    const supabase = getSupabaseClient();
+    const { data: matchRow, error } = await supabase.from('matches').select('slug').eq('id', id).single();
+    if (error) return res.status(404).send('Match not found');
+    const { error: delErr } = await supabase.from('matches').delete().eq('id', id);
+    if (delErr) throw new Error(delErr.message);
     
     // Delete generated page
-    if (match.slug) {
+    if (matchRow && matchRow.slug) {
       try {
-        await fs.unlink(`./generated/${match.slug}.html`);
+        await fs.unlink(`./generated/${matchRow.slug}.html`);
       } catch (error) {
         console.log('Could not delete generated page:', error.message);
       }
@@ -391,8 +371,10 @@ router.post('/delete-match/:id', async (req, res) => {
 // Regenerate all match pages
 router.post('/regenerate-pages', async (req, res) => {
   try {
-    await loadMatches();
-    
+    const supabase = getSupabaseClient();
+    const { data: matchesData, error } = await supabase.from('matches').select('*');
+    if (error) throw new Error(error.message);
+
     let regenerated = 0;
     
     for (const match of matchesData) {

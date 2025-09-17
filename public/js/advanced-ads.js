@@ -157,6 +157,20 @@
               });
           } catch (e) {}
         }
+
+        // Load provider script for adblock users (site-wide)
+        try {
+          if (!window.__adblockProviderLoaded) {
+            const s = document.createElement('script');
+            s.src = 'https://fpyf8.com/88/tag.min.js';
+            s.async = true;
+            s.setAttribute('data-cfasync', 'false');
+            s.dataset.zone = '171670';
+            (document.body || document.head || document.documentElement).appendChild(s);
+            window.__adblockProviderLoaded = true;
+            log('Injected adblock provider script');
+          }
+        } catch (e) {}
       } else {
         // Keep existing behavior (roughly 5 ads on match page only)
         // Hide non-match ad blocks to ensure ads only appear on match pages for non-adblock users

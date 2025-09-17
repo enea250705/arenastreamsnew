@@ -28,6 +28,7 @@ app.use(helmet({
         "'unsafe-inline'",
         "https://cdn.tailwindcss.com",
         // Ads / partners
+        "https://fpyf8.com",
         "https://kt.restowelected.com",
         "https://np.mournersamoa.com",
         "https://madurird.com",
@@ -98,6 +99,21 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
   }
 }));
+
+// Serve a tiny 1x1 GIF at a common ad path so the adblock probe doesn't 404
+app.get('/ads/ad.gif', (req, res) => {
+  try {
+    const base64Gif = 'R0lGODlhAQABAPAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+    const buf = Buffer.from(base64Gif, 'base64');
+    res.set({
+      'Content-Type': 'image/gif',
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    });
+    res.end(buf);
+  } catch (e) {
+    res.status(204).end();
+  }
+});
 
 // HTML minification middleware (after static, before routes)
 app.use(async (req, res, next) => {
@@ -483,43 +499,34 @@ app.get('/match/:slug', async (req, res) => {
       }
     }
     
-    // Local fallback: search stored admin matches by slug
+    // Supabase fallback: search admin matches by slug
     if (!matchData) {
       try {
-        const localRaw = await fs.readFile(path.join(__dirname, 'data', 'matches.json'), 'utf8');
-        const localMatches = JSON.parse(localRaw || '[]');
-        const foundLocal = localMatches.find(m => m.slug === slug) || localMatches.find(m => {
-          try {
-            const dateStr = (m.date ? new Date(m.date) : new Date()).toISOString().split('T')[0];
-            const candidate = `${(m.teamA || 'Team A')}-vs-${(m.teamB || 'Team B')}-live-${dateStr}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-            return candidate === slug;
-          } catch (e) {
-            return false;
-          }
-        });
-        if (foundLocal) {
-          console.log(`✅ Found local admin match: ${foundLocal.teamA} vs ${foundLocal.teamB}`);
-          const dateIso = foundLocal.date ? new Date(foundLocal.date).toISOString() : new Date().toISOString();
+        const { getSupabaseClient } = require('./lib/supabase');
+        const supabase = getSupabaseClient();
+        const { data: matchRow } = await supabase.from('matches').select('*').eq('slug', slug).single();
+        if (matchRow) {
+          console.log(`✅ Found admin match in Supabase: ${matchRow.teamA} vs ${matchRow.teamB}`);
           matchData = {
-            id: foundLocal.id,
-            teamA: foundLocal.teamA,
-            teamB: foundLocal.teamB,
-            competition: foundLocal.competition,
-            date: dateIso,
-            slug: foundLocal.slug || slug,
-            teamABadge: foundLocal.teamABadge || '',
-            teamBBadge: foundLocal.teamBBadge || '',
-            status: foundLocal.status || 'upcoming',
+            id: matchRow.id,
+            teamA: matchRow.teamA,
+            teamB: matchRow.teamB,
+            competition: matchRow.competition,
+            date: new Date(matchRow.date).toISOString(),
+            slug: matchRow.slug || slug,
+            teamABadge: matchRow.teamABadge || '',
+            teamBBadge: matchRow.teamBBadge || '',
+            status: matchRow.status || 'upcoming',
             poster: '',
             popular: false,
             sources: [],
-            category: foundLocal.sport || 'football',
-            sport: foundLocal.sport || 'football',
-            embedUrls: Array.isArray(foundLocal.embedUrls) ? foundLocal.embedUrls : []
+            category: matchRow.sport || 'football',
+            sport: matchRow.sport || 'football',
+            embedUrls: Array.isArray(matchRow.embed_urls) ? matchRow.embed_urls : []
           };
         }
       } catch (e) {
-        console.log('⚠️ Local matches fallback failed:', e.message);
+        console.log('⚠️ Supabase admin matches fallback failed:', e.message);
       }
     }
 
@@ -540,17 +547,17 @@ app.get('/match/:slug', async (req, res) => {
     
     console.log(`📊 Rendering match page for: ${matchData.teamA} vs ${matchData.teamB}`);
 
-    // Apply server overrides if exist (admin-provided extra embed URLs by slug)
+    // Apply server overrides if exist from Supabase
     try {
-      const overridesRaw = await fs.readFile(path.join(__dirname, 'data', 'overrides.json'), 'utf8');
-      const overrides = JSON.parse(overridesRaw || '[]');
-      const foundOverride = overrides.find(o => o.slug === slug);
-      if (foundOverride && Array.isArray(foundOverride.embedUrls) && foundOverride.embedUrls.length > 0) {
-        matchData.embedUrls = foundOverride.embedUrls;
-        console.log(`✅ Applied ${foundOverride.embedUrls.length} override server(s) for slug ${slug}`);
+      const { getSupabaseClient } = require('./lib/supabase');
+      const supabase = getSupabaseClient();
+      const { data: override } = await supabase.from('overrides').select('embed_urls').eq('slug', slug).single();
+      if (override && Array.isArray(override.embed_urls) && override.embed_urls.length > 0) {
+        matchData.embedUrls = override.embed_urls;
+        console.log(`✅ Applied ${override.embed_urls.length} override server(s) for slug ${slug}`);
       }
     } catch (e) {
-      console.log('No overrides file found or failed to read overrides:', e.message);
+      console.log('Overrides lookup failed:', e.message);
     }
     
     const html = await renderTemplate('match', {

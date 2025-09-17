@@ -1,34 +1,27 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
 const moment = require('moment');
 const slugify = require('slugify');
+const { getSupabaseClient } = require('../lib/supabase');
 
 const router = express.Router();
 
-// Load matches data
-let matchesData = [];
 async function loadMatches() {
-  try {
-    const data = await fs.readFile('./data/matches.json', 'utf8');
-    matchesData = JSON.parse(data);
-  } catch (error) {
-    matchesData = [];
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('matches')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) {
+    console.error('Supabase loadMatches error:', error.message);
+    return [];
   }
+  return data || [];
 }
-
-// Save matches data
-async function saveMatches() {
-  await fs.writeFile('./data/matches.json', JSON.stringify(matchesData, null, 2));
-}
-
-// Initialize data
-loadMatches();
 
 // GET all matches
 router.get('/', async (req, res) => {
   try {
-    await loadMatches();
+    const matchesData = await loadMatches();
     res.json({
       success: true,
       matches: matchesData,
@@ -45,7 +38,7 @@ router.get('/', async (req, res) => {
 // GET matches by sport
 router.get('/sport/:sport', async (req, res) => {
   try {
-    await loadMatches();
+    const matchesData = await loadMatches();
     const { sport } = req.params;
     const sportMatches = matchesData.filter(match => 
       match.sport.toLowerCase() === sport.toLowerCase()
@@ -68,7 +61,7 @@ router.get('/sport/:sport', async (req, res) => {
 // GET today's matches
 router.get('/today', async (req, res) => {
   try {
-    await loadMatches();
+    const matchesData = await loadMatches();
     const today = moment().format('YYYY-MM-DD');
     const todayMatches = matchesData.filter(match => 
       moment(match.date).format('YYYY-MM-DD') === today
@@ -91,11 +84,11 @@ router.get('/today', async (req, res) => {
 // GET specific match
 router.get('/:id', async (req, res) => {
   try {
-    await loadMatches();
+    const supabase = getSupabaseClient();
     const { id } = req.params;
-    const match = matchesData.find(m => m.id === id);
+    const { data: match, error } = await supabase.from('matches').select('*').eq('id', id).single();
     
-    if (!match) {
+    if (error || !match) {
       return res.status(404).json({
         success: false,
         error: 'Match not found'
@@ -117,8 +110,7 @@ router.get('/:id', async (req, res) => {
 // POST new match
 router.post('/', async (req, res) => {
   try {
-    await loadMatches();
-    
+    const supabase = getSupabaseClient();
     const {
       sport,
       teamA,
@@ -157,9 +149,25 @@ router.post('/', async (req, res) => {
       source: 'manual'
     };
     
-    // Add to matches
-    matchesData.push(newMatch);
-    await saveMatches();
+    // Persist to Supabase
+    const insertPayload = {
+      id,
+      sport: newMatch.sport,
+      teamA,
+      teamB,
+      competition,
+      date,
+      embed_urls: newMatch.embedUrls,
+      teamABadge,
+      teamBBadge,
+      status: newMatch.status,
+      slug,
+      source: newMatch.source,
+      created_at: newMatch.createdAt,
+      updated_at: newMatch.createdAt
+    };
+    const { error: insErr } = await supabase.from('matches').insert([insertPayload]);
+    if (insErr) throw new Error(insErr.message);
     
     // Generate SEO page
     const slug = slugify(`${teamA}-vs-${teamB}-live-${moment(date).format('YYYY-MM-DD')}`, {
@@ -188,33 +196,31 @@ router.post('/', async (req, res) => {
 // PUT update match
 router.put('/:id', async (req, res) => {
   try {
-    await loadMatches();
-    
+    const supabase = getSupabaseClient();
     const { id } = req.params;
-    const matchIndex = matchesData.findIndex(m => m.id === id);
-    
-    if (matchIndex === -1) {
+    const { data: existing, error } = await supabase.from('matches').select('*').eq('id', id).single();
+    if (error || !existing) {
       return res.status(404).json({
         success: false,
         error: 'Match not found'
       });
     }
     
-    // Update match
-    matchesData[matchIndex] = {
-      ...matchesData[matchIndex],
-      ...req.body,
-      updatedAt: new Date().toISOString()
-    };
-    
-    await saveMatches();
-    
+    const update = { ...req.body };
+    if (Array.isArray(update.embedUrls)) {
+      update.embed_urls = update.embedUrls;
+      delete update.embedUrls;
+    }
+    update.updated_at = new Date().toISOString();
+    const { error: upErr } = await supabase.from('matches').update(update).eq('id', id);
+    if (upErr) throw new Error(upErr.message);
+    const { data: updatedRow } = await supabase.from('matches').select('*').eq('id', id).single();
     // Regenerate SEO page
-    await generateMatchPage(matchesData[matchIndex]);
+    await generateMatchPage(updatedRow);
     
     res.json({
       success: true,
-      match: matchesData[matchIndex],
+      match: updatedRow,
       message: 'Match updated successfully'
     });
   } catch (error) {
@@ -228,28 +234,23 @@ router.put('/:id', async (req, res) => {
 // DELETE match
 router.delete('/:id', async (req, res) => {
   try {
-    await loadMatches();
-    
+    const supabase = getSupabaseClient();
     const { id } = req.params;
-    const matchIndex = matchesData.findIndex(m => m.id === id);
-    
-    if (matchIndex === -1) {
+    const { data: existing, error } = await supabase.from('matches').select('slug').eq('id', id).single();
+    if (error) {
       return res.status(404).json({
         success: false,
         error: 'Match not found'
       });
     }
-    
-    const match = matchesData[matchIndex];
-    
-    // Remove from array
-    matchesData.splice(matchIndex, 1);
-    await saveMatches();
+    const { error: delErr } = await supabase.from('matches').delete().eq('id', id);
+    if (delErr) throw new Error(delErr.message);
     
     // Delete generated page
-    if (match.slug) {
+    if (existing && existing.slug) {
       try {
-        await fs.unlink(`./generated/${match.slug}.html`);
+        const fs = require('fs').promises;
+        await fs.unlink(`./generated/${existing.slug}.html`);
       } catch (error) {
         console.log('Could not delete generated page:', error.message);
       }
