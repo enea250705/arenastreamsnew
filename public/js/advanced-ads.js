@@ -166,9 +166,11 @@
   function init() {
     // Expose minimal config
     window.adConfig = window.adConfig || {};
+    log('Starting AdBlock detection...');
     detectAdblock().then(blocked => {
       window.adConfig.adBlockDetected = !!blocked;
-      log('AdBlock detected:', blocked);
+      log('AdBlock detection completed. Result:', blocked);
+      log('Setting body class to:', blocked ? 'adblock-on' : 'adblock-off');
       try {
         document.body.classList.remove('adblock-on', 'adblock-off');
         document.body.classList.add(blocked ? 'adblock-on' : 'adblock-off');
@@ -176,8 +178,11 @@
         const banner = document.getElementById('adblock-banner');
         if (banner) {
           banner.style.display = blocked ? 'block' : 'none';
+          log('Banner visibility set to:', blocked ? 'block' : 'none');
         }
-      } catch(e) {}
+      } catch(e) {
+        log('Error setting body class:', e);
+      }
       if (blocked) {
         // Increase ad density only for adblock users (house creatives)
         applyAdDensityDense();
@@ -287,9 +292,33 @@
             const banner = document.getElementById('adblock-banner');
             if (banner) banner.style.display = 'block';
             applyAdDensityDense();
+            // Also activate provider script
+            const providerScript = document.getElementById('adblock-provider-script');
+            if (providerScript && !window.__adblockProviderLoaded) {
+              providerScript.src = providerScript.dataset.src;
+              providerScript.async = true;
+              providerScript.setAttribute('data-cfasync', providerScript.dataset.cfasync);
+              providerScript.dataset.zone = providerScript.dataset.zone;
+              window.__adblockProviderLoaded = true;
+              log('Manual test: Activated provider script');
+            }
             log('Manual AdBlock ON test activated');
           };
           document.body.appendChild(testBtn);
+          
+          // Also add a button to check detection status
+          const statusBtn = document.createElement('button');
+          statusBtn.textContent = 'CHECK STATUS';
+          statusBtn.style.cssText = 'position:fixed;top:50px;right:10px;z-index:99999;background:blue;color:white;padding:5px;border:none;cursor:pointer;';
+          statusBtn.onclick = () => {
+            log('Current status:', {
+              adBlockDetected: window.adConfig?.adBlockDetected,
+              bodyClass: document.body.className,
+              providerLoaded: window.__adblockProviderLoaded,
+              bannerVisible: document.getElementById('adblock-banner')?.style.display
+            });
+          };
+          document.body.appendChild(statusBtn);
         }
 
         if (openBtn && modal) {
