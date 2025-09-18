@@ -732,11 +732,11 @@
                 });
             }
             
-            // Setup football matches with Streamed.pk API - wait for main.js to load
+            // Setup American Football matches with Streamed.pk API - wait for main.js to load
             function setupMatches() {
                 if (window.ArenaStreams) {
-                    console.log('✅ ArenaStreams found, setting up football matches...');
-                    window.ArenaStreams.setupAutoRefresh('football', 'today-matches', 'no-matches');
+                    console.log('✅ ArenaStreams found, setting up American Football matches...');
+                    window.ArenaStreams.setupAutoRefresh('americanfootball', 'today-matches', 'no-matches');
                     // Wire up search input to real filtering
                     function wireSearch() {
                         const input = document.getElementById('search-input-today-matches');
