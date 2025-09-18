@@ -283,7 +283,7 @@ let sportsData = [];
 // SEO Configuration
 const seoConfig = {
   siteName: 'ArenaStreams',
-  siteDescription: 'Watch live sports streaming online free. Football, Basketball, Tennis, UFC, Rugby, Baseball live streams in HD quality.',
+  siteDescription: 'Watch live sports streaming online free. Football, Basketball, Tennis, UFC, Rugby, Baseball, American Football live streams in HD quality.',
   siteUrl: 'https://arenastreams.com',
   defaultImage: 'https://arenastreams.com/images/og-default.jpg',
   twitterHandle: '@ArenaStreams',
@@ -323,6 +323,12 @@ const seoConfig = {
       description: 'Watch baseball live streams online free. MLB games, World Series, baseball matches, baseball streaming.',
       keywords: 'baseball live stream, MLB streaming, baseball games live, MLB live stream free',
       image: 'https://arenastreams.com/images/baseball-og.jpg'
+    },
+    americanfootball: {
+      name: 'American Football',
+      description: 'Watch American Football live streams online free. NFL games, Super Bowl, college football, NFL streaming.',
+      keywords: 'NFL live stream, American football streaming, NFL games live, Super Bowl live stream, college football live',
+      image: 'https://arenastreams.com/images/americanfootball-og.jpg'
     }
   }
 };
@@ -362,7 +368,8 @@ async function fetchSportsFromAPI() {
       { name: 'tennis', displayName: 'Tennis' },
       { name: 'ufc', displayName: 'UFC' },
       { name: 'rugby', displayName: 'Rugby' },
-      { name: 'baseball', displayName: 'Baseball' }
+      { name: 'baseball', displayName: 'Baseball' },
+      { name: 'americanfootball', displayName: 'American Football' }
     ];
   }
 }
@@ -389,9 +396,9 @@ app.get('/', async (req, res) => {
     const html = await renderTemplate('homepage', {
       sports: sportsData.map(s => s.name || s),
       seo: {
-        title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC`,
+        title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC, American Football`,
         description: seoConfig.siteDescription,
-        keywords: 'live sports streaming, football live stream, basketball streaming, tennis live, UFC fights, rugby streaming, baseball live',
+        keywords: 'live sports streaming, football live stream, basketball streaming, tennis live, UFC fights, rugby streaming, baseball live, NFL live stream, American football streaming',
         canonical: seoConfig.siteUrl,
         ogTitle: `${seoConfig.siteName} - Live Sports Streaming`,
         ogDescription: seoConfig.siteDescription,
@@ -725,6 +732,19 @@ app.get('/baseball', async (req, res) => {
   }
 });
 
+app.get('/americanfootball', async (req, res) => {
+  try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
+    const html = await renderTemplate('americanfootball', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering americanfootball page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // AdBlock version routes - ad-heavy versions for AdBlock users
 app.get('/homepageadblock', async (req, res) => {
   try {
@@ -828,6 +848,19 @@ app.get('/baseballadblock', async (req, res) => {
     res.send(html);
   } catch (error) {
     console.error('Error rendering baseballadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/americanfootballadblock', async (req, res) => {
+  try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
+    const html = await renderTemplate('americanfootballadblock', {});
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering americanfootballadblock page:', error);
     res.status(500).send('Internal Server Error');
   }
 });
