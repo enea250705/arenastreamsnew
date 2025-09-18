@@ -737,7 +737,23 @@ app.get('/americanfootball', async (req, res) => {
     // Track clean visit (no AdBlock)
     trackAdblockVisit(false);
     
-    const html = await renderTemplate('americanfootball', {});
+    const sport = seoConfig.sports.americanfootball;
+    const html = await renderTemplate('americanfootball', {
+      sport: sport,
+      seo: {
+        title: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        description: sport.description,
+        keywords: sport.keywords,
+        canonical: `${seoConfig.siteUrl}/americanfootball`,
+        ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        ogDescription: sport.description,
+        ogImage: sport.image,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        twitterDescription: sport.description,
+        twitterImage: sport.image
+      }
+    });
     res.send(html);
   } catch (error) {
     console.error('Error rendering americanfootball page:', error);
@@ -857,7 +873,23 @@ app.get('/americanfootballadblock', async (req, res) => {
     // Track AdBlock visit
     trackAdblockVisit(true);
     
-    const html = await renderTemplate('americanfootballadblock', {});
+    const sport = seoConfig.sports.americanfootball;
+    const html = await renderTemplate('americanfootballadblock', {
+      sport: sport,
+      seo: {
+        title: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        description: sport.description + ' - AdBlock version with ads everywhere',
+        keywords: sport.keywords + ', adblock version, ads everywhere',
+        canonical: `${seoConfig.siteUrl}/americanfootballadblock`,
+        ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        ogDescription: sport.description + ' - AdBlock version with ads everywhere',
+        ogImage: sport.image,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        twitterDescription: sport.description + ' - AdBlock version with ads everywhere',
+        twitterImage: sport.image
+      }
+    });
     res.send(html);
   } catch (error) {
     console.error('Error rendering americanfootballadblock page:', error);
