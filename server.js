@@ -242,9 +242,11 @@ app.use((req, res, next) => {
   // Disable caching for HTML pages to ensure updates are visible
   if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|americanfootball|admin|match|privacy|terms)(adblock)?$/)) {
     res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
-      'Expires': '0'
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString(),
+      'ETag': `"${Date.now()}"`
     });
   }
   next();
@@ -408,6 +410,7 @@ app.get('/', async (req, res) => {
     
     const html = await renderTemplate('homepage', {
       sports: sportsData.map(s => s.name || s),
+      timestamp: Date.now(),
       seo: {
         title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC, American Football`,
         description: seoConfig.siteDescription,
@@ -782,6 +785,7 @@ app.get('/homepageadblock', async (req, res) => {
     
     const html = await renderTemplate('homepageadblock', {
       sports: sportsData.map(s => s.name || s),
+      timestamp: Date.now(),
       seo: {
         title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC - AdBlock Version`,
         description: `${seoConfig.siteName} - Live sports streaming platform for football, basketball, tennis, UFC, rugby and baseball - AdBlock version with ads everywhere`,
