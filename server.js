@@ -237,6 +237,19 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Cache-busting middleware for Cloudflare Pages
+app.use((req, res, next) => {
+  // Disable caching for HTML pages to ensure updates are visible
+  if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|americanfootball|admin|match|privacy|terms)(adblock)?$/)) {
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+  }
+  next();
+});
+
 // Import routes
 const matchRoutes = require('./routes/matches');
 const adminRoutes = require('./routes/admin');
