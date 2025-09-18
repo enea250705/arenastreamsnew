@@ -16,29 +16,37 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ufc Live Streams | ArenaStreams - Free Ufc Streaming</title>
-    <meta name="description" content="Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.">
-    <meta name="keywords" content="UFC live stream, MMA streaming, UFC fights live, MMA fights free">
+    <title>{{seo.title}}</title>
+    <meta name="description" content="{{seo.description}}">
+    <meta name="keywords" content="{{seo.keywords}}">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://arenastreams.com/ufc">
+    <link rel="canonical" href="{{seo.canonical}}">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Ufc Live Streams | ArenaStreams">
-    <meta property="og:description" content="Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.">
+    <meta property="og:title" content="{{seo.ogTitle}}">
+    <meta property="og:description" content="{{seo.ogDescription}}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://arenastreams.com/ufc">
-    <meta property="og:image" content="https://arenastreams.com/images/ufc-og.jpg">
+    <meta property="og:url" content="{{seo.canonical}}">
+    <meta property="og:image" content="{{seo.ogImage}}">
     
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Ufc Live Streams | ArenaStreams">
-    <meta name="twitter:description" content="Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.">
-    <meta name="twitter:image" content="https://arenastreams.com/images/ufc-og.jpg">
+    <meta name="twitter:card" content="{{seo.twitterCard}}">
+    <meta name="twitter:title" content="{{seo.twitterTitle}}">
+    <meta name="twitter:description" content="{{seo.twitterDescription}}">
+    <meta name="twitter:image" content="{{seo.twitterImage}}">
     
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <!-- Hreflang for International SEO -->
+    <link rel="alternate" hreflang="en-us" href="https://arenastreams.com/football">
+    <link rel="alternate" hreflang="en-gb" href="https://arenastreams.com/football">
+    <link rel="alternate" hreflang="en-ca" href="https://arenastreams.com/football">
+    <link rel="alternate" hreflang="en-au" href="https://arenastreams.com/football">
+    <link rel="alternate" hreflang="x-default" href="https://arenastreams.com/football">
+    
+    <!-- Additional Performance Optimizations -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
     <!-- TailwindCSS with Performance Optimization -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -75,18 +83,35 @@
         .hover\\:text-yellow-400:hover { color: #fbbf24; }
         .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     </style>
+    <!-- Advanced Image Optimization -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#ffcc00',
-                        dark: '#1a1a1a',
-                        darker: '#0f0f0f'
-                    }
-                }
-            }
+        // WebP support detection and optimization
+        function supportsWebP() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
         }
+        
+        // Lazy loading for images
+        function lazyLoadImages() {
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+        }
+        
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', lazyLoadImages);
     </script>
     
     <!-- Advanced Ad System -->
@@ -109,7 +134,7 @@
                 "@id": "https://arenastreams.com/#website",
                 "url": "https://arenastreams.com/",
                 "name": "ArenaStreams",
-                "description": "Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.",
+                "description": "{{sport.description}}",
                 "publisher": {
                     "@id": "https://arenastreams.com/#organization"
                 },
@@ -143,26 +168,26 @@
             },
             {
                 "@type": "WebPage",
-                "@id": "https://arenastreams.com/ufc#webpage",
-                "url": "https://arenastreams.com/ufc",
-                "name": "Ufc Live Streams | ArenaStreams - Free Ufc Streaming",
+                "@id": "{{seo.canonical}}#webpage",
+                "url": "{{seo.canonical}}",
+                "name": "{{seo.title}}",
                 "isPartOf": {
                     "@id": "https://arenastreams.com/#website"
                 },
                 "about": {
                     "@id": "https://arenastreams.com/#organization"
                 },
-                "description": "Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.",
+                "description": "{{seo.description}}",
                 "breadcrumb": {
-                    "@id": "https://arenastreams.com/ufc#breadcrumb"
+                    "@id": "{{seo.canonical}}#breadcrumb"
                 },
                 "mainEntity": {
-                    "@id": "https://arenastreams.com/ufc#sportsactivity"
+                    "@id": "{{seo.canonical}}#sportsactivity"
                 }
             },
             {
                 "@type": "BreadcrumbList",
-                "@id": "https://arenastreams.com/ufc#breadcrumb",
+                "@id": "{{seo.canonical}}#breadcrumb",
                 "itemListElement": [
                     {
                         "@type": "ListItem",
@@ -173,19 +198,19 @@
                     {
                         "@type": "ListItem",
                         "position": 2,
-                        "name": "Ufc",
-                        "item": "https://arenastreams.com/ufc"
+                        "name": "{{sport.name}}",
+                        "item": "{{seo.canonical}}"
                     }
                 ]
             },
             {
                 "@type": "SportsActivity",
-                "@id": "https://arenastreams.com/ufc#sportsactivity",
-                "name": "Ufc Live Streaming",
-                "description": "Watch UFC live streams online free. MMA fights, UFC events, boxing matches, combat sports.",
-                "url": "https://arenastreams.com/ufc",
-                "image": "https://arenastreams.com/images/ufc-og.jpg",
-                "sport": "Ufc",
+                "@id": "{{seo.canonical}}#sportsactivity",
+                "name": "{{sport.name}} Live Streaming",
+                "description": "{{sport.description}}",
+                "url": "{{seo.canonical}}",
+                "image": "{{sport.image}}",
+                "sport": "{{sport.name}}",
                 "provider": {
                     "@id": "https://arenastreams.com/#organization"
                 },
@@ -202,33 +227,33 @@
                     "audienceType": "Sports Fans"
                 },
                 "category": "Sports Streaming",
-                "keywords": "UFC live stream, MMA streaming, UFC fights live, MMA fights free"
+                "keywords": "{{seo.keywords}}"
             },
             {
                 "@type": "FAQPage",
                 "mainEntity": [
                     {
                         "@type": "Question",
-                        "name": "How to watch Ufc live streams?",
+                        "name": "How to watch {{sport.name}} live streams?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "You can watch Ufc live streams for free on ArenaStreams. Simply choose your server and the stream will load automatically. No registration required."
+                            "text": "You can watch {{sport.name}} live streams for free on ArenaStreams. Simply choose your server and the stream will load automatically. No registration required."
                         }
                     },
                     {
                         "@type": "Question",
-                        "name": "Is Ufc streaming free?",
+                        "name": "Is {{sport.name}} streaming free?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "Yes, all Ufc streams on ArenaStreams are completely free. No subscription or registration required."
+                            "text": "Yes, all {{sport.name}} streams on ArenaStreams are completely free. No subscription or registration required."
                         }
                     },
                     {
                         "@type": "Question",
-                        "name": "What Ufc leagues are available?",
+                        "name": "What {{sport.name}} leagues are available?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "We stream all major Ufc leagues including Premier League, Champions League, La Liga, Serie A, Bundesliga and more."
+                            "text": "We stream all major {{sport.name}} leagues including Premier League, Champions League, La Liga, Serie A, Bundesliga and more."
                         }
                     }
                 ]
@@ -248,10 +273,10 @@
                 </div>
                 <nav class="hidden md:flex space-x-6">
                     <a href="/" class="text-gray-400 hover:text-primary transition-colors">Home</a>
-                    <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
+                    <a href="/football" class="text-white">⚽ Football</a>
                     <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
                     <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
-                    <a href="/ufc" class="text-white">🥊 UFC</a>
+                    <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                     <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                     <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
                 </nav>
@@ -271,10 +296,10 @@
         <div class="container mx-auto px-4 py-4">
             <nav class="flex flex-col space-y-4">
                 <a href="/" class="text-white hover:text-primary transition-colors">Home</a>
-                <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
+                <a href="/football" class="text-white">⚽ Football</a>
                 <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
                 <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
-                <a href="/ufc" class="text-white">🥊 UFC</a>
+                <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                 <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                 <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
             </nav>
@@ -293,7 +318,7 @@
                 </li>
                 <li class="text-gray-400" aria-hidden="true">/</li>
                 <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span class="text-white capitalize" itemprop="name">Ufc</span>
+                    <span class="text-white capitalize" itemprop="name">{{sport.name}}</span>
                     <meta itemprop="position" content="2" />
                 </li>
             </ol>
@@ -304,13 +329,13 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Sport Header - 11/10 SEO -->
         <section class="text-center mb-12">
-            <div class="text-8xl mb-6" aria-hidden="true">🥊</div>
+            <div class="text-8xl mb-6" aria-hidden="true">⚽</div>
             <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                Ufc <span class="text-primary">Live Streaming</span>
+                {{sport.name}} <span class="text-primary">Live Streaming</span>
             </h1>
             <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                Watch live {{sport.name}} fights online in HD quality. Free streaming with no registration required. 
-                UFC events, title fights, and more MMA action worldwide.
+                Watch live {{sport.name}} matches online in HD quality. Free streaming with no registration required. 
+                Premier League, Champions League, La Liga, Serie A, Bundesliga and more.
             </p>
             
             <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
@@ -332,32 +357,32 @@
         <!-- Today's Matches -->
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-8 text-center">
-                Today's Ufc Matches
+                Today's {{sport.name}} Matches
             </h2>
             
             <!-- Internal Linking Hub -->
             <div class="bg-gray-800 rounded-lg p-6 mb-8">
-                <h3 class="text-xl font-bold mb-4 text-primary">Popular MMA Organizations</h3>
+                <h3 class="text-xl font-bold mb-4 text-primary">Popular {{sport.name}} Leagues</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
-                        <div class="text-2xl mb-2">🥊</div>
-                        <div class="font-semibold">UFC</div>
-                        <div class="text-xs text-gray-400">USA</div>
-                    </div>
-                    <div class="bg-gray-700 rounded-lg p-3 text-center">
                         <div class="text-2xl mb-2">🏆</div>
-                        <div class="font-semibold">Bellator</div>
-                        <div class="text-xs text-gray-400">USA</div>
+                        <div class="font-semibold">Premier League</div>
+                        <div class="text-xs text-gray-400">England</div>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
-                        <div class="text-2xl mb-2">🌏</div>
-                        <div class="font-semibold">ONE Championship</div>
-                        <div class="text-xs text-gray-400">Asia</div>
+                        <div class="text-2xl mb-2">⭐</div>
+                        <div class="font-semibold">Champions League</div>
+                        <div class="text-xs text-gray-400">Europe</div>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
-                        <div class="text-2xl mb-2">⚡</div>
-                        <div class="font-semibold">PFL</div>
-                        <div class="text-xs text-gray-400">USA</div>
+                        <div class="text-2xl mb-2">🇪🇸</div>
+                        <div class="font-semibold">La Liga</div>
+                        <div class="text-xs text-gray-400">Spain</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-3 text-center">
+                        <div class="text-2xl mb-2">🇮🇹</div>
+                        <div class="font-semibold">Serie A</div>
+                        <div class="text-xs text-gray-400">Italy</div>
                     </div>
                 </div>
             </div>
@@ -369,7 +394,7 @@
                         type="text" 
                         id="search-input-today-matches" 
                         class="w-full px-4 py-3 pl-12 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none transition-colors"
-                        placeholder="Search UFC fighters like 'McGregor', 'Jones', 'Khabib'..."
+                        placeholder="Search football teams like 'Liverpool', 'Barcelona', 'Real Madrid'..."
                         autocomplete="off"
                     >
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -395,20 +420,38 @@
             </div>
             
             <div id="no-matches" class="text-center py-12 hidden">
-                <div class="text-6xl mb-4">🥊</div>
-                <h3 class="text-2xl font-semibold mb-4">No ufc matches scheduled for today</h3>
-                <p class="text-gray-400 mb-8">Check back later for upcoming ufc matches or browse other sports.</p>
+                <div class="text-6xl mb-4">⚽</div>
+                <h3 class="text-2xl font-semibold mb-4">No football matches scheduled for today</h3>
+                <p class="text-gray-400 mb-8">Check back later for upcoming football matches or browse other sports.</p>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a href="/" class="bg-dark border border-gray-800 px-6 py-3 rounded-lg hover:border-primary transition-colors">
                         View All Sports
                     </a>
                 </div>
             </div>
+        </section>
+
+        <!-- Real Banner Ad -->
+        <section class="mb-12">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 max-w-4xl mx-auto">
+                <p class="text-gray-400 text-sm mb-2 text-center">Advertisement</p>
+                <div class="text-center">
+                    <!-- Real Banner Ad -->
+                    <iframe src="https://otieu.com/4/9889886" 
+                            width="728" height="90" 
+                            frameborder="0" 
+                            scrolling="no"
+                            style="max-width: 100%; height: auto;">
+                    </iframe>
+                    <p class="text-xs mt-2 text-gray-500">728x90 Banner Ad</p>
+                </div>
+            </div>
+        </section>
 
         <!-- How to Watch Guide -->
         <section class="mb-12">
             <div class="bg-gray-800 rounded-lg p-6 max-w-4xl mx-auto">
-                <h2 class="text-2xl font-bold mb-4 text-primary text-center">How to Watch Ufc Live Streams</h2>
+                <h2 class="text-2xl font-bold mb-4 text-primary text-center">How to Watch {{sport.name}} Live Streams</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                     <div>
                         <h3 class="text-lg font-semibold mb-2">1. Choose Your Server</h3>
@@ -429,41 +472,41 @@
         <!-- Popular Leagues -->
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-8 text-center">
-                Popular MMA Organizations
+                Popular Football Leagues
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🥊</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">UFC</h3>
-                    <p class="text-gray-400 text-sm mt-2">USA</p>
+                    <div class="text-4xl mb-3">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Premier League</h3>
+                    <p class="text-gray-400 text-sm mt-2">England</p>
                 </div>
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
                     <div class="text-4xl mb-3">🏆</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Bellator</h3>
-                    <p class="text-gray-400 text-sm mt-2">USA</p>
-                </div>
-                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🌏</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">ONE Championship</h3>
-                    <p class="text-gray-400 text-sm mt-2">Asia</p>
-                </div>
-                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">⚡</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">PFL</h3>
-                    <p class="text-gray-400 text-sm mt-2">USA</p>
-                </div>
-                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🔥</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Cage Warriors</h3>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Champions League</h3>
                     <p class="text-gray-400 text-sm mt-2">Europe</p>
+                </div>
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+                    <div class="text-4xl mb-3">🇪🇸</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">La Liga</h3>
+                    <p class="text-gray-400 text-sm mt-2">Spain</p>
+                </div>
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+                    <div class="text-4xl mb-3">🇮🇹</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Serie A</h3>
+                    <p class="text-gray-400 text-sm mt-2">Italy</p>
+                </div>
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+                    <div class="text-4xl mb-3">🇩🇪</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Bundesliga</h3>
+                    <p class="text-gray-400 text-sm mt-2">Germany</p>
                 </div>
             </div>
         </section>
 
-        <!-- Ufc Information -->
+        <!-- Football Information -->
         <section class="mb-12">
             <div class="bg-dark border border-gray-800 rounded-lg p-8">
-                <h2 class="text-3xl font-bold mb-6 text-center">About Ufc Streaming</h2>
+                <h2 class="text-3xl font-bold mb-6 text-center">About Football Streaming</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <h3 class="text-xl font-semibold mb-4 text-primary">Why Choose ArenaStreams?</h3>
@@ -491,31 +534,31 @@
                         </ul>
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-4 text-primary">Popular Ufc Competitions</h3>
+                        <h3 class="text-xl font-semibold mb-4 text-primary">Popular Football Competitions</h3>
                         <ul class="space-y-3 text-gray-300">
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                UFC Events
+                                Premier League
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Title Fights
+                                Champions League
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                UFC Fight Night
+                                La Liga
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                UFC PPV
+                                Serie A
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Bellator MMA
+                                Bundesliga
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                ONE Championship
+                                Ligue 1
                             </li>
                         </ul>
                     </div>
@@ -564,13 +607,13 @@
                 <div>
                     <h4 class="text-xl font-bold text-primary mb-4">🏟️ ArenaStreams</h4>
                     <p class="text-gray-400 text-sm">
-                        Your ultimate destination for live sports streaming. Watch ufc, basketball, tennis, UFC and more in HD quality.
+                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC and more in HD quality.
                     </p>
                 </div>
                 <div>
                     <h5 class="font-semibold mb-4">Sports</h5>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="/ufc" class="hover:text-primary transition-colors">Ufc</a></li>
+                        <li><a href="/football" class="hover:text-primary transition-colors">Football</a></li>
                         <li><a href="/basketball" class="hover:text-primary transition-colors">Basketball</a></li>
                         <li><a href="/tennis" class="hover:text-primary transition-colors">Tennis</a></li>
                         <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
@@ -594,7 +637,23 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-                <p>&copy; 2025 ArenaStreams. All rights reserved. | Live ufc streaming platform</p>
+                <p>&copy; 2025 ArenaStreams. All rights reserved. | Live football streaming platform</p>
+                
+                <!-- X (Twitter) Follow Section -->
+                <div class="mt-6 mb-6">
+                    <div class="flex items-center justify-center space-x-3">
+                        <a href="https://x.com/arenastreams" target="_blank" rel="noopener noreferrer" 
+                           class="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg border border-gray-700 transition-colors group">
+                            <svg class="w-5 h-5 text-white group-hover:text-blue-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                            <span class="text-white group-hover:text-blue-400 transition-colors font-medium">Follow on X</span>
+                        </a>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Follow us on X for updates and announcements. If the site goes down, we'll post updates there!
+                    </p>
+                </div>
                 
                 <!-- DMCA Notice -->
                 <div class="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
@@ -640,7 +699,7 @@
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             
-            console.log('🔍 UFC page - Mobile menu elements:', { mobileMenuBtn, mobileMenu });
+            console.log('🔍 Football page - Mobile menu elements:', { mobileMenuBtn, mobileMenu });
             
             if (mobileMenuBtn && mobileMenu) {
                 // Remove any existing listeners first
@@ -651,33 +710,33 @@
                 newMobileMenuBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('📱 UFC - Mobile menu button clicked');
+                    console.log('📱 Football - Mobile menu button clicked');
                     mobileMenu.classList.toggle('hidden');
-                    console.log('📱 UFC - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                    console.log('📱 Football - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
                 });
                 
                 // Also add touch event for mobile devices
                 newMobileMenuBtn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('📱 UFC - Mobile menu button touched');
+                    console.log('📱 Football - Mobile menu button touched');
                     mobileMenu.classList.toggle('hidden');
-                    console.log('📱 UFC - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                    console.log('📱 Football - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
                 });
                 
-                console.log('✅ UFC - Mobile menu fallback initialized with robust event listeners');
+                console.log('✅ Football - Mobile menu fallback initialized with robust event listeners');
             } else {
-                console.log('❌ UFC - Mobile menu elements not found:', { 
+                console.log('❌ Football - Mobile menu elements not found:', { 
                     mobileMenuBtn: !!mobileMenuBtn, 
                     mobileMenu: !!mobileMenu 
                 });
             }
             
-            // Setup ufc matches with Streamed.pk API - wait for main.js to load
+            // Setup football matches with Streamed.pk API - wait for main.js to load
             function setupMatches() {
                 if (window.ArenaStreams) {
-                    console.log('✅ ArenaStreams found, setting up ufc matches...');
-                    window.ArenaStreams.setupAutoRefresh('ufc', 'today-matches', 'no-matches');
+                    console.log('✅ ArenaStreams found, setting up football matches...');
+                    window.ArenaStreams.setupAutoRefresh('football', 'today-matches', 'no-matches');
                     // Wire up search input to real filtering
                     function wireSearch() {
                         const input = document.getElementById('search-input-today-matches');
@@ -712,7 +771,6 @@
             setTimeout(setupMatches, 50);
         });
     </script>
-    <!-- Load protection first -->
     
     <!-- Load obfuscated main code -->
     <script src="/js/app.min.js"></script>
