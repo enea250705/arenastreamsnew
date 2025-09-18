@@ -95,13 +95,37 @@
                     <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                     <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                     <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
+                    <a href="/americanfootball" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                 </nav>
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                <div class="flex items-center space-x-3">
+                    <!-- Copy Link Section -->
+                    <div class="hidden md:flex items-center space-x-3 bg-gray-800/50 px-3 py-2 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-300">If you like our stream platform, share it with your friends.</p>
+                        <button id="copy-link-btn" class="flex items-center space-x-2 bg-primary text-dark font-bold px-3 py-2 rounded-lg hover:bg-yellow-400 transition-colors group">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Copy arenastreams.com</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Follow on X Button -->
+                    <a href="https://x.com/arenastreams" target="_blank" rel="noopener noreferrer" 
+                       class="hidden md:flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg border border-gray-600 transition-colors group">
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
-                    </button>
+                        <span class="text-gray-300 group-hover:text-blue-400 transition-colors text-sm font-medium">Follow on X</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button id="mobile-menu-btn" class="text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,7 +213,33 @@
                 <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                 <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                 <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
+                <a href="/americanfootball" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
             </nav>
+            
+            <!-- Mobile Action Buttons -->
+            <div class="mt-6 pt-4 border-t border-gray-700">
+                <div class="flex flex-col space-y-3">
+                    <!-- Copy Link Section (Mobile) -->
+                    <div class="bg-gray-800/50 px-3 py-3 rounded-lg border border-gray-700">
+                        <p class="text-xs text-gray-300 text-center mb-3">If you like our stream platform, share it with your friends.</p>
+                        <button id="copy-link-btn-mobile" class="w-full flex items-center justify-center space-x-2 bg-primary text-dark font-bold px-4 py-3 rounded-lg hover:bg-yellow-400 transition-colors group">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Copy arenastreams.com</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Follow on X Button (Mobile) -->
+                    <a href="https://x.com/arenastreams" target="_blank" rel="noopener noreferrer" 
+                       class="flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-600 px-4 py-3 rounded-lg border border-gray-600 transition-colors group">
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span class="text-gray-300 group-hover:text-blue-400 transition-colors text-sm font-medium">Follow us on X</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -541,10 +591,101 @@
             }
         }
 
+
         // Initialize homepage
         document.addEventListener('DOMContentLoaded', function() {
             // Display today's date immediately
             displayTodaysDate();
+
+            // Copy link button functionality (Desktop) - Copy arenastreams.com like on match page
+            const copyLinkBtn = document.getElementById('copy-link-btn');
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', async function() {
+                    try {
+                        await navigator.clipboard.writeText('https://arenastreams.com');
+                        
+                        // Show success feedback
+                        const originalText = this.querySelector('span').textContent;
+                        const originalIcon = this.querySelector('svg').innerHTML;
+                        
+                        this.querySelector('span').textContent = 'Copied!';
+                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                        this.classList.add('bg-green-600', 'border-green-500');
+                        this.classList.remove('bg-primary', 'hover:bg-yellow-400');
+                        
+                        // Track copy event in Google Analytics
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'copy_link', {
+                                event_category: 'Social Sharing',
+                                event_label: 'Header Copy Link',
+                                value: 1
+                            });
+                        }
+                        
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            this.querySelector('span').textContent = originalText;
+                            this.querySelector('svg').innerHTML = originalIcon;
+                            this.classList.remove('bg-green-600', 'border-green-500');
+                            this.classList.add('bg-primary', 'hover:bg-yellow-400');
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('Failed to copy link:', error);
+                        // Show error feedback
+                        const originalText = this.querySelector('span').textContent;
+                        this.querySelector('span').textContent = 'Failed';
+                        setTimeout(() => {
+                            this.querySelector('span').textContent = originalText;
+                        }, 2000);
+                    }
+                });
+            }
+
+            // Copy link button functionality (Mobile) - Copy arenastreams.com like on match page
+            const copyLinkBtnMobile = document.getElementById('copy-link-btn-mobile');
+            if (copyLinkBtnMobile) {
+                copyLinkBtnMobile.addEventListener('click', async function() {
+                    try {
+                        await navigator.clipboard.writeText('https://arenastreams.com');
+                        
+                        // Show success feedback
+                        const originalText = this.querySelector('span').textContent;
+                        const originalIcon = this.querySelector('svg').innerHTML;
+                        
+                        this.querySelector('span').textContent = 'Copied!';
+                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                        this.classList.add('bg-green-600', 'border-green-500');
+                        this.classList.remove('bg-primary', 'hover:bg-yellow-400');
+                        
+                        // Track copy event in Google Analytics
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'copy_link', {
+                                event_category: 'Social Sharing',
+                                event_label: 'Mobile Copy Link',
+                                value: 1
+                            });
+                        }
+                        
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            this.querySelector('span').textContent = originalText;
+                            this.querySelector('svg').innerHTML = originalIcon;
+                            this.classList.remove('bg-green-600', 'border-green-500');
+                            this.classList.add('bg-primary', 'hover:bg-yellow-400');
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('Failed to copy link:', error);
+                        // Show error feedback
+                        const originalText = this.querySelector('span').textContent;
+                        this.querySelector('span').textContent = 'Failed';
+                        setTimeout(() => {
+                            this.querySelector('span').textContent = originalText;
+                        }, 2000);
+                    }
+                });
+            }
 
             // Initialize global search
             const globalSearchInput = document.getElementById('global-search-input');
