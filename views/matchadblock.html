@@ -165,7 +165,7 @@
                     <div class="text-sm text-gray-400">
                         <span class="text-green-500">●</span> Live
                     </div>
-                </div>
+            </div>
             </div>
         </div>
     </header>
@@ -183,7 +183,7 @@
                         <h1 class="text-2xl font-bold">{{match.teamA}}</h1>
                         <div class="text-gray-400">vs</div>
                         <h1 class="text-2xl font-bold">{{match.teamB}}</h1>
-                    </div>
+                </div>
                     {{#if match.teamBLogo}}
                     <img src="{{match.teamBLogo}}" alt="{{match.teamB}}" class="w-16 h-16 object-contain">
                     {{/if}}
@@ -195,19 +195,19 @@
                         <span class="text-green-500">●</span> Live Stream
                     </div>
                 </div>
-            </div>
-        </div>
-
+                            </div>
+                    </div>
+                    
         <!-- Ad Block -->
         <div class="ad-inline mb-8">
             <div class="text-gray-400 text-sm">Advertisement</div>
-        </div>
-
+                </div>
+                
         <!-- Stream Player -->
         <div class="bg-dark rounded-lg p-6 mb-8">
             <div class="aspect-video bg-black rounded-lg mb-4 relative">
                 <div id="player-container" class="w-full h-full flex items-center justify-center">
-                    <div class="text-center">
+                        <div class="text-center">
                         <div class="text-gray-400 mb-4">Loading stream...</div>
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                     </div>
@@ -231,18 +231,18 @@
                 <button onclick="loadStream(4)" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
                     Server 5
                 </button>
-            </div>
+                            </div>
 
             <!-- Live Viewer Count -->
             <div class="text-sm text-gray-400 mb-4">
                 <span id="viewer-count">Loading viewers...</span> watching
-            </div>
-        </div>
+                            </div>
+                        </div>
 
         <!-- Ad Block -->
         <div class="ad-inline mb-8">
             <div class="text-gray-400 text-sm">Advertisement</div>
-        </div>
+                            </div>
 
         <!-- Match Info -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -256,32 +256,32 @@
                     <div class="flex justify-between">
                         <span class="text-gray-400">Competition:</span>
                         <span>{{match.competition}}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Date:</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Date:</span>
                         <span>{{match.date}}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Status:</span>
-                        <span class="text-green-500">Live</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Status:</span>
+                            <span class="text-green-500">Live</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <div class="bg-dark rounded-lg p-6">
                 <h2 class="text-xl font-bold mb-4">Stream Quality</h2>
                 <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Quality:</span>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Quality:</span>
                         <span class="text-green-500">HD</span>
-                    </div>
-                    <div class="flex justify-between">
+                        </div>
+                        <div class="flex justify-between">
                         <span class="text-gray-400">Buffering:</span>
                         <span class="text-green-500">Minimal</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Mobile:</span>
-                        <span class="text-green-500">Supported</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Mobile:</span>
+                            <span class="text-green-500">Supported</span>
                     </div>
                 </div>
             </div>
@@ -321,7 +321,7 @@
 
     <!-- Advanced Ads Script -->
     <script src="/js/advanced-ads.js"></script>
-
+    
     <script>
         // Stream URLs from admin or overrides
         const embedUrls = {{{json embedUrls}}};
@@ -353,7 +353,7 @@
                             class="w-full h-full rounded-lg">
                     </iframe>
                 `;
-            } else {
+                        } else {
                 // Generic iframe
                 container.innerHTML = `
                     <iframe src="${url}" 
