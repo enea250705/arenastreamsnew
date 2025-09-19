@@ -521,6 +521,29 @@ app.get('/match/:slug', async (req, res) => {
           });
         }
         
+        // Filter rugby matches to exclude NFL matches incorrectly categorized as rugby
+        if (sport === 'rugby') {
+          matches = matches.filter(match => {
+            const title = match.title ? match.title.toLowerCase() : '';
+            const id = match.id ? match.id.toLowerCase() : '';
+            
+            // Exclude NFL/American football matches
+            const nflKeywords = ['nfl:', 'nfl ', 'miami dolphins', 'buffalo bills', 'houston texans', 'jacksonville jaguars', 'pittsburgh steelers', 'new england patriots', 'dallas cowboys', 'chicago bears', 'green bay packers', 'cleveland browns', 'denver broncos', 'los angeles chargers', 'arizona cardinals', 'san francisco 49ers', 'kansas city chiefs', 'new york giants', 'detroit lions', 'baltimore ravens'];
+            if (nflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Exclude AFL (Australian Football League) matches
+            const aflKeywords = ['afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood', 'essendon', 'fremantle', 'brisbane lions', 'port adelaide'];
+            if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Keep actual rugby matches (NRL, NPC, Super Rugby, etc.)
+            return true;
+          });
+        }
+        
         // Look for a match that matches our slug (try ID first, then title-based slug)
         const foundMatch = matches.find(match => {
           // Try direct ID match first
@@ -750,7 +773,23 @@ app.get('/rugby', async (req, res) => {
     // Track clean visit (no AdBlock)
     trackAdblockVisit(false);
     
-    const html = await renderTemplate('rugby', {});
+    const sport = seoConfig.sports.rugby;
+    const html = await renderTemplate('rugby', {
+      sport: sport,
+      seo: {
+        title: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        description: sport.description,
+        keywords: sport.keywords,
+        canonical: `${seoConfig.siteUrl}/rugby`,
+        ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        ogDescription: sport.description,
+        ogImage: sport.image,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        twitterDescription: sport.description,
+        twitterImage: sport.image
+      }
+    });
     res.send(html);
   } catch (error) {
     console.error('Error rendering rugby page:', error);
@@ -982,6 +1021,29 @@ app.get('/matchadblock/:slug', async (req, res) => {
             }
             
             // Keep NFL, college football, and American football networks
+            return true;
+          });
+        }
+        
+        // Filter rugby matches to exclude NFL matches incorrectly categorized as rugby
+        if (sport === 'rugby') {
+          matches = matches.filter(match => {
+            const title = match.title ? match.title.toLowerCase() : '';
+            const id = match.id ? match.id.toLowerCase() : '';
+            
+            // Exclude NFL/American football matches
+            const nflKeywords = ['nfl:', 'nfl ', 'miami dolphins', 'buffalo bills', 'houston texans', 'jacksonville jaguars', 'pittsburgh steelers', 'new england patriots', 'dallas cowboys', 'chicago bears', 'green bay packers', 'cleveland browns', 'denver broncos', 'los angeles chargers', 'arizona cardinals', 'san francisco 49ers', 'kansas city chiefs', 'new york giants', 'detroit lions', 'baltimore ravens'];
+            if (nflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Exclude AFL (Australian Football League) matches
+            const aflKeywords = ['afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood', 'essendon', 'fremantle', 'brisbane lions', 'port adelaide'];
+            if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Keep actual rugby matches (NRL, NPC, Super Rugby, etc.)
             return true;
           });
         }

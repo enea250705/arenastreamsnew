@@ -99,6 +99,29 @@ async function loadSportMatches(sport) {
             });
         }
         
+        // Filter rugby matches to exclude NFL matches incorrectly categorized as rugby
+        if (sport === 'rugby') {
+            matches = matches.filter(match => {
+                const title = match.title ? match.title.toLowerCase() : '';
+                const id = match.id ? match.id.toLowerCase() : '';
+                
+                // Exclude NFL/American football matches
+                const nflKeywords = ['nfl:', 'nfl ', 'miami dolphins', 'buffalo bills', 'houston texans', 'jacksonville jaguars', 'pittsburgh steelers', 'new england patriots', 'dallas cowboys', 'chicago bears', 'green bay packers', 'cleveland browns', 'denver broncos', 'los angeles chargers', 'arizona cardinals', 'san francisco 49ers', 'kansas city chiefs', 'new york giants', 'detroit lions', 'baltimore ravens'];
+                if (nflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+                    return false;
+                }
+                
+                // Exclude AFL (Australian Football League) matches
+                const aflKeywords = ['afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood', 'essendon', 'fremantle', 'brisbane lions', 'port adelaide'];
+                if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+                    return false;
+                }
+                
+                // Keep actual rugby matches (NRL, NPC, Super Rugby, etc.)
+                return true;
+            });
+        }
+        
         let streamedProcessed = [];
         if (matches.length > 0) {
             streamedProcessed = matches.map(match => {
