@@ -161,7 +161,7 @@ async function loadSportMatches(sport) {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: getMatchStatus(match.date),
+                        status: 'live', // Always live for channels // Always live for channels
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
@@ -314,7 +314,7 @@ async function loadLiveMatches() {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: 'live',
+                        status: 'live', // Always live for channels
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
@@ -458,7 +458,7 @@ async function loadTodaysMatches() {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: getMatchStatus(match.date),
+                        status: 'live', // Always live for channels
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],

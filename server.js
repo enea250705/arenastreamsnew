@@ -715,7 +715,7 @@ app.get('/match/:slug', async (req, res) => {
             slug: slug,
             teamABadge: teamABadge,
             teamBBadge: teamBBadge,
-            status: foundMatch.date && foundMatch.date > 0 ? 'upcoming' : 'upcoming',
+            status: (foundMatch.date && foundMatch.date > 0 && foundMatch.title.includes(' vs ')) ? 'upcoming' : 'live', // Channels without 'vs' are always live
             poster: foundMatch.poster ? `https://streamed.pk/api/images/poster/${foundMatch.poster}` : '',
             popular: foundMatch.popular || false,
             sources: detailedStreams,
