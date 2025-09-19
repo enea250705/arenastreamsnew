@@ -6,6 +6,7 @@ const multer = require('multer');
 const slugify = require('slugify');
 const moment = require('moment');
 const { getSupabaseClient } = require('../lib/supabase');
+const { loadMatches, addMatch, updateMatch, deleteMatch, getMatchById } = require('../lib/json-storage');
 
 const router = express.Router();
 
@@ -30,22 +31,12 @@ handlebars.registerHelper('gt', function(a, b) {
   return a > b;
 });
 
-// Load matches from Supabase
-async function loadMatches() {
+// Load matches from JSON storage
+async function loadMatchesFromStorage() {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('matches')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (error) {
-      console.error('Supabase loadMatches error:', error.message);
-      return [];
-    }
-    return data || [];
+    return loadMatches();
   } catch (error) {
-    console.error('Supabase connection error:', error.message);
-    console.log('⚠️ Supabase not configured. Admin panel will work in read-only mode.');
+    console.error('JSON storage loadMatches error:', error.message);
     return [];
   }
 }
@@ -113,7 +104,7 @@ async function renderTemplate(templateName, data) {
 // Admin dashboard
 router.get('/', async (req, res) => {
   try {
-    const matchesData = await loadMatches();
+    const matchesData = await loadMatchesFromStorage();
     
     // Fetch AdBlock statistics
     let adblockStats = {
@@ -285,30 +276,16 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
       strict: true
     });
     
-    // Persist to Supabase
+    // Persist to JSON storage
     try {
-      const supabase = getSupabaseClient();
-      const insertPayload = {
-        id: newMatch.id,
-        sport: newMatch.sport,
-        teamA: newMatch.teamA,
-        teamB: newMatch.teamB,
-        competition: newMatch.competition,
-        date: newMatch.date,
-        embed_urls: newMatch.embedUrls,
-        teamABadge: newMatch.teamABadge,
-        teamBBadge: newMatch.teamBBadge,
-        status: newMatch.status,
-        slug: newMatch.slug,
-        source: newMatch.source,
-        created_at: newMatch.createdAt,
-        updated_at: newMatch.createdAt
-      };
-      const { error: insErr } = await supabase.from('matches').insert([insertPayload]);
-      if (insErr) throw new Error(insErr.message);
-    } catch (dbError) {
-      console.error('Database error:', dbError.message);
-      throw new Error('Database not configured. Please set up Supabase environment variables. See SUPABASE_SETUP.md for instructions.');
+      const success = addMatch(newMatch);
+      if (!success) {
+        throw new Error('Failed to save match to storage');
+      }
+      console.log('✅ Match added to JSON storage:', newMatch.id);
+    } catch (storageError) {
+      console.error('Storage error:', storageError.message);
+      throw new Error('Failed to save match: ' + storageError.message);
     }
     
     res.redirect('/admin?success=Match added successfully');

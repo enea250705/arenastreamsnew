@@ -651,14 +651,13 @@ app.get('/match/:slug', async (req, res) => {
       }
     }
     
-    // Supabase fallback: search admin matches by slug
+    // JSON storage fallback: search admin matches by slug
     if (!matchData) {
       try {
-        const { getSupabaseClient } = require('./lib/supabase');
-        const supabase = getSupabaseClient();
-        const { data: matchRow } = await supabase.from('matches').select('*').eq('slug', slug).single();
+        const { getMatchBySlug } = require('./lib/json-storage');
+        const matchRow = getMatchBySlug(slug);
         if (matchRow) {
-          console.log(`✅ Found admin match in Supabase: ${matchRow.teamA} vs ${matchRow.teamB}`);
+          console.log(`✅ Found admin match in JSON storage: ${matchRow.teamA} vs ${matchRow.teamB}`);
           matchData = {
             id: matchRow.id,
             teamA: matchRow.teamA,
@@ -674,11 +673,11 @@ app.get('/match/:slug', async (req, res) => {
             sources: [],
             category: matchRow.sport || 'football',
             sport: matchRow.sport || 'football',
-            embedUrls: Array.isArray(matchRow.embed_urls) ? matchRow.embed_urls : []
+            embedUrls: Array.isArray(matchRow.embedUrls) ? matchRow.embedUrls : []
           };
         }
       } catch (e) {
-        console.log('⚠️ Supabase admin matches fallback failed:', e.message);
+        console.log('⚠️ JSON storage admin matches fallback failed:', e.message);
       }
     }
 
