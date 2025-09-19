@@ -609,6 +609,7 @@ app.get('/match/:slug', async (req, res) => {
           }
           
           const expectedSlug = `${homeTeam}-vs-${awayTeam}-live-${dateStr}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+          console.log(`🔍 Checking match "${match.title}": expectedSlug="${expectedSlug}" vs requestedSlug="${slug}"`);
           return expectedSlug === slug;
         });
         
