@@ -32,16 +32,22 @@ handlebars.registerHelper('gt', function(a, b) {
 
 // Load matches from Supabase
 async function loadMatches() {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from('matches')
-    .select('*')
-    .order('created_at', { ascending: true });
-  if (error) {
-    console.error('Supabase loadMatches error:', error.message);
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('matches')
+      .select('*')
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.error('Supabase loadMatches error:', error.message);
+      return [];
+    }
+    return data || [];
+  } catch (error) {
+    console.error('Supabase connection error:', error.message);
+    console.log('⚠️ Supabase not configured. Admin panel will work in read-only mode.');
     return [];
   }
-  return data || [];
 }
 
 // Overrides (extra servers for fetched matches) via Supabase
@@ -280,25 +286,30 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
     });
     
     // Persist to Supabase
-    const supabase = getSupabaseClient();
-    const insertPayload = {
-      id: newMatch.id,
-      sport: newMatch.sport,
-      teamA: newMatch.teamA,
-      teamB: newMatch.teamB,
-      competition: newMatch.competition,
-      date: newMatch.date,
-      embed_urls: newMatch.embedUrls,
-      teamABadge: newMatch.teamABadge,
-      teamBBadge: newMatch.teamBBadge,
-      status: newMatch.status,
-      slug: newMatch.slug,
-      source: newMatch.source,
-      created_at: newMatch.createdAt,
-      updated_at: newMatch.createdAt
-    };
-    const { error: insErr } = await supabase.from('matches').insert([insertPayload]);
-    if (insErr) throw new Error(insErr.message);
+    try {
+      const supabase = getSupabaseClient();
+      const insertPayload = {
+        id: newMatch.id,
+        sport: newMatch.sport,
+        teamA: newMatch.teamA,
+        teamB: newMatch.teamB,
+        competition: newMatch.competition,
+        date: newMatch.date,
+        embed_urls: newMatch.embedUrls,
+        teamABadge: newMatch.teamABadge,
+        teamBBadge: newMatch.teamBBadge,
+        status: newMatch.status,
+        slug: newMatch.slug,
+        source: newMatch.source,
+        created_at: newMatch.createdAt,
+        updated_at: newMatch.createdAt
+      };
+      const { error: insErr } = await supabase.from('matches').insert([insertPayload]);
+      if (insErr) throw new Error(insErr.message);
+    } catch (dbError) {
+      console.error('Database error:', dbError.message);
+      throw new Error('Database not configured. Please set up Supabase environment variables. See SUPABASE_SETUP.md for instructions.');
+    }
     
     res.redirect('/admin?success=Match added successfully');
   } catch (error) {
