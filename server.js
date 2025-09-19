@@ -1547,6 +1547,7 @@ app.get('/sitemap.xml', async (req, res) => {
       { url: '/ufc', priority: '0.9', changefreq: 'daily' },
       { url: '/rugby', priority: '0.9', changefreq: 'daily' },
       { url: '/baseball', priority: '0.9', changefreq: 'daily' },
+      { url: '/american-football', priority: '0.9', changefreq: 'daily' },
       { url: '/privacy', priority: '0.3', changefreq: 'monthly' },
       { url: '/terms', priority: '0.3', changefreq: 'monthly' },
       { url: '/contact', priority: '0.4', changefreq: 'monthly' }
@@ -1626,7 +1627,8 @@ app.get('/sitemap-images.xml', async (req, res) => {
       { sport: 'tennis', name: 'Tennis', image: 'https://arenastreams.com/images/tennis-og.jpg' },
       { sport: 'ufc', name: 'UFC', image: 'https://arenastreams.com/images/ufc-og.jpg' },
       { sport: 'rugby', name: 'Rugby', image: 'https://arenastreams.com/images/rugby-og.jpg' },
-      { sport: 'baseball', name: 'Baseball', image: 'https://arenastreams.com/images/baseball-og.jpg' }
+      { sport: 'baseball', name: 'Baseball', image: 'https://arenastreams.com/images/baseball-og.jpg' },
+      { sport: 'american-football', name: 'American Football', image: 'https://arenastreams.com/images/american-football-og.jpg' }
     ];
     
     // Get live matches for dynamic image content

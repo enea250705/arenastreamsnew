@@ -186,7 +186,8 @@ const advancedSEOConfig = {
         'How to watch tennis live streams',
         'How to watch UFC live streams',
         'How to watch rugby live streams',
-        'How to watch baseball live streams'
+        'How to watch baseball live streams',
+        'How to watch American football live streams'
       ],
       'Free Streaming': [
         'Free football streaming sites',
@@ -194,7 +195,8 @@ const advancedSEOConfig = {
         'Free tennis streaming sites',
         'Free UFC streaming sites',
         'Free rugby streaming sites',
-        'Free baseball streaming sites'
+        'Free baseball streaming sites',
+        'Free American football streaming sites'
       ],
       'Live Sports': [
         'Live football matches today',
@@ -202,7 +204,8 @@ const advancedSEOConfig = {
         'Live tennis matches today',
         'Live UFC fights today',
         'Live rugby matches today',
-        'Live baseball games today'
+        'Live baseball games today',
+        'Live American football games today'
       ]
     },
     
