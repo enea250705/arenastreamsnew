@@ -76,38 +76,7 @@ async function loadSportMatches(sport) {
             matches = streamedData;
         }
         
-        // Filter american-football matches to exclude rugby/AFL matches
-        if (sport === 'american-football') {
-            matches = matches.filter(match => {
-                const title = match.title ? match.title.toLowerCase() : '';
-                const id = match.id ? match.id.toLowerCase() : '';
-                
-                // Exclude rugby matches (comprehensive list)
-                const rugbyKeywords = [
-                    'rugby', 'npc:', 'super rugby', 'women\'s rugby', 'rugby world cup',
-                    'taranaki', 'hawkes bay', 'hawke\'s bay', 'counties manukau', 'auckland',
-                    'wellington', 'southland', 'canterbury', 'otago', 'tasman', 'waikato',
-                    'north harbour', 'northland', 'manawatu', 'bay of plenty', 'force', 'brumbies',
-                    'waratahs', 'reds', 'new zealand w', 'canada w'
-                ];
-                if (rugbyKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
-                    return false;
-                }
-                
-                // Exclude AFL (Australian Football League) matches
-                const aflKeywords = [
-                    'afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood',
-                    'essendon', 'fremantle', 'brisbane lions', 'port adelaide', 'magpies',
-                    'bombers', 'dockers', 'power', 'premiership football', 'afl womens'
-                ];
-                if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
-                    return false;
-                }
-                
-                // Keep NFL, college football, and American football networks
-                return true;
-            });
-        }
+        // Note: American football filtering is handled server-side to avoid double filtering
         
         // Filter rugby matches to exclude NFL matches incorrectly categorized as rugby
         if (sport === 'rugby') {
