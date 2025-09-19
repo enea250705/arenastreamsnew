@@ -498,6 +498,29 @@ app.get('/match/:slug', async (req, res) => {
           matches = response.data;
         }
         
+        // Filter american-football matches to exclude rugby/AFL matches
+        if (sport === 'american-football') {
+          matches = matches.filter(match => {
+            const title = match.title ? match.title.toLowerCase() : '';
+            const id = match.id ? match.id.toLowerCase() : '';
+            
+            // Exclude rugby matches
+            const rugbyKeywords = ['rugby', 'npc:', 'super rugby', 'women\'s rugby', 'rugby world cup'];
+            if (rugbyKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Exclude AFL (Australian Football League) matches
+            const aflKeywords = ['afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood', 'essendon', 'fremantle', 'brisbane lions', 'port adelaide'];
+            if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Keep NFL, college football, and American football networks
+            return true;
+          });
+        }
+        
         // Look for a match that matches our slug (try ID first, then title-based slug)
         const foundMatch = matches.find(match => {
           // Try direct ID match first
@@ -933,12 +956,40 @@ app.get('/matchadblock/:slug', async (req, res) => {
           timeout: 10000
         });
         
-        if (response.data && Array.isArray(response.data)) {
-          const match = response.data.find(m => m.slug === slug);
-          if (match) {
-            matchData = { ...match, sport };
-            break;
-          }
+        let matches = [];
+        if (response.data.value && Array.isArray(response.data.value)) {
+          matches = response.data.value;
+        } else if (Array.isArray(response.data)) {
+          matches = response.data;
+        }
+        
+        // Filter american-football matches to exclude rugby/AFL matches
+        if (sport === 'american-football') {
+          matches = matches.filter(match => {
+            const title = match.title ? match.title.toLowerCase() : '';
+            const id = match.id ? match.id.toLowerCase() : '';
+            
+            // Exclude rugby matches
+            const rugbyKeywords = ['rugby', 'npc:', 'super rugby', 'women\'s rugby', 'rugby world cup'];
+            if (rugbyKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Exclude AFL (Australian Football League) matches
+            const aflKeywords = ['afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood', 'essendon', 'fremantle', 'brisbane lions', 'port adelaide'];
+            if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+              return false;
+            }
+            
+            // Keep NFL, college football, and American football networks
+            return true;
+          });
+        }
+        
+        const match = matches.find(m => m.slug === slug);
+        if (match) {
+          matchData = { ...match, sport };
+          break;
         }
       } catch (error) {
         console.log(`No matches found for ${sport}`);
