@@ -613,6 +613,8 @@ app.get('/match/:slug', async (req, res) => {
         
         if (foundMatch) {
           console.log(`✅ Found match: ${foundMatch.title} (${foundMatch.id})`);
+          console.log(`📊 Match sources:`, foundMatch.sources ? `${foundMatch.sources.length} sources` : 'No sources');
+          console.log(`📊 Match data structure:`, Object.keys(foundMatch));
           
           // Process the match data
           let homeTeam = 'Team A';
