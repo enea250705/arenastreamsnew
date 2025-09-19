@@ -1,4 +1,4 @@
-// Main JavaScript for ArenaStreams - Streamed.pk API only
+// Main JavaScript for ArenaStreams - Streamed.pk API only v2.1
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
