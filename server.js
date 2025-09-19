@@ -638,7 +638,7 @@ app.get('/match/:slug', async (req, res) => {
           };
           
           // Special case: Add custom iframe for Buffalo Bills vs Miami Dolphins match
-          if (slug === 'buffalo-bills-vs-miami-dolphins-2261219' || 
+          if (slug === 'buffalo-bills-vs-miami-dolphins-live-2025-09-19' || 
               (homeTeam.toLowerCase().includes('buffalo bills') && awayTeam.toLowerCase().includes('miami dolphins')) ||
               (awayTeam.toLowerCase().includes('buffalo bills') && homeTeam.toLowerCase().includes('miami dolphins'))) {
             console.log('🎯 Adding custom iframe for Buffalo Bills vs Miami Dolphins match');
@@ -1061,7 +1061,7 @@ app.get('/matchadblock/:slug', async (req, res) => {
             matchData = { ...match, sport };
           
           // Special case: Add custom iframe for Buffalo Bills vs Miami Dolphins match
-          if (slug === 'buffalo-bills-vs-miami-dolphins-2261219' || 
+          if (slug === 'buffalo-bills-vs-miami-dolphins-live-2025-09-19' || 
               (match.title && match.title.toLowerCase().includes('buffalo bills') && match.title.toLowerCase().includes('miami dolphins'))) {
             console.log('🎯 Adding custom iframe for Buffalo Bills vs Miami Dolphins match (AdBlock)');
             matchData.embedUrls = ['https://embedsports.top/embed/admin/ppv-miami-dolphins-vs-buffalo-bills/1'];
