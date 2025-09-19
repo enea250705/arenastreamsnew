@@ -1175,10 +1175,99 @@ app.get('/api/streamed/matches/:sport', async (req, res) => {
     const response = await axios.get(`${STREAMED_API_BASE}/matches/${sport}`, {
       timeout: 15000
     });
-    res.json(response.data);
+    
+    let matches = response.data;
+    
+    // Apply filtering based on sport
+    if (sport === 'american-football') {
+      // Handle the API response structure
+      if (Array.isArray(matches)) {
+        // Direct array response
+      } else if (matches.value && Array.isArray(matches.value)) {
+        matches = matches.value;
+      } else {
+        matches = [];
+      }
+      
+      // Filter american-football matches to exclude rugby/AFL matches
+      matches = matches.filter(match => {
+        const title = match.title ? match.title.toLowerCase() : '';
+        const id = match.id ? match.id.toLowerCase() : '';
+        
+        // Exclude rugby matches (comprehensive list)
+        const rugbyKeywords = [
+          'rugby', 'npc:', 'super rugby', 'women\'s rugby', 'rugby world cup',
+          'taranaki', 'hawkes bay', 'hawke\'s bay', 'counties manukau', 'auckland',
+          'wellington', 'southland', 'canterbury', 'otago', 'tasman', 'waikato',
+          'north harbour', 'northland', 'manawatu', 'bay of plenty', 'force', 'brumbies',
+          'waratahs', 'reds', 'new zealand w', 'canada w'
+        ];
+        if (rugbyKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+          return false;
+        }
+        
+        // Exclude AFL (Australian Football League) matches
+        const aflKeywords = [
+          'afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood',
+          'essendon', 'fremantle', 'brisbane lions', 'port adelaide', 'magpies',
+          'bombers', 'dockers', 'power', 'premiership football', 'afl womens'
+        ];
+        if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+          return false;
+        }
+        
+        // Keep NFL, college football, and American football networks
+        return true;
+      });
+    } else if (sport === 'rugby') {
+      // Handle the API response structure
+      if (Array.isArray(matches)) {
+        // Direct array response
+      } else if (matches.value && Array.isArray(matches.value)) {
+        matches = matches.value;
+      } else {
+        matches = [];
+      }
+      
+      // Filter rugby matches to exclude NFL matches incorrectly categorized as rugby
+      matches = matches.filter(match => {
+        const title = match.title ? match.title.toLowerCase() : '';
+        const id = match.id ? match.id.toLowerCase() : '';
+        
+        // Exclude NFL/American football matches
+        const nflKeywords = [
+          'nfl:', 'nfl ', 'miami dolphins', 'buffalo bills', 'houston texans', 'jacksonville jaguars',
+          'pittsburgh steelers', 'new england patriots', 'dallas cowboys', 'chicago bears',
+          'green bay packers', 'cleveland browns', 'denver broncos', 'los angeles chargers',
+          'arizona cardinals', 'san francisco 49ers', 'kansas city chiefs', 'new york giants',
+          'detroit lions', 'baltimore ravens', 'atlanta falcons', 'carolina panthers',
+          'new orleans saints', 'tampa bay buccaneers', 'washington commanders', 'philadelphia eagles',
+          'new york jets', 'las vegas raiders', 'los angeles rams', 'seattle seahawks',
+          'indianapolis colts', 'tennessee titans', 'cincinnati bengals', 'minnesota vikings'
+        ];
+        if (nflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+          return false;
+        }
+        
+        // Exclude AFL (Australian Football League) matches
+        const aflKeywords = [
+          'afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood',
+          'essendon', 'fremantle', 'brisbane lions', 'port adelaide', 'magpies',
+          'bombers', 'dockers', 'power', 'premiership football', 'afl womens'
+        ];
+        if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
+          return false;
+        }
+        
+        // Keep actual rugby matches (NRL, NPC, Super Rugby, etc.)
+        return true;
+      });
+    }
+    
+    res.json(matches);
   } catch (error) {
-    console.error(`Error fetching ${sport} matches:`, error);
-    res.status(500).json({ error: `Failed to fetch ${sport} matches` });
+    console.error(`Error fetching ${req.params.sport} matches:`, error);
+    res.status(500).json({ error: `Failed to fetch ${req.params.sport} matches` });
   }
 });
 
