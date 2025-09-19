@@ -456,37 +456,10 @@
             localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
         }
 
-        // Trigger popup ads
+        // Trigger popup ads - DISABLED to prevent blank page redirects
         function triggerPopups(count) {
-            const currentCount = checkPopupLimit();
-            if (currentCount >= adConfig.maxPopupsPerSession) {
-                console.log('Maximum popups reached for this session');
-                return;
-            }
-
-            for (let i = 0; i < count; i++) {
-                if (currentCount + i < adConfig.maxPopupsPerSession) {
-                    // Simulate popup ad (replace with real ad scripts)
-                    setTimeout(() => {
-                        const popup = window.open('about:blank', 'popup_' + i, 'width=400,height=300');
-                        if (popup) {
-                            popup.document.write(`
-                                <html>
-                                    <head><title>Advertisement</title></head>
-                                    <body style="margin:0;padding:20px;font-family:Arial;">
-                                        <h3>Advertisement</h3>
-                                        <p>This is a placeholder for popup ads.</p>
-                                        <p>In production, this would load real ad content.</p>
-                                        <button onclick="window.close()">Close</button>
-                                    </body>
-                                </html>
-                            `);
-                        }
-                    }, i * 1000);
-                }
-            }
-
-            updatePopupCount(currentCount + count);
+            console.log('🚫 Popup ads disabled to prevent blank page redirects');
+            return;
         }
 
         // Stream player functionality (variables moved to DOMContentLoaded)
@@ -766,43 +739,10 @@
                 autoLoadStreams();
             }, 2000); // Wait 2 seconds for page to fully load
 
-            // Re-enable monetized popup ads (non-blank), limited by session
+            // Re-enable monetized popup ads - DISABLED to prevent blank page redirects
             window.triggerPopups = function triggerPopups(count) {
-                if (popupCount >= maxPopups) {
-                    console.log('🚫 Max popups reached for this session');
-                    return;
-                }
-                const actualCount = Math.min(count || 1, maxPopups - popupCount);
-                for (let i = 0; i < actualCount; i++) {
-                    popupCount++;
-                    const w = window.open('about:blank', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                    if (w) {
-                        w.document.write(`
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Advertisement</title>
-    <style>
-      html,body{margin:0;height:100%;background:#000;color:#fff}
-      .wrap{display:flex;align-items:center;justify-content:center;height:100%;padding:12px}
-      .slot{width:100%;max-width:728px;min-height:90px;background:#111;border:1px solid #222;border-radius:8px;overflow:hidden}
-      .bar{position:fixed;top:8px;right:8px}
-      .btn{padding:8px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer}
-    </style>
-  </head>
-  <body>
-    <div class="bar"><button class="btn" onclick="window.close()">Close</button></div>
-    <div class="wrap">
-      <div id="ad-slot" class="slot"></div>
-    </div>
-    <script>(function(){try{var s=document.createElement('script');s.src='https://al5sm.com/tag.min.js';s.dataset.zone='9879600';document.body.appendChild(s);}catch(e){}})();<\/script>
-  </body>
- </html>`);
-                    }
-                }
-                localStorage.setItem(sessionKey, popupCount.toString());
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
             }
 
             // Play button functionality (First/Second click logic)
