@@ -173,7 +173,7 @@ router.get('/', async (req, res) => {
 router.get('/add-match', async (req, res) => {
   try {
     const html = await renderTemplate('add-match', {
-      sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc']
+      sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc', 'american-football']
     });
     res.send(html);
   } catch (error) {
@@ -238,7 +238,7 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
     // Validation
     if (!sport || !teamA || !teamB || !competition || !date) {
       const html = await renderTemplate('add-match', {
-        sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc'],
+        sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc', 'american-football'],
         error: 'Please fill in all required fields',
         formData: req.body
       });
@@ -304,7 +304,7 @@ router.post('/add-match', upload.fields([{ name: 'teamALogo' }, { name: 'teamBLo
   } catch (error) {
     console.error('Error adding match:', error);
     const html = await renderTemplate('add-match', {
-      sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc'],
+      sports: ['football', 'basketball', 'baseball', 'rugby', 'tennis', 'ufc', 'american-football'],
       error: 'Error adding match: ' + error.message,
       formData: req.body
     });
