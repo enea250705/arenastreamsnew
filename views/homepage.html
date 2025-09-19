@@ -409,8 +409,67 @@
                     <p class="text-sm text-gray-400 mt-2">F1, MotoGP, NASCAR</p>
                 </a>
             </div>
+        <!-- Live Matches Dropdown -->
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold mb-4">
+                    Live Matches <span class="text-primary">Now</span>
+                </h3>
+                <p class="text-gray-400 text-lg">See what's currently streaming across all sports</p>
+            </div>
+            
+            <!-- Sports Dropdown -->
+            <div class="max-w-4xl mx-auto">
+                <div class="relative">
+                    <select id="sport-dropdown" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-primary focus:outline-none transition-colors text-lg appearance-none cursor-pointer">
+                        <option value="">Select a sport to see live matches...</option>
+                        <option value="football">⚽ Football</option>
+                        <option value="basketball">🏀 Basketball</option>
+                        <option value="tennis">🎾 Tennis</option>
+                        <option value="ufc">🥊 UFC</option>
+                        <option value="rugby">🏉 Rugby</option>
+                        <option value="baseball">⚾ Baseball</option>
+                        <option value="american-football">🏈 American Football</option>
+                        <option value="cricket">🏏 Cricket</option>
+                        <option value="motor-sports">🏁 Motor Sports</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Loading State -->
+                <div id="live-matches-loading" class="mt-6 text-center hidden">
+                    <div class="inline-flex items-center space-x-2 text-gray-400">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                        <span>Loading live matches...</span>
+                    </div>
+                </div>
+                
+                <!-- Live Matches Results -->
+                <div id="live-matches-results" class="mt-6 hidden">
+                    <div class="bg-dark border border-gray-800 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-xl font-bold text-primary" id="selected-sport-title">Live Matches</h4>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-400">Live</span>
+                            </div>
+                        </div>
+                        <div id="live-matches-list" class="space-y-3">
+                            <!-- Live matches will be populated here -->
+                        </div>
+                        <div id="no-live-matches" class="text-center py-8 hidden">
+                            <div class="text-4xl text-gray-600 mb-4">📺</div>
+                            <p class="text-gray-400 mb-2">No live matches found</p>
+                            <p class="text-gray-500 text-sm">Check back later or try another sport</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
-    </main>
 
     <!-- Footer -->
     <footer class="bg-dark border-t border-gray-800 mt-16">
@@ -800,6 +859,142 @@
                     });
                 }
             });
+
+            // Live Matches Dropdown Functionality
+            const sportDropdown = document.getElementById('sport-dropdown');
+            const liveMatchesLoading = document.getElementById('live-matches-loading');
+            const liveMatchesResults = document.getElementById('live-matches-results');
+            const liveMatchesList = document.getElementById('live-matches-list');
+            const noLiveMatches = document.getElementById('no-live-matches');
+            const selectedSportTitle = document.getElementById('selected-sport-title');
+
+            if (sportDropdown) {
+                // Wait for ArenaStreams to be available
+                const waitForArenaStreams = () => {
+                    if (window.ArenaStreams) {
+                        console.log('✅ ArenaStreams loaded, dropdown ready');
+                        return true;
+                    }
+                    return false;
+                };
+
+                // Check if ArenaStreams is already loaded
+                if (!waitForArenaStreams()) {
+                    // Wait for it to load
+                    const checkInterval = setInterval(() => {
+                        if (waitForArenaStreams()) {
+                            clearInterval(checkInterval);
+                        }
+                    }, 100);
+                }
+                sportDropdown.addEventListener('change', async function() {
+                    const selectedSport = this.value;
+                    
+                    if (!selectedSport) {
+                        liveMatchesResults.classList.add('hidden');
+                        return;
+                    }
+
+                    // Show loading state
+                    liveMatchesLoading.classList.remove('hidden');
+                    liveMatchesResults.classList.add('hidden');
+                    noLiveMatches.classList.add('hidden');
+
+                    try {
+                        // Use the same function that sports pages use to fetch matches
+                        if (!window.ArenaStreams) {
+                            console.error('ArenaStreams not loaded yet');
+                            liveMatchesLoading.classList.add('hidden');
+                            return;
+                        }
+
+                        const matches = await window.ArenaStreams.loadSportMatches(selectedSport);
+                        console.log(`📊 Loaded ${matches.length} matches for ${selectedSport}:`, matches);
+
+                        // Filter for live matches (matches without future dates or with "live" status)
+                        const liveMatches = matches.filter(match => {
+                            // Consider matches live if they don't have a future date or are marked as live
+                            if (!match.date || match.date <= Date.now()) {
+                                return true;
+                            }
+                            // Also include matches that might be marked as live in title
+                            const title = (match.title || '').toLowerCase();
+                            return title.includes('live') || title.includes('now');
+                        }).slice(0, 10); // Limit to 10 matches
+
+                        // Hide loading state
+                        liveMatchesLoading.classList.add('hidden');
+
+                        if (liveMatches.length > 0) {
+                            // Update title
+                            const sportNames = {
+                                'football': '⚽ Football',
+                                'basketball': '🏀 Basketball', 
+                                'tennis': '🎾 Tennis',
+                                'ufc': '🥊 UFC',
+                                'rugby': '🏉 Rugby',
+                                'baseball': '⚾ Baseball',
+                                'american-football': '🏈 American Football',
+                                'cricket': '🏏 Cricket',
+                                'motor-sports': '🏁 Motor Sports'
+                            };
+                            selectedSportTitle.textContent = `${sportNames[selectedSport]} Live Matches`;
+
+                            // Render live matches
+                            liveMatchesList.innerHTML = liveMatches.map(match => {
+                                const matchTitle = match.title || `${match.teamA} vs ${match.teamB}`;
+                                const matchSlug = match.slug || match.id || 'live-match';
+                                const competition = match.competition || match.category || selectedSport;
+                                
+                                return `
+                                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-primary transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <h5 class="font-semibold text-white mb-1">${matchTitle}</h5>
+                                                <p class="text-sm text-gray-400">${competition}</p>
+                                            </div>
+                                            <div class="flex items-center space-x-3">
+                                                <div class="flex items-center space-x-1">
+                                                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                                    <span class="text-xs text-gray-400">Live</span>
+                                                </div>
+                                                <a href="/match/${matchSlug}" 
+                                                   class="bg-primary text-dark font-bold px-4 py-2 rounded-lg hover:bg-yellow-400 transition-colors text-sm">
+                                                    Watch
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+
+                            // Show results
+                            liveMatchesResults.classList.remove('hidden');
+                            noLiveMatches.classList.add('hidden');
+
+                            // Track dropdown usage
+                            if (typeof gtag !== 'undefined') {
+                                gtag('event', 'live_matches_view', {
+                                    event_category: 'Live Matches',
+                                    event_label: selectedSport,
+                                    value: liveMatches.length
+                                });
+                            }
+
+                        } else {
+                            // No live matches found
+                            liveMatchesResults.classList.add('hidden');
+                            noLiveMatches.classList.remove('hidden');
+                        }
+
+                    } catch (error) {
+                        console.error('Error fetching live matches:', error);
+                        liveMatchesLoading.classList.add('hidden');
+                        liveMatchesResults.classList.add('hidden');
+                        noLiveMatches.classList.remove('hidden');
+                    }
+                });
+            }
         });
     </script>
     
