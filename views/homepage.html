@@ -95,7 +95,7 @@
                     <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                     <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                     <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
-                    <a href="/americanfootball" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
+                    <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                 </nav>
                 <div class="flex items-center space-x-3">
                     <!-- Mobile Menu Button -->
@@ -193,7 +193,7 @@
                 <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                 <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
                 <a href="/baseball" class="text-gray-400 hover:text-primary transition-colors">⚾ Baseball</a>
-                <a href="/americanfootball" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
+                <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
             </nav>
             
         </div>
@@ -389,7 +389,7 @@
                     <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Baseball</h4>
                     <p class="text-sm text-gray-400 mt-2">MLB, World Series</p>
                 </a>
-                <a href="/americanfootball" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                <a href="/american-football" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
                     <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏈</div>
                     <h4 class="font-bold text-lg group-hover:text-primary transition-colors">American Football</h4>
                     <p class="text-sm text-gray-400 mt-2">NFL, Super Bowl</p>
@@ -417,7 +417,7 @@
                         <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
                         <li><a href="/rugby" class="hover:text-primary transition-colors">Rugby</a></li>
                         <li><a href="/baseball" class="hover:text-primary transition-colors">Baseball</a></li>
-                        <li><a href="/americanfootball" class="hover:text-primary transition-colors">American Football</a></li>
+                        <li><a href="/american-football" class="hover:text-primary transition-colors">American Football</a></li>
                     </ul>
                 </div>
                 <div>
@@ -429,7 +429,7 @@
                         <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
                         <li><a href="/rugby" class="hover:text-primary transition-colors">Rugby</a></li>
                         <li><a href="/baseball" class="hover:text-primary transition-colors">Baseball</a></li>
-                        <li><a href="/americanfootball" class="hover:text-primary transition-colors">American Football</a></li>
+                        <li><a href="/american-football" class="hover:text-primary transition-colors">American Football</a></li>
                     </ul>
                 </div>
                 <div>
@@ -774,7 +774,8 @@
             document.querySelectorAll('a[href^="/"]').forEach(link => {
                 if (link.href.includes('/football') || link.href.includes('/basketball') || 
                     link.href.includes('/tennis') || link.href.includes('/ufc') || 
-                    link.href.includes('/rugby') || link.href.includes('/baseball')) {
+                    link.href.includes('/rugby') || link.href.includes('/baseball') || 
+                    link.href.includes('/american-football')) {
                     link.addEventListener('click', function(e) {
                         const sport = this.href.split('/').pop();
                         trackSportSelection(sport);

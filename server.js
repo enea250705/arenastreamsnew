@@ -240,7 +240,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Cache-busting middleware for Cloudflare Pages
 app.use((req, res, next) => {
   // Disable caching for HTML pages to ensure updates are visible
-  if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|americanfootball|admin|match|privacy|terms)(adblock)?$/)) {
+  if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|american-football|admin|match|privacy|terms)(adblock)?$/)) {
     res.set({
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
@@ -339,7 +339,7 @@ const seoConfig = {
       keywords: 'baseball live stream, MLB streaming, baseball games live, MLB live stream free',
       image: 'https://arenastreams.com/images/baseball-og.jpg'
     },
-    americanfootball: {
+    'american-football': {
       name: 'American Football',
       description: 'Watch American Football live streams online free. NFL games, Super Bowl, college football, NFL streaming.',
       keywords: 'NFL live stream, American football streaming, NFL games live, Super Bowl live stream, college football live',
@@ -384,7 +384,7 @@ async function fetchSportsFromAPI() {
       { name: 'ufc', displayName: 'UFC' },
       { name: 'rugby', displayName: 'Rugby' },
       { name: 'baseball', displayName: 'Baseball' },
-      { name: 'americanfootball', displayName: 'American Football' }
+      { name: 'american-football', displayName: 'American Football' }
     ];
   }
 }
@@ -818,19 +818,19 @@ app.get('/baseball', async (req, res) => {
   }
 });
 
-app.get('/americanfootball', async (req, res) => {
+app.get('/american-football', async (req, res) => {
   try {
     // Track clean visit (no AdBlock)
     trackAdblockVisit(false);
     
-    const sport = seoConfig.sports.americanfootball;
+    const sport = seoConfig.sports['american-football'];
     const html = await renderTemplate('americanfootball', {
       sport: sport,
       seo: {
         title: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
         description: sport.description,
         keywords: sport.keywords,
-        canonical: `${seoConfig.siteUrl}/americanfootball`,
+        canonical: `${seoConfig.siteUrl}/american-football`,
         ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
         ogDescription: sport.description,
         ogImage: sport.image,
@@ -842,7 +842,7 @@ app.get('/americanfootball', async (req, res) => {
     });
     res.send(html);
   } catch (error) {
-    console.error('Error rendering americanfootball page:', error);
+    console.error('Error rendering american-football page:', error);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -955,19 +955,19 @@ app.get('/baseballadblock', async (req, res) => {
   }
 });
 
-app.get('/americanfootballadblock', async (req, res) => {
+app.get('/american-footballadblock', async (req, res) => {
   try {
     // Track AdBlock visit
     trackAdblockVisit(true);
     
-    const sport = seoConfig.sports.americanfootball;
+    const sport = seoConfig.sports['american-football'];
     const html = await renderTemplate('americanfootballadblock', {
       sport: sport,
       seo: {
         title: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
         description: sport.description + ' - AdBlock version with ads everywhere',
         keywords: sport.keywords + ', adblock version, ads everywhere',
-        canonical: `${seoConfig.siteUrl}/americanfootballadblock`,
+        canonical: `${seoConfig.siteUrl}/american-footballadblock`,
         ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
         ogDescription: sport.description + ' - AdBlock version with ads everywhere',
         ogImage: sport.image,
@@ -979,7 +979,7 @@ app.get('/americanfootballadblock', async (req, res) => {
     });
     res.send(html);
   } catch (error) {
-    console.error('Error rendering americanfootballadblock page:', error);
+    console.error('Error rendering american-footballadblock page:', error);
     res.status(500).send('Internal Server Error');
   }
 });
