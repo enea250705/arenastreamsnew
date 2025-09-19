@@ -642,6 +642,50 @@ app.get('/match/:slug', async (req, res) => {
               awayTeam = 'Live';
             }
           }
+
+          // Fetch detailed stream data for motor sports using Streamed.pk API structure
+          let detailedStreams = [];
+          if (foundMatch.sources && foundMatch.sources.length > 0) {
+            try {
+              console.log(`🔄 Fetching detailed streams for motor sports match: ${foundMatch.id}`);
+              
+              // Fetch initial stream list (like in streamed.html)
+              const streamListResponse = await axios.get(`${STREAMED_API_BASE}/stream/embed/${foundMatch.id}`, {
+                timeout: 10000
+              });
+              
+              if (streamListResponse.data && Array.isArray(streamListResponse.data)) {
+                // Fetch individual stream details for each source
+                const streamDetails = await Promise.all(
+                  streamListResponse.data.map(async (streamRef) => {
+                    try {
+                      const streamDetailResponse = await axios.get(`${STREAMED_API_BASE}/stream/${streamRef.source}/${streamRef.id}`, {
+                        timeout: 10000
+                      });
+                      return streamDetailResponse.data;
+                    } catch (error) {
+                      console.log(`⚠️ Could not fetch stream details for ${streamRef.source}/${streamRef.id}:`, error.message);
+                      return null;
+                    }
+                  })
+                );
+                
+                // Filter out null results and flatten
+                detailedStreams = streamDetails.filter(stream => stream !== null).flat();
+                
+                // Sort by viewers (highest first)
+                detailedStreams.sort((a, b) => (b.viewers || 0) - (a.viewers || 0));
+                
+                console.log(`✅ Found ${detailedStreams.length} detailed streams for motor sports match`);
+              }
+            } catch (error) {
+              console.log(`⚠️ Could not fetch detailed streams for motor sports match:`, error.message);
+              // Fallback to original sources
+              detailedStreams = foundMatch.sources || [];
+            }
+          } else {
+            detailedStreams = foundMatch.sources || [];
+          }
           
           // Handle date
           let matchDate;
@@ -665,7 +709,7 @@ app.get('/match/:slug', async (req, res) => {
             status: foundMatch.date && foundMatch.date > 0 ? 'upcoming' : 'upcoming',
             poster: foundMatch.poster ? `https://streamed.pk/api/images/poster/${foundMatch.poster}` : '',
             popular: foundMatch.popular || false,
-            sources: foundMatch.sources || [],
+            sources: detailedStreams,
             category: foundMatch.category || sport,
             sport: sport
           };
