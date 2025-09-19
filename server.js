@@ -240,7 +240,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Cache-busting middleware for Cloudflare Pages
 app.use((req, res, next) => {
   // Disable caching for HTML pages to ensure updates are visible
-  if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|american-football|admin|match|privacy|terms)(adblock)?$/)) {
+  if (req.path === '/' || req.path.match(/^\/(football|basketball|tennis|ufc|rugby|baseball|american-football|cricket|motor-sports|admin|match|privacy|terms)(adblock)?$/)) {
     res.set({
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
@@ -497,7 +497,7 @@ app.get('/match/:slug', async (req, res) => {
     
     // Try to find the match by searching through all sports
     let matchData = null;
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports'];
     
     for (const sport of sports) {
       try {
