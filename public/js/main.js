@@ -129,7 +129,7 @@ async function loadSportMatches(sport) {
                             awayTeam = titleParts[1].trim();
                         } else {
                             homeTeam = match.title;
-                            awayTeam = 'vs Opponent';
+                            awayTeam = 'Live';
                         }
                     } else if (match.title.includes(':')) {
                         // Handle format like "WNBA: Team A vs Team B"
@@ -142,16 +142,16 @@ async function loadSportMatches(sport) {
                                 awayTeam = parts[1].trim();
                             } else {
                                 homeTeam = afterColon;
-                                awayTeam = 'vs Opponent';
+                                awayTeam = 'Live';
                             }
                         } else {
                             homeTeam = afterColon;
-                            awayTeam = 'vs Opponent';
+                            awayTeam = 'Live';
                         }
                     } else {
                         // Single team or channel name
                         homeTeam = match.title;
-                        awayTeam = 'vs Opponent';
+                        awayTeam = 'Live';
                     }
                 }
                 
@@ -279,7 +279,7 @@ async function loadLiveMatches() {
                         awayTeam = titleParts[1].trim();
                     } else {
                         homeTeam = match.title;
-                        awayTeam = 'vs Opponent';
+                        awayTeam = 'Live';
                     }
                 }
                 
@@ -399,7 +399,7 @@ async function loadTodaysMatches() {
                         awayTeam = titleParts[1].trim();
                     } else {
                         homeTeam = match.title;
-                        awayTeam = 'vs Opponent';
+                        awayTeam = 'Live';
                     }
                 }
                 
@@ -764,7 +764,7 @@ function renderMatches(matches, containerId) {
         <div class="bg-dark border border-gray-800 rounded-lg p-3 sm:p-6 hover:border-primary transition-colors">
             <!-- Ultra-compact mobile layout for team names -->
             <div class="mb-3 sm:mb-4">
-                ${match.teamB !== 'vs Opponent' ? `
+                ${match.teamB !== 'Live' ? `
                 <!-- Two team match - Horizontal layout: Team A vs Team B -->
                 <div class="flex items-center justify-between space-x-2">
                     <!-- Team A -->
