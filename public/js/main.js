@@ -167,6 +167,7 @@ async function loadSportMatches(sport) {
                 }
                 
                 const slug = `${homeTeam}-vs-${awayTeam}-live-${new Date(matchDate).toISOString().split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                console.log(`🔗 Generated slug for "${match.title}": ${slug}`);
                 
                 return {
                     id: match.id,
@@ -284,6 +285,7 @@ async function loadLiveMatches() {
                 }
                 
                 const slug = `${homeTeam}-vs-${awayTeam}-live-${new Date(match.date).toISOString().split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                console.log(`🔗 Generated slug for live "${match.title}": ${slug}`);
                 
                 return {
                     id: match.id,
@@ -404,6 +406,7 @@ async function loadTodaysMatches() {
                 }
                 
                 const slug = `${homeTeam}-vs-${awayTeam}-live-${new Date(match.date).toISOString().split('T')[0]}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                console.log(`🔗 Generated slug for today "${match.title}": ${slug}`);
                 
                 return {
                     id: match.id,
