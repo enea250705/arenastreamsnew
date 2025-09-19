@@ -911,15 +911,39 @@
                         const matches = await window.ArenaStreams.loadSportMatches(selectedSport);
                         console.log(`📊 Loaded ${matches.length} matches for ${selectedSport}:`, matches);
 
-                        // Filter for live matches (matches without future dates or with "live" status)
+                        // Filter for live matches using the same logic as sports pages
                         const liveMatches = matches.filter(match => {
-                            // Consider matches live if they don't have a future date or are marked as live
-                            if (!match.date || match.date <= Date.now()) {
+                            // Check if match has explicit live status first
+                            if (match.status === 'live') {
                                 return true;
                             }
-                            // Also include matches that might be marked as live in title
-                            const title = (match.title || '').toLowerCase();
-                            return title.includes('live') || title.includes('now');
+                            
+                            // Use the same getMatchStatus logic as main.js
+                            const now = Date.now();
+                            let timestampMs;
+                            
+                            if (typeof match.date === 'string') {
+                                const parsed = Date.parse(match.date);
+                                if (!isNaN(parsed)) {
+                                    timestampMs = parsed;
+                                } else if (!isNaN(Number(match.date))) {
+                                    const n = Number(match.date);
+                                    timestampMs = n > 0 && n < 1e12 ? n * 1000 : n;
+                                }
+                            } else if (typeof match.date === 'number') {
+                                timestampMs = match.date > 0 && match.date < 1e12 ? match.date * 1000 : match.date;
+                            }
+                            
+                            if (!(timestampMs > 0)) {
+                                const fallback = new Date();
+                                fallback.setHours(fallback.getHours() + 2);
+                                timestampMs = fallback.getTime();
+                            }
+                            
+                            const diffMinutes = (timestampMs - now) / (1000 * 60);
+                            
+                            // Match is live if it started within the last 3 hours (same as getMatchStatus)
+                            return diffMinutes < 0 && diffMinutes > -180;
                         }).slice(0, 10); // Limit to 10 matches
 
                         // Hide loading state
