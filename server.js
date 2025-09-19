@@ -493,7 +493,8 @@ app.get('/match/:slug', async (req, res) => {
     trackAdblockVisit(false);
     
     const { slug } = req.params;
-    console.log(`🔍 Loading match page for slug: ${slug}`);
+    console.log(`🔍 Searching for match with slug: ${slug}`);
+    console.log(`🔍 Searching in sports: ${sports.join(', ')}`);
     
     // Try to find the match by searching through all sports
     let matchData = null;
@@ -510,9 +511,7 @@ app.get('/match/:slug', async (req, res) => {
           matches = response.data;
         } else if (response.data.value && Array.isArray(response.data.value)) {
           matches = response.data.value;
-        }
-        
-        // Filter american-football matches to exclude rugby/AFL matches
+        console.log(`🔍 ${sport}: found ${matches.length} matches`);
         if (sport === 'american-football') {
           matches = matches.filter(match => {
             const title = match.title ? match.title.toLowerCase() : '';
@@ -1135,9 +1134,7 @@ app.get('/matchadblock/:slug', async (req, res) => {
           matches = response.data;
         } else if (response.data.value && Array.isArray(response.data.value)) {
           matches = response.data.value;
-        }
-        
-        // Filter american-football matches to exclude rugby/AFL matches
+        console.log(`🔍 ${sport}: found ${matches.length} matches`);
         if (sport === 'american-football') {
           matches = matches.filter(match => {
             const title = match.title ? match.title.toLowerCase() : '';
