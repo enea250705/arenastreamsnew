@@ -511,7 +511,11 @@ app.get('/match/:slug', async (req, res) => {
           matches = response.data;
         } else if (response.data.value && Array.isArray(response.data.value)) {
           matches = response.data.value;
+        }
+        
         console.log(`🔍 ${sport}: found ${matches.length} matches`);
+        
+        // Filter american-football matches to exclude rugby/AFL matches
         if (sport === 'american-football') {
           matches = matches.filter(match => {
             const title = match.title ? match.title.toLowerCase() : '';
@@ -578,7 +582,13 @@ app.get('/match/:slug', async (req, res) => {
             return true;
           }
           
-          // Try slug-based matching
+          // For motor sports, use the Streamed.pk ID as the slug directly
+          if (sport === 'motor-sports' && match.id) {
+            console.log(`🔍 Checking motor sports match "${match.title}": matchId="${match.id}" vs requestedSlug="${slug}"`);
+            return match.id === slug;
+          }
+          
+          // For other sports, use slug-based matching
           let homeTeam = 'Team A';
           let awayTeam = 'Team B';
           
@@ -593,7 +603,6 @@ app.get('/match/:slug', async (req, res) => {
                 awayTeam = titleParts[1].trim();
               }
             } else {
-              // For motor sports, use the full title as home team
               homeTeam = match.title;
               awayTeam = 'Live';
             }
@@ -1134,7 +1143,11 @@ app.get('/matchadblock/:slug', async (req, res) => {
           matches = response.data;
         } else if (response.data.value && Array.isArray(response.data.value)) {
           matches = response.data.value;
+        }
+        
         console.log(`🔍 ${sport}: found ${matches.length} matches`);
+        
+        // Filter american-football matches to exclude rugby/AFL matches
         if (sport === 'american-football') {
           matches = matches.filter(match => {
             const title = match.title ? match.title.toLowerCase() : '';
