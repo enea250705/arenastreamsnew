@@ -594,8 +594,9 @@ app.get('/match/:slug', async (req, res) => {
                 awayTeam = titleParts[1].trim();
               }
             } else {
+              // For motor sports, use the full title as home team
               homeTeam = match.title;
-              awayTeam = 'vs Opponent';
+              awayTeam = 'Live';
             }
           }
           
@@ -635,8 +636,9 @@ app.get('/match/:slug', async (req, res) => {
                 awayTeam = titleParts[1].trim();
               }
             } else {
+              // For motor sports, use the full title as home team
               homeTeam = foundMatch.title;
-              awayTeam = 'vs Opponent';
+              awayTeam = 'Live';
             }
           }
           
