@@ -161,7 +161,16 @@ async function loadSportMatches(sport) {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: 'live', // Always live for channels // Always live for channels
+                        status: (() => {
+                            if (match.category === 'motor-sports') {
+                                return 'live'; // Motor sports events are usually live
+                            } else {
+                                // For NFL, check if it's a known channel/network
+                                const channelKeywords = ['snf:', 'tnf:', 'mnf:', 'nfl network', 'espn', 'fox sports', 'cbs sports', 'nbc sports', 'abc sports'];
+                                const isChannel = channelKeywords.some(keyword => match.title.toLowerCase().includes(keyword));
+                                return isChannel ? 'live' : (match.date && match.date > 0 ? 'upcoming' : 'live');
+                            }
+                        })(),
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
@@ -314,7 +323,16 @@ async function loadLiveMatches() {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: 'live', // Always live for channels
+                        status: (() => {
+                            if (match.category === 'motor-sports') {
+                                return 'live'; // Motor sports events are usually live
+                            } else {
+                                // For NFL, check if it's a known channel/network
+                                const channelKeywords = ['snf:', 'tnf:', 'mnf:', 'nfl network', 'espn', 'fox sports', 'cbs sports', 'nbc sports', 'abc sports'];
+                                const isChannel = channelKeywords.some(keyword => match.title.toLowerCase().includes(keyword));
+                                return isChannel ? 'live' : (match.date && match.date > 0 ? 'upcoming' : 'live');
+                            }
+                        })(),
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
@@ -458,7 +476,16 @@ async function loadTodaysMatches() {
                         slug: slug,
                         teamABadge: '',
                         teamBBadge: '',
-                        status: 'live', // Always live for channels
+                        status: (() => {
+                            if (match.category === 'motor-sports') {
+                                return 'live'; // Motor sports events are usually live
+                            } else {
+                                // For NFL, check if it's a known channel/network
+                                const channelKeywords = ['snf:', 'tnf:', 'mnf:', 'nfl network', 'espn', 'fox sports', 'cbs sports', 'nbc sports', 'abc sports'];
+                                const isChannel = channelKeywords.some(keyword => match.title.toLowerCase().includes(keyword));
+                                return isChannel ? 'live' : (match.date && match.date > 0 ? 'upcoming' : 'live');
+                            }
+                        })(),
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],

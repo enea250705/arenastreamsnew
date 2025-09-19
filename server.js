@@ -715,7 +715,17 @@ app.get('/match/:slug', async (req, res) => {
             slug: slug,
             teamABadge: teamABadge,
             teamBBadge: teamBBadge,
-            status: (foundMatch.date && foundMatch.date > 0 && foundMatch.title.includes(' vs ')) ? 'upcoming' : 'live', // Channels without 'vs' are always live
+            status: (() => {
+              if (foundMatch.title.includes(' vs ')) {
+                // Team vs team matches - use date-based status
+                return foundMatch.date && foundMatch.date > 0 ? 'upcoming' : 'live';
+              } else {
+                // Check if it's a known channel/network (always live)
+                const channelKeywords = ['snf:', 'tnf:', 'mnf:', 'nfl network', 'espn', 'fox sports', 'cbs sports', 'nbc sports', 'abc sports'];
+                const isChannel = channelKeywords.some(keyword => foundMatch.title.toLowerCase().includes(keyword));
+                return isChannel ? 'live' : (foundMatch.date && foundMatch.date > 0 ? 'upcoming' : 'live');
+              }
+            })(),
             poster: foundMatch.poster ? `https://streamed.pk/api/images/poster/${foundMatch.poster}` : '',
             popular: foundMatch.popular || false,
             sources: detailedStreams,
