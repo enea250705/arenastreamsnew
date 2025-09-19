@@ -583,9 +583,9 @@ app.get('/match/:slug', async (req, res) => {
             return true;
           }
           
-          // For motor sports, use the Streamed.pk ID as the slug directly
-          if (sport === 'motor-sports' && match.id) {
-            console.log(`🔍 Checking motor sports match "${match.title}": matchId="${match.id}" vs requestedSlug="${slug}"`);
+          // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
+          if ((sport === 'motor-sports' || sport === 'american-football') && match.id && !match.title.includes(' vs ')) {
+            console.log(`🔍 Checking ${sport} channel match "${match.title}": matchId="${match.id}" vs requestedSlug="${slug}"`);
             return match.id === slug;
           }
           

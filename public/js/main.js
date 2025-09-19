@@ -147,16 +147,16 @@ async function loadSportMatches(sport) {
                     }
                 }
                 
-                // For motor sports, use the Streamed.pk ID as the slug directly
-                if (match.category === 'motor-sports' && match.id) {
+                // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
+                if ((match.category === 'motor-sports' || match.category === 'american-football') && match.id && !match.title.includes(' vs ')) {
                     const slug = match.id;
-                    console.log(`🔗 Generated slug for motor sports "${match.title}": ${slug}`);
+                    console.log(`🔗 Generated slug for ${match.category} "${match.title}": ${slug}`);
                     
                     return {
                         id: match.id,
                         teamA: match.title,
                         teamB: 'Live',
-                        competition: match.title || 'Motor Sports Event',
+                        competition: match.title || `${match.category.charAt(0).toUpperCase() + match.category.slice(1)} Event`,
                         date: new Date(match.date).toISOString(),
                         slug: slug,
                         teamABadge: '',
@@ -165,8 +165,8 @@ async function loadSportMatches(sport) {
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
-                        category: match.category || 'motor-sports',
-                        sport: 'motor-sports'
+                        category: match.category || match.category,
+                        sport: match.category
                     };
                 }
                 
@@ -300,16 +300,16 @@ async function loadLiveMatches() {
                     }
                 }
                 
-                // For motor sports, use the Streamed.pk ID as the slug directly
-                if (match.category === 'motor-sports' && match.id) {
+                // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
+                if ((match.category === 'motor-sports' || match.category === 'american-football') && match.id && !match.title.includes(' vs ')) {
                     const slug = match.id;
-                    console.log(`🔗 Generated slug for live motor sports "${match.title}": ${slug}`);
+                    console.log(`🔗 Generated slug for live ${match.category} "${match.title}": ${slug}`);
                     
                     return {
                         id: match.id,
                         teamA: match.title,
                         teamB: 'Live',
-                        competition: match.title || 'Motor Sports Event',
+                        competition: match.title || `${match.category.charAt(0).toUpperCase() + match.category.slice(1)} Event`,
                         date: new Date(match.date).toISOString(),
                         slug: slug,
                         teamABadge: '',
@@ -318,8 +318,8 @@ async function loadLiveMatches() {
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
-                        category: match.category || 'motor-sports',
-                        sport: 'motor-sports'
+                        category: match.category || match.category,
+                        sport: match.category
                     };
                 }
                 
@@ -444,16 +444,16 @@ async function loadTodaysMatches() {
                     }
                 }
                 
-                // For motor sports, use the Streamed.pk ID as the slug directly
-                if (match.category === 'motor-sports' && match.id) {
+                // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
+                if ((match.category === 'motor-sports' || match.category === 'american-football') && match.id && !match.title.includes(' vs ')) {
                     const slug = match.id;
-                    console.log(`🔗 Generated slug for today motor sports "${match.title}": ${slug}`);
+                    console.log(`🔗 Generated slug for today ${match.category} "${match.title}": ${slug}`);
                     
                     return {
                         id: match.id,
                         teamA: match.title,
                         teamB: 'Live',
-                        competition: match.title || 'Motor Sports Event',
+                        competition: match.title || `${match.category.charAt(0).toUpperCase() + match.category.slice(1)} Event`,
                         date: new Date(match.date).toISOString(),
                         slug: slug,
                         teamABadge: '',
@@ -462,8 +462,8 @@ async function loadTodaysMatches() {
                         poster: match.poster ? `https://streamed.pk/api/images/poster/${match.poster}` : '',
                         popular: match.popular || false,
                         sources: match.sources || [],
-                        category: match.category || 'motor-sports',
-                        sport: 'motor-sports'
+                        category: match.category || match.category,
+                        sport: match.category
                     };
                 }
                 
