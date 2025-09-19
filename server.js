@@ -483,7 +483,7 @@ app.get('/match/:slug', async (req, res) => {
     
     // Try to find the match by searching through all sports
     let matchData = null;
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'americanfootball'];
     
     for (const sport of sports) {
       try {
@@ -925,7 +925,7 @@ app.get('/matchadblock/:slug', async (req, res) => {
     
     // Try to find the match by searching through all sports
     let matchData = null;
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'americanfootball'];
     
     for (const sport of sports) {
       try {
@@ -1360,7 +1360,7 @@ ${allUrls.map(page => `  <url>
 // Additional sitemaps for 11/10 SEO
 app.get('/sitemap-sports.xml', async (req, res) => {
   try {
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'americanfootball'];
     const urls = sports.map(sport => ({
       loc: `https://arenastreams.com/${sport}`,
       lastmod: new Date().toISOString(),
