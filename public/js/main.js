@@ -68,12 +68,12 @@ async function loadSportMatches(sport) {
         const streamedResponse = await fetch(`/api/streamed/matches/${sport}`);
         const streamedData = await streamedResponse.json();
         
-        // Handle the API response structure - data might be wrapped in 'value' array
+        // Handle the API response structure - prioritize direct array (matches API docs)
         let matches = [];
-        if (streamedData.value && Array.isArray(streamedData.value)) {
-            matches = streamedData.value;
-        } else if (Array.isArray(streamedData)) {
+        if (Array.isArray(streamedData)) {
             matches = streamedData;
+        } else if (streamedData.value && Array.isArray(streamedData.value)) {
+            matches = streamedData.value;
         }
         
         // Note: American football filtering is handled server-side to avoid double filtering

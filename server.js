@@ -492,10 +492,10 @@ app.get('/match/:slug', async (req, res) => {
         });
         
         let matches = [];
-        if (response.data.value && Array.isArray(response.data.value)) {
-          matches = response.data.value;
-        } else if (Array.isArray(response.data)) {
+        if (Array.isArray(response.data)) {
           matches = response.data;
+        } else if (response.data.value && Array.isArray(response.data.value)) {
+          matches = response.data.value;
         }
         
         // Filter american-football matches to exclude rugby/AFL matches
@@ -1017,10 +1017,10 @@ app.get('/matchadblock/:slug', async (req, res) => {
         });
         
         let matches = [];
-        if (response.data.value && Array.isArray(response.data.value)) {
-          matches = response.data.value;
-        } else if (Array.isArray(response.data)) {
+        if (Array.isArray(response.data)) {
           matches = response.data;
+        } else if (response.data.value && Array.isArray(response.data.value)) {
+          matches = response.data.value;
         }
         
         // Filter american-football matches to exclude rugby/AFL matches
