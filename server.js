@@ -580,13 +580,19 @@ app.get('/match/:slug', async (req, res) => {
         const foundMatch = matches.find(match => {
           // Try direct ID match first
           if (match.id === slug) {
+            console.log(`✅ Direct ID match found: ${match.id}`);
             return true;
           }
           
           // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
           if ((sport === 'motor-sports' || sport === 'american-football') && match.id && !match.title.includes(' vs ')) {
             console.log(`🔍 Checking ${sport} channel match "${match.title}": matchId="${match.id}" vs requestedSlug="${slug}"`);
-            return match.id === slug;
+            if (match.id === slug) {
+              console.log(`✅ ${sport} channel match found by ID: ${match.id}`);
+              return true;
+            }
+            // Don't fall through to regular slug matching for channel matches
+            return false;
           }
           
           // For other sports, use slug-based matching
@@ -619,7 +625,11 @@ app.get('/match/:slug', async (req, res) => {
           
           const expectedSlug = `${homeTeam}-vs-${awayTeam}-live-${dateStr}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
           console.log(`🔍 Checking match "${match.title}": expectedSlug="${expectedSlug}" vs requestedSlug="${slug}"`);
-          return expectedSlug === slug;
+          if (expectedSlug === slug) {
+            console.log(`✅ Regular match found by slug: ${expectedSlug}`);
+            return true;
+          }
+          return false;
         });
         
         if (foundMatch) {
@@ -1218,12 +1228,65 @@ app.get('/matchadblock/:slug', async (req, res) => {
           });
         }
         
-        const match = matches.find(m => m.slug === slug);
-          if (match) {
-            matchData = { ...match, sport };
+        // Look for a match that matches our slug (try ID first, then title-based slug)
+        const foundMatch = matches.find(match => {
+          // Try direct ID match first
+          if (match.id === slug) {
+            console.log(`✅ AdBlock: Direct ID match found: ${match.id}`);
+            return true;
+          }
           
+          // For motor sports and NFL channel matches, use the Streamed.pk ID as the slug directly
+          if ((sport === 'motor-sports' || sport === 'american-football') && match.id && !match.title.includes(' vs ')) {
+            console.log(`🔍 AdBlock: Checking ${sport} channel match "${match.title}": matchId="${match.id}" vs requestedSlug="${slug}"`);
+            if (match.id === slug) {
+              console.log(`✅ AdBlock: ${sport} channel match found by ID: ${match.id}`);
+              return true;
+            }
+            // Don't fall through to regular slug matching for channel matches
+            return false;
+          }
           
-            break;
+          // For other sports, use slug-based matching
+          let homeTeam = 'Team A';
+          let awayTeam = 'Team B';
+          
+          if (match.teams && match.teams.home && match.teams.away) {
+            homeTeam = match.teams.home.name || 'Team A';
+            awayTeam = match.teams.away.name || 'Team B';
+          } else if (match.title) {
+            if (match.title.includes(' vs ')) {
+              const titleParts = match.title.split(' vs ');
+              if (titleParts.length === 2) {
+                homeTeam = titleParts[0].trim();
+                awayTeam = titleParts[1].trim();
+              }
+            } else {
+              homeTeam = match.title;
+              awayTeam = 'Live';
+            }
+          }
+          
+          // Handle date for slug generation
+          let dateStr;
+          if (match.date && match.date > 0) {
+            dateStr = new Date(match.date).toISOString().split('T')[0];
+          } else {
+            dateStr = new Date().toISOString().split('T')[0];
+          }
+          
+          const expectedSlug = `${homeTeam}-vs-${awayTeam}-live-${dateStr}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+          console.log(`🔍 AdBlock: Checking match "${match.title}": expectedSlug="${expectedSlug}" vs requestedSlug="${slug}"`);
+          if (expectedSlug === slug) {
+            console.log(`✅ AdBlock: Regular match found by slug: ${expectedSlug}`);
+            return true;
+          }
+          return false;
+        });
+        
+        if (foundMatch) {
+          matchData = { ...foundMatch, sport };
+          break;
         }
       } catch (error) {
         console.log(`No matches found for ${sport}`);
