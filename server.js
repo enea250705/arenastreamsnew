@@ -493,12 +493,13 @@ app.get('/match/:slug', async (req, res) => {
     trackAdblockVisit(false);
     
     const { slug } = req.params;
-    console.log(`🔍 Searching for match with slug: ${slug}`);
-    console.log(`🔍 Searching in sports: ${sports.join(', ')}`);
     
     // Try to find the match by searching through all sports
     let matchData = null;
     const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports'];
+    
+    console.log(`🔍 Searching for match with slug: ${slug}`);
+    console.log(`🔍 Searching in sports: ${sports.join(', ')}`);
     
     for (const sport of sports) {
       try {
