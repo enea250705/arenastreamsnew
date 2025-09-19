@@ -852,7 +852,47 @@ function renderMatches(matches, containerId) {
         return;
     }
     
-    container.innerHTML = matches.map(match => `
+    // Sort matches: Live matches first, then channels, then others
+    const sortedMatches = matches.sort((a, b) => {
+        // Helper function to check if a match is a channel (not a team vs team match)
+        const isChannel = (match) => match.teamB === 'Live' || !match.title?.includes(' vs ');
+        
+        // Helper function to check if a match is a known NFL channel
+            const isNFLChannel = (match) => {
+                if (match.category !== 'american-football') return false;
+                const channelKeywords = ['snf:', 'tnf:', 'mnf:', 'nfl network', 'espn', 'fox sports', 'cbs sports', 'nbc sports', 'abc sports'];
+                return channelKeywords.some(keyword => match.title?.toLowerCase().includes(keyword));
+            };
+        
+        // Priority 1: Live team vs team matches (actual games)
+        const aIsLiveGame = a.status === 'live' && !isChannel(a) && !isNFLChannel(a);
+        const bIsLiveGame = b.status === 'live' && !isChannel(b) && !isNFLChannel(b);
+        
+        // Priority 2: Live channels (24/7 streams)
+        const aIsLiveChannel = a.status === 'live' && (isChannel(a) || isNFLChannel(a));
+        const bIsLiveChannel = b.status === 'live' && (isChannel(b) || isNFLChannel(b));
+        
+        // Priority 3: Upcoming matches
+        const aIsUpcoming = a.status === 'upcoming';
+        const bIsUpcoming = b.status === 'upcoming';
+        
+        // Priority 4: Other statuses
+        
+        // Compare priorities
+        if (aIsLiveGame && !bIsLiveGame) return -1;
+        if (!aIsLiveGame && bIsLiveGame) return 1;
+        
+        if (aIsLiveChannel && !bIsLiveChannel && !bIsLiveGame) return -1;
+        if (!aIsLiveChannel && bIsLiveChannel && !aIsLiveGame) return 1;
+        
+        if (aIsUpcoming && !bIsUpcoming && !bIsLiveChannel && !bIsLiveGame) return -1;
+        if (!aIsUpcoming && bIsUpcoming && !aIsLiveChannel && !aIsLiveGame) return 1;
+        
+        // If same priority, sort by date (newer first)
+        return new Date(b.date) - new Date(a.date);
+    });
+    
+    container.innerHTML = sortedMatches.map(match => `
         <div class="bg-dark border border-gray-800 rounded-lg p-3 sm:p-6 hover:border-primary transition-colors">
             <!-- Ultra-compact mobile layout for team names -->
             <div class="mb-3 sm:mb-4">
@@ -905,7 +945,7 @@ function renderMatches(matches, containerId) {
     `).join('');
     
     // Update live match count
-    updateLiveMatchCount(matches);
+    updateLiveMatchCount(sortedMatches);
 
     // After rendering, bulk load viewer counts for displayed slugs
     try {
