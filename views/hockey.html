@@ -36,11 +36,11 @@
     <meta name="twitter:image" content="{{seo.twitterImage}}">
     
     <!-- Hreflang for International SEO -->
-    <link rel="alternate" hreflang="en-us" href="https://arenastreams.com/football">
-    <link rel="alternate" hreflang="en-gb" href="https://arenastreams.com/football">
-    <link rel="alternate" hreflang="en-ca" href="https://arenastreams.com/football">
-    <link rel="alternate" hreflang="en-au" href="https://arenastreams.com/football">
-    <link rel="alternate" hreflang="x-default" href="https://arenastreams.com/football">
+    <link rel="alternate" hreflang="en-us" href="https://arenastreams.com/hockey">
+    <link rel="alternate" hreflang="en-gb" href="https://arenastreams.com/hockey">
+    <link rel="alternate" hreflang="en-ca" href="https://arenastreams.com/hockey">
+    <link rel="alternate" hreflang="en-au" href="https://arenastreams.com/hockey">
+    <link rel="alternate" hreflang="x-default" href="https://arenastreams.com/hockey">
     
     <!-- Additional Performance Optimizations -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -253,7 +253,7 @@
                         "name": "What {{sport.name}} leagues are available?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "We stream all major {{sport.name}} leagues including Premier League, Champions League, La Liga, Serie A, Bundesliga and more."
+                            "text": "We stream all major {{sport.name}} leagues including NHL, Stanley Cup, college hockey, international hockey and more."
                         }
                     }
                 ]
@@ -274,7 +274,7 @@
                 <nav class="hidden md:flex space-x-6">
                     <a href="/" class="text-gray-400 hover:text-primary transition-colors">Home</a>
                     <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
-                    <a href="/basketball" class="text-white">🏀 Basketball</a>
+                    <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
                     <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
                     <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                     <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
@@ -282,7 +282,7 @@
                     <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                     <a href="/cricket" class="text-gray-400 hover:text-primary transition-colors">🏏 Cricket</a>
                     <a href="/motor-sports" class="text-gray-400 hover:text-primary transition-colors">🏁 Motor Sports</a>
-                    <a href="/hockey" class="text-gray-400 hover:text-primary transition-colors">🏒 Hockey</a>
+                    <a href="/hockey" class="text-white">🏒 Hockey</a>
                 </nav>
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-white">
@@ -301,7 +301,7 @@
             <nav class="flex flex-col space-y-4">
                 <a href="/" class="text-white hover:text-primary transition-colors">Home</a>
                 <a href="/football" class="text-gray-400 hover:text-primary transition-colors">⚽ Football</a>
-                <a href="/basketball" class="text-white">🏀 Basketball</a>
+                <a href="/basketball" class="text-gray-400 hover:text-primary transition-colors">🏀 Basketball</a>
                 <a href="/tennis" class="text-gray-400 hover:text-primary transition-colors">🎾 Tennis</a>
                 <a href="/ufc" class="text-gray-400 hover:text-primary transition-colors">🥊 UFC</a>
                 <a href="/rugby" class="text-gray-400 hover:text-primary transition-colors">🏉 Rugby</a>
@@ -309,7 +309,7 @@
                 <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                 <a href="/cricket" class="text-gray-400 hover:text-primary transition-colors">🏏 Cricket</a>
                 <a href="/motor-sports" class="text-gray-400 hover:text-primary transition-colors">🏁 Motor Sports</a>
-                <a href="/hockey" class="text-gray-400 hover:text-primary transition-colors">🏒 Hockey</a>
+                <a href="/hockey" class="text-white">🏒 Hockey</a>
             </nav>
         </div>
     </div>
@@ -337,13 +337,13 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Sport Header - 11/10 SEO -->
         <section class="text-center mb-12">
-            <div class="text-8xl mb-6" aria-hidden="true">🏀</div>
+            <div class="text-8xl mb-6" aria-hidden="true">🏒</div>
             <h1 class="text-4xl md:text-6xl font-bold mb-4">
                 {{sport.name}} <span class="text-primary">Live Streaming</span>
             </h1>
             <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
                 Watch live {{sport.name}} matches online in HD quality. Free streaming with no registration required. 
-                NBA, EuroLeague, NCAA, FIBA and more.
+                NHL, Stanley Cup, college hockey, international hockey and more.
             </p>
             
             <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
@@ -373,24 +373,24 @@
                 <h3 class="text-xl font-bold mb-4 text-primary">Popular {{sport.name}} Leagues</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
-                        <div class="text-2xl mb-2">🏀</div>
-                        <div class="font-semibold">NBA</div>
-                        <div class="text-xs text-gray-400">United States</div>
-                    </div>
-                    <div class="bg-gray-700 rounded-lg p-3 text-center">
-                        <div class="text-2xl mb-2">⭐</div>
-                        <div class="font-semibold">EuroLeague</div>
-                        <div class="text-xs text-gray-400">Europe</div>
+                        <div class="text-2xl mb-2">🏒</div>
+                        <div class="font-semibold">NHL</div>
+                        <div class="text-xs text-gray-400">North America</div>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
                         <div class="text-2xl mb-2">🏆</div>
-                        <div class="font-semibold">NCAA</div>
-                        <div class="text-xs text-gray-400">College</div>
+                        <div class="font-semibold">Stanley Cup</div>
+                        <div class="text-xs text-gray-400">Playoffs</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-3 text-center">
+                        <div class="text-2xl mb-2">🎓</div>
+                        <div class="font-semibold">College Hockey</div>
+                        <div class="text-xs text-gray-400">NCAA</div>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-3 text-center">
                         <div class="text-2xl mb-2">🌍</div>
-                        <div class="font-semibold">FIBA</div>
-                        <div class="text-xs text-gray-400">International</div>
+                        <div class="font-semibold">International</div>
+                        <div class="text-xs text-gray-400">World</div>
                     </div>
                 </div>
             </div>
@@ -402,7 +402,7 @@
                         type="text" 
                         id="search-input-today-matches" 
                         class="w-full px-4 py-3 pl-12 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none transition-colors"
-                        placeholder="Search basketball teams like 'Lakers', 'Warriors', 'Celtics', 'Heat'..."
+                        placeholder="Search hockey teams like 'Maple Leafs', 'Bruins', 'Rangers', 'Penguins'..."
                         autocomplete="off"
                     >
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -428,9 +428,9 @@
             </div>
             
             <div id="no-matches" class="text-center py-12 hidden">
-                <div class="text-6xl mb-4">🏀</div>
-                <h3 class="text-2xl font-semibold mb-4">No basketball matches scheduled for today</h3>
-                <p class="text-gray-400 mb-8">Check back later for upcoming basketball matches or browse other sports.</p>
+                <div class="text-6xl mb-4">🏒</div>
+                <h3 class="text-2xl font-semibold mb-4">No hockey matches scheduled for today</h3>
+                <p class="text-gray-400 mb-8">Check back later for upcoming hockey matches or browse other sports.</p>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a href="/" class="bg-dark border border-gray-800 px-6 py-3 rounded-lg hover:border-primary transition-colors">
                         View All Sports
@@ -480,41 +480,41 @@
         <!-- Popular Leagues -->
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-8 text-center">
-                Popular Football Leagues
+                Popular Hockey Leagues
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Premier League</h3>
-                    <p class="text-gray-400 text-sm mt-2">England</p>
+                    <div class="text-4xl mb-3">🇺🇸</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">NHL</h3>
+                    <p class="text-gray-400 text-sm mt-2">North America</p>
                 </div>
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
                     <div class="text-4xl mb-3">🏆</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Champions League</h3>
-                    <p class="text-gray-400 text-sm mt-2">Europe</p>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Stanley Cup</h3>
+                    <p class="text-gray-400 text-sm mt-2">Playoffs</p>
                 </div>
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🇪🇸</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">La Liga</h3>
-                    <p class="text-gray-400 text-sm mt-2">Spain</p>
+                    <div class="text-4xl mb-3">🎓</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">NCAA</h3>
+                    <p class="text-gray-400 text-sm mt-2">College</p>
                 </div>
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🇮🇹</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Serie A</h3>
-                    <p class="text-gray-400 text-sm mt-2">Italy</p>
+                    <div class="text-4xl mb-3">🇨🇦</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">AHL</h3>
+                    <p class="text-gray-400 text-sm mt-2">Minor League</p>
                 </div>
                 <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🇩🇪</div>
-                    <h3 class="font-semibold group-hover:text-primary transition-colors">Bundesliga</h3>
-                    <p class="text-gray-400 text-sm mt-2">Germany</p>
+                    <div class="text-4xl mb-3">🌍</div>
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">KHL</h3>
+                    <p class="text-gray-400 text-sm mt-2">International</p>
                 </div>
             </div>
         </section>
 
-        <!-- Football Information -->
+        <!-- Hockey Information -->
         <section class="mb-12">
             <div class="bg-dark border border-gray-800 rounded-lg p-8">
-                <h2 class="text-3xl font-bold mb-6 text-center">About Football Streaming</h2>
+                <h2 class="text-3xl font-bold mb-6 text-center">About Hockey Streaming</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <h3 class="text-xl font-semibold mb-4 text-primary">Why Choose ArenaStreams?</h3>
@@ -542,31 +542,31 @@
                         </ul>
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-4 text-primary">Popular Football Competitions</h3>
+                        <h3 class="text-xl font-semibold mb-4 text-primary">Popular Hockey Competitions</h3>
                         <ul class="space-y-3 text-gray-300">
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Premier League
+                                NHL Regular Season
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Champions League
+                                Stanley Cup Playoffs
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                La Liga
+                                NCAA Hockey
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Serie A
+                                AHL
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Bundesliga
+                                KHL
                             </li>
                             <li class="flex items-center">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                Ligue 1
+                                World Championships
                             </li>
                         </ul>
                     </div>
@@ -580,6 +580,10 @@
                 Other Sports
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <a href="/football" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+                    <div class="text-4xl mb-3">⚽</div>
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">Football</h4>
+                </a>
                 <a href="/basketball" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
                     <div class="text-4xl mb-3">🏀</div>
                     <h4 class="font-semibold group-hover:text-primary transition-colors">Basketball</h4>
@@ -596,14 +600,6 @@
                     <div class="text-4xl mb-3">🏉</div>
                     <h4 class="font-semibold group-hover:text-primary transition-colors">Rugby</h4>
                 </a>
-                <a href="/baseball" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">⚾</div>
-                    <h4 class="font-semibold group-hover:text-primary transition-colors">Baseball</h4>
-                </a>
-                <a href="/hockey" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
-                    <div class="text-4xl mb-3">🏒</div>
-                    <h4 class="font-semibold group-hover:text-primary transition-colors">Hockey</h4>
-                </a>
                 <a href="/" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
                     <div class="text-4xl mb-3">🏟️</div>
                     <h4 class="font-semibold group-hover:text-primary transition-colors">All Sports</h4>
@@ -619,7 +615,7 @@
                 <div>
                     <h4 class="text-xl font-bold text-primary mb-4">🏟️ ArenaStreams</h4>
                     <p class="text-gray-400 text-sm">
-                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC and more in HD quality.
+                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC, hockey and more in HD quality.
                     </p>
                 </div>
                 <div>
@@ -630,6 +626,7 @@
                         <li><a href="/tennis" class="hover:text-primary transition-colors">Tennis</a></li>
                         <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
                         <li><a href="/hockey" class="hover:text-primary transition-colors">Hockey</a></li>
+                        <li><a href="/motor-sports" class="hover:text-primary transition-colors">Motor Sports</a></li>
                     </ul>
                 </div>
                 <div>
@@ -650,7 +647,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-                <p>&copy; 2025 ArenaStreams. All rights reserved. | Live football streaming platform</p>
+                <p>&copy; 2025 ArenaStreams. All rights reserved. | Live hockey streaming platform</p>
                 
                 <!-- X (Twitter) Follow Section -->
                 <div class="mt-6 mb-6">
@@ -712,7 +709,7 @@
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             
-            console.log('🔍 Football page - Mobile menu elements:', { mobileMenuBtn, mobileMenu });
+            console.log('🔍 Hockey page - Mobile menu elements:', { mobileMenuBtn, mobileMenu });
             
             if (mobileMenuBtn && mobileMenu) {
                 // Remove any existing listeners first
@@ -723,33 +720,33 @@
                 newMobileMenuBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('📱 Football - Mobile menu button clicked');
+                    console.log('📱 Hockey - Mobile menu button clicked');
                     mobileMenu.classList.toggle('hidden');
-                    console.log('📱 Football - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                    console.log('📱 Hockey - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
                 });
                 
                 // Also add touch event for mobile devices
                 newMobileMenuBtn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('📱 Football - Mobile menu button touched');
+                    console.log('📱 Hockey - Mobile menu button touched');
                     mobileMenu.classList.toggle('hidden');
-                    console.log('📱 Football - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
+                    console.log('📱 Hockey - Mobile menu hidden class:', mobileMenu.classList.contains('hidden'));
                 });
                 
-                console.log('✅ Football - Mobile menu fallback initialized with robust event listeners');
+                console.log('✅ Hockey - Mobile menu fallback initialized with robust event listeners');
             } else {
-                console.log('❌ Football - Mobile menu elements not found:', { 
+                console.log('❌ Hockey - Mobile menu elements not found:', { 
                     mobileMenuBtn: !!mobileMenuBtn, 
                     mobileMenu: !!mobileMenu 
                 });
             }
             
-            // Setup football matches with Streamed.pk API - wait for main.js to load
+            // Setup hockey matches with Streamed.pk API - wait for main.js to load
             function setupMatches() {
                 if (window.ArenaStreams) {
-                    console.log('✅ ArenaStreams found, setting up football matches...');
-                    window.ArenaStreams.setupAutoRefresh('basketball', 'today-matches', 'no-matches');
+                    console.log('✅ ArenaStreams found, setting up hockey matches...');
+                    window.ArenaStreams.setupAutoRefresh('hockey', 'today-matches', 'no-matches');
                     // Wire up search input to real filtering
                     function wireSearch() {
                         const input = document.getElementById('search-input-today-matches');

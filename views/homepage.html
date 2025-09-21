@@ -69,7 +69,7 @@
         "@type": "WebSite",
         "name": "ArenaStreams",
         "url": "https://arenastreams.com",
-        "description": "Live sports streaming platform for football, basketball, tennis, UFC, rugby, baseball and American football",
+        "description": "Live sports streaming platform for football, basketball, tennis, UFC, rugby, baseball, American football and hockey",
         "potentialAction": {
             "@type": "SearchAction",
             "target": "https://arenastreams.com/search?q={search_term_string}",
@@ -98,6 +98,8 @@
                     <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                     <a href="/cricket" class="text-gray-400 hover:text-primary transition-colors">🏏 Cricket</a>
                     <a href="/motor-sports" class="text-gray-400 hover:text-primary transition-colors">🏁 Motor Sports</a>
+                <a href="/hockey" class="text-gray-400 hover:text-primary transition-colors">🏒 Hockey</a>
+                    <a href="/hockey" class="text-gray-400 hover:text-primary transition-colors">🏒 Hockey</a>
                 </nav>
                 <div class="flex items-center space-x-3">
                     <!-- Mobile Menu Button -->
@@ -198,6 +200,7 @@
                 <a href="/american-football" class="text-gray-400 hover:text-primary transition-colors">🏈 American Football</a>
                 <a href="/cricket" class="text-gray-400 hover:text-primary transition-colors">🏏 Cricket</a>
                 <a href="/motor-sports" class="text-gray-400 hover:text-primary transition-colors">🏁 Motor Sports</a>
+                <a href="/hockey" class="text-gray-400 hover:text-primary transition-colors">🏒 Hockey</a>
             </nav>
             
         </div>
@@ -211,7 +214,7 @@
                 Live Sports <span class="text-primary">Streaming</span>
             </h2>
             <p class="text-xl text-gray-300 mb-6 max-w-3xl mx-auto">
-                Watch live football, basketball, tennis, UFC, rugby, baseball and American football matches in HD quality. 
+                Watch live football, basketball, tennis, UFC, rugby, baseball, American football and hockey matches in HD quality. 
                 Free streaming with no registration required.
             </p>
             
@@ -408,6 +411,11 @@
                     <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Motor Sports</h4>
                     <p class="text-sm text-gray-400 mt-2">F1, MotoGP, NASCAR</p>
                 </a>
+                <a href="/hockey" class="bg-dark border-2 border-gray-800 rounded-xl p-8 text-center hover:border-primary hover:bg-gray-800 transition-all duration-300 group transform hover:scale-105">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏒</div>
+                    <h4 class="font-bold text-lg group-hover:text-primary transition-colors">Hockey</h4>
+                    <p class="text-sm text-gray-400 mt-2">NHL, Stanley Cup</p>
+                </a>
             </div>
         <!-- Live Matches Dropdown -->
         <section class="mb-12">
@@ -432,6 +440,7 @@
                         <option value="american-football">🏈 American Football</option>
                         <option value="cricket">🏏 Cricket</option>
                         <option value="motor-sports">🏁 Motor Sports</option>
+                        <option value="hockey">🏒 Hockey</option>
                     </select>
                     <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                         <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -478,7 +487,7 @@
                 <div>
                     <h4 class="text-xl font-bold text-primary mb-4">🏟️ ArenaStreams</h4>
                     <p class="text-gray-400 text-sm">
-                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC, rugby, baseball and American football in HD quality.
+                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC, rugby, baseball, American football and hockey in HD quality.
                     </p>
                 </div>
                 <div>
@@ -493,6 +502,7 @@
                         <li><a href="/american-football" class="hover:text-primary transition-colors">American Football</a></li>
                         <li><a href="/cricket" class="hover:text-primary transition-colors">Cricket</a></li>
                         <li><a href="/motor-sports" class="hover:text-primary transition-colors">Motor Sports</a></li>
+                        <li><a href="/hockey" class="hover:text-primary transition-colors">Hockey</a></li>
                     </ul>
                 </div>
                 <div>
@@ -507,6 +517,7 @@
                         <li><a href="/american-football" class="hover:text-primary transition-colors">American Football</a></li>
                         <li><a href="/cricket" class="hover:text-primary transition-colors">Cricket</a></li>
                         <li><a href="/motor-sports" class="hover:text-primary transition-colors">Motor Sports</a></li>
+                        <li><a href="/hockey" class="hover:text-primary transition-colors">Hockey</a></li>
                     </ul>
                 </div>
                 <div>
@@ -852,7 +863,7 @@
                 if (link.href.includes('/football') || link.href.includes('/basketball') || 
                     link.href.includes('/tennis') || link.href.includes('/ufc') || 
                     link.href.includes('/rugby') || link.href.includes('/baseball') || 
-                    link.href.includes('/american-football')) {
+                    link.href.includes('/american-football') || link.href.includes('/hockey')) {
                     link.addEventListener('click', function(e) {
                         const sport = this.href.split('/').pop();
                         trackSportSelection(sport);
@@ -960,7 +971,8 @@
                                 'baseball': '⚾ Baseball',
                                 'american-football': '🏈 American Football',
                                 'cricket': '🏏 Cricket',
-                                'motor-sports': '🏁 Motor Sports'
+                                'motor-sports': '🏁 Motor Sports',
+                                'hockey': '🏒 Hockey'
                             };
                             selectedSportTitle.textContent = `${sportNames[selectedSport]} Live Matches`;
 

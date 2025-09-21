@@ -298,7 +298,7 @@ let sportsData = [];
 // SEO Configuration
 const seoConfig = {
   siteName: 'ArenaStreams',
-    siteDescription: 'Watch live sports streaming online free. Football, Basketball, Tennis, UFC, Rugby, Baseball, American Football, Cricket, Motor Sports live streams in HD quality.',
+    siteDescription: 'Watch live sports streaming online free. Football, Basketball, Tennis, UFC, Rugby, Baseball, American Football, Cricket, Motor Sports, Hockey live streams in HD quality.',
   siteUrl: 'https://arenastreams.com',
   defaultImage: 'https://arenastreams.com/images/og-default.jpg',
   twitterHandle: '@ArenaStreams',
@@ -356,6 +356,12 @@ const seoConfig = {
       description: 'Watch motor sports live streams online free. Formula 1, MotoGP, NASCAR, IndyCar, Rally racing live streams.',
       keywords: 'motor sports live stream, F1 live stream, MotoGP live stream, NASCAR live stream, Formula 1 streaming, racing live',
       image: 'https://arenastreams.com/images/motorsports-og.jpg'
+    },
+    hockey: {
+      name: 'Hockey',
+      description: 'Watch hockey live streams online free. NHL games, Stanley Cup, college hockey, international hockey matches.',
+      keywords: 'hockey live stream, NHL streaming, hockey games live, NHL live stream free, Stanley Cup live, college hockey',
+      image: 'https://arenastreams.com/images/hockey-og.jpg'
     }
   }
 };
@@ -398,7 +404,8 @@ async function fetchSportsFromAPI() {
       { name: 'baseball', displayName: 'Baseball' },
       { name: 'american-football', displayName: 'American Football' },
       { name: 'cricket', displayName: 'Cricket' },
-    { name: 'motor-sports', displayName: 'Motor Sports' }
+      { name: 'motor-sports', displayName: 'Motor Sports' },
+      { name: 'hockey', displayName: 'Hockey' }
     ];
   }
 }
@@ -426,9 +433,9 @@ app.get('/', async (req, res) => {
       sports: sportsData.map(s => s.name || s),
       timestamp: Date.now(),
       seo: {
-        title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC, American Football`,
+        title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC, American Football, Hockey`,
         description: seoConfig.siteDescription,
-        keywords: 'live sports streaming, football live stream, basketball streaming, tennis live, UFC fights, rugby streaming, baseball live, NFL live stream, American football streaming',
+        keywords: 'live sports streaming, football live stream, basketball streaming, tennis live, UFC fights, rugby streaming, baseball live, NFL live stream, American football streaming, hockey live stream',
         canonical: seoConfig.siteUrl,
         ogTitle: `${seoConfig.siteName} - Live Sports Streaming`,
         ogDescription: seoConfig.siteDescription,
@@ -496,7 +503,7 @@ app.get('/match/:slug', async (req, res) => {
     
     // Try to find the match by searching through all sports
     let matchData = null;
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports', 'hockey'];
     
     console.log(`🔍 Searching for match with slug: ${slug}`);
     console.log(`🔍 Searching in sports: ${sports.join(', ')}`);
@@ -945,6 +952,35 @@ app.get('/american-football', async (req, res) => {
   }
 });
 
+app.get('/hockey', async (req, res) => {
+  try {
+    // Track clean visit (no AdBlock)
+    trackAdblockVisit(false);
+    
+    const sport = seoConfig.sports.hockey;
+    const html = await renderTemplate('hockey', {
+      sport: sport,
+      seo: {
+        title: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        description: sport.description,
+        keywords: sport.keywords,
+        canonical: `${seoConfig.siteUrl}/hockey`,
+        ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        ogDescription: sport.description,
+        ogImage: sport.image,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${sport.name} Live Streaming - ${seoConfig.siteName}`,
+        twitterDescription: sport.description,
+        twitterImage: sport.image
+      }
+    });
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering hockey page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // AdBlock version routes - ad-heavy versions for AdBlock users
 app.get('/homepageadblock', async (req, res) => {
   try {
@@ -1140,6 +1176,35 @@ app.get('/motorsportsadblock', async (req, res) => {
   }
 });
 
+app.get('/hockeyadblock', async (req, res) => {
+  try {
+    // Track AdBlock visit
+    trackAdblockVisit(true);
+    
+    const sport = seoConfig.sports.hockey;
+    const html = await renderTemplate('hockeyadblock', {
+      sport: sport,
+      seo: {
+        title: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        description: sport.description + ' - AdBlock version with ads everywhere',
+        keywords: sport.keywords + ', adblock version',
+        canonical: `${seoConfig.siteUrl}/hockeyadblock`,
+        ogTitle: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        ogDescription: sport.description + ' - AdBlock version with ads everywhere',
+        ogImage: sport.image,
+        twitterCard: 'summary_large_image',
+        twitterTitle: `${sport.name} Live Streaming - ${seoConfig.siteName} (AdBlock Version)`,
+        twitterDescription: sport.description + ' - AdBlock version with ads everywhere',
+        twitterImage: sport.image
+      }
+    });
+    res.send(html);
+  } catch (error) {
+    console.error('Error rendering hockeyadblock page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // AdBlock match page route
 app.get('/matchadblock/:slug', async (req, res) => {
   try {
@@ -1151,7 +1216,7 @@ app.get('/matchadblock/:slug', async (req, res) => {
     
     // Try to find the match by searching through all sports
     let matchData = null;
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports', 'hockey'];
     
     for (const sport of sports) {
       try {
@@ -1798,7 +1863,7 @@ ${allUrls.map(page => `  <url>
 // Additional sitemaps for 11/10 SEO
 app.get('/sitemap-sports.xml', async (req, res) => {
   try {
-    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports'];
+    const sports = ['football', 'basketball', 'tennis', 'ufc', 'rugby', 'baseball', 'american-football', 'cricket', 'motor-sports', 'hockey'];
     const urls = sports.map(sport => ({
       loc: `https://arenastreams.com/${sport}`,
       lastmod: new Date().toISOString(),
