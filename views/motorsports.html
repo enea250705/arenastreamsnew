@@ -477,42 +477,50 @@
                 });
             }
             
-            // Setup motor sports matches with Streamed.pk API - wait for main.js to load
-            function setupMatches() {
-                if (window.ArenaStreams) {
-                    console.log('✅ ArenaStreams found, setting up motor sports matches...');
-                    window.ArenaStreams.setupAutoRefresh('motor-sports', 'today-matches', 'no-matches');
-                    
-                    // Wire up search input to real filtering
-                    function wireSearch() {
-                        const input = document.getElementById('search-input-today-matches');
-                        const clearBtn = document.getElementById('clear-search-today-matches');
-                        if (!input || !window.ArenaStreams) { setTimeout(wireSearch, 100); return; }
-                        let debounceId;
-                        input.addEventListener('input', function() {
-                            const term = this.value.trim();
-                            if (clearBtn) clearBtn.style.display = term ? 'flex' : 'none';
-                            clearTimeout(debounceId);
-                            debounceId = setTimeout(() => {
-                                window.ArenaStreams.searchMatches(term, 'today-matches');
-                            }, 300);
-                        });
-                        if (clearBtn) {
-                            clearBtn.addEventListener('click', function() {
-                                input.value = '';
-                                this.style.display = 'none';
-                                window.ArenaStreams.searchMatches('', 'today-matches');
-                                input.focus();
-                            });
-                        }
-                    }
-                    wireSearch();
-                } else {
-                    setTimeout(setupMatches, 100);
-                }
+            // Ad configuration (moved to DOMContentLoaded)
+            // Check if user has reached popup limit
+            function checkPopupLimit() {
+                const stored = localStorage.getItem('arenastreams_popups_' + adConfig.sessionId);
+                return stored ? parseInt(stored) : 0;
             }
             
-            setTimeout(setupMatches, 50);
+            function updatePopupCount(count) {
+                localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
+            }
+            
+            // Trigger popup ads - DISABLED to prevent blank page redirects
+            function triggerPopups(count) {
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
+            }
+            
+            // Initialize popup tracking from localStorage
+            const sessionKey2 = 'arenastreams_popups_' + window.location.pathname;
+            let popupCount2 = parseInt(localStorage.getItem(sessionKey2) || '0');
+            const maxPopups2 = 5;
+            
+            // Re-enable monetized popup ads - DISABLED to prevent blank page redirects
+            window.triggerPopups = function triggerPopups(count) {
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
+            }
+            
+            // Ad configuration (moved to DOMContentLoaded)
+            // Check if user has reached popup limit
+            function checkPopupLimit() {
+                const stored = localStorage.getItem('arenastreams_popups_' + adConfig.sessionId);
+                return stored ? parseInt(stored) : 0;
+            }
+            
+            function updatePopupCount(count) {
+                localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
+            }
+            
+            // Trigger popup ads - DISABLED to prevent blank page redirects
+            function triggerPopups(count) {
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
+            }
         });
     </script>
     
@@ -890,143 +898,6 @@
 
 
 
-    <!-- JavaScript -->
-
-    <script>
-
-        // Mobile menu toggle
-
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-
-            const mobileMenu = document.getElementById('mobile-menu');
-
-            
-
-            if (mobileMenuBtn && mobileMenu) {
-
-                mobileMenuBtn.addEventListener('click', function(e) {
-
-                    e.preventDefault();
-
-                    e.stopPropagation();
-
-                    mobileMenu.classList.toggle('hidden');
-
-                    console.log('Mobile menu toggled:', mobileMenu.classList.contains('hidden') ? 'hidden' : 'visible');
-
-                });
-
-                
-
-                // Close menu when clicking outside
-
-                document.addEventListener('click', function(e) {
-
-                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-
-                        mobileMenu.classList.add('hidden');
-
-                    }
-
-                });
-
-                
-
-                // Close menu when clicking on a link
-
-                const menuLinks = mobileMenu.querySelectorAll('a');
-
-                menuLinks.forEach(link => {
-
-                    link.addEventListener('click', function() {
-
-                        mobileMenu.classList.add('hidden');
-
-                    });
-
-                });
-
-            }
-
-            
-
-            // Setup motor sports matches with Streamed.pk API - wait for main.js to load
-
-            function setupMatches() {
-
-                if (window.ArenaStreams) {
-
-                    console.log('✅ ArenaStreams found, setting up motor sports matches...');
-
-                    window.ArenaStreams.setupAutoRefresh('motor-sports', 'today-matches', 'no-matches');
-
-                    
-
-                    // Wire up search input to real filtering
-
-                    function wireSearch() {
-
-                        const input = document.getElementById('search-input-today-matches');
-
-                        const clearBtn = document.getElementById('clear-search-today-matches');
-
-                        if (!input || !window.ArenaStreams) { setTimeout(wireSearch, 100); return; }
-
-                        let debounceId;
-
-                        input.addEventListener('input', function() {
-
-                            const term = this.value.trim();
-
-                            if (clearBtn) clearBtn.style.display = term ? 'flex' : 'none';
-
-                            clearTimeout(debounceId);
-
-                            debounceId = setTimeout(() => {
-
-                                window.ArenaStreams.searchMatches(term, 'today-matches');
-
-                            }, 300);
-
-                        });
-
-                        if (clearBtn) {
-
-                            clearBtn.addEventListener('click', function() {
-
-                                input.value = '';
-
-                                this.style.display = 'none';
-
-                                window.ArenaStreams.searchMatches('', 'today-matches');
-
-                                input.focus();
-
-                            });
-
-                        }
-
-                    }
-
-                    wireSearch();
-
-                } else {
-
-                    setTimeout(setupMatches, 100);
-
-                }
-
-            }
-
-            
-
-            setTimeout(setupMatches, 50);
-
-        });
-
-    </script>
 
     
     <!-- Advanced Ad System -->

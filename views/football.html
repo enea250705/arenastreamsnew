@@ -746,6 +746,34 @@
                 });
             }
             
+            // Ad configuration (moved to DOMContentLoaded)
+            // Check if user has reached popup limit
+            function checkPopupLimit() {
+                const stored = localStorage.getItem('arenastreams_popups_' + adConfig.sessionId);
+                return stored ? parseInt(stored) : 0;
+            }
+            
+            function updatePopupCount(count) {
+                localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
+            }
+            
+            // Trigger popup ads - DISABLED to prevent blank page redirects
+            function triggerPopups(count) {
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
+            }
+            
+            // Initialize popup tracking from localStorage
+            const sessionKey = 'arenastreams_popups_' + window.location.pathname;
+            let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
+            const maxPopups = 5;
+            
+            // Re-enable monetized popup ads - DISABLED to prevent blank page redirects
+            window.triggerPopups = function triggerPopups(count) {
+                console.log('🚫 Popup ads disabled to prevent blank page redirects');
+                return;
+            }
+            
             // Setup football matches with Streamed.pk API - wait for main.js to load
             function setupMatches() {
                 if (window.ArenaStreams) {
