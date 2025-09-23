@@ -516,9 +516,6 @@
         });
     </script>
     
-    <!-- Advanced Ad System -->
-    <script src="/js/advanced-ads.js"></script>
-    
     <!-- Service Worker for Ad Control -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -551,3 +548,530 @@
     </script>
 </body>
 </html>
+
+
+            <div class="mb-8">
+
+                <div class="relative">
+
+                    <input 
+
+                        type="text" 
+
+                        id="search-input-today-matches" 
+
+                        class="w-full px-4 py-3 pl-12 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none transition-colors"
+
+                        placeholder="Search motor sports teams like 'Ferrari', 'Mercedes', 'Red Bull', 'Honda', 'Yamaha'..."
+
+                        autocomplete="off"
+
+                    >
+
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+
+                        </svg>
+
+                    </div>
+
+                    <button 
+
+                        id="clear-search-today-matches" 
+
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors"
+
+                        style="display: none;"
+
+                    >
+
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+                <div class="search-results-info text-sm text-gray-400 mt-2" style="display: none;"></div>
+
+            </div>
+
+            
+
+            <div id="today-matches" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Matches will be loaded dynamically -->
+
+            </div>
+
+            
+
+            <div id="no-matches" class="text-center py-12 hidden">
+
+                <div class="text-6xl mb-4">🏁</div>
+
+                <h3 class="text-2xl font-semibold mb-4">No motor sports events scheduled for today</h3>
+
+                <p class="text-gray-400 mb-8">Check back later for upcoming motor sports races or browse other sports.</p>
+
+                <div class="flex flex-wrap justify-center gap-4">
+
+                    <a href="/" class="bg-dark border border-gray-800 px-6 py-3 rounded-lg hover:border-primary transition-colors">
+
+                        View All Sports
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Popular Leagues -->
+
+        <section class="mb-12">
+
+            <h2 class="text-3xl font-bold mb-8 text-center">
+
+                Popular Motor Sports Series
+
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏎️</div>
+
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">Formula 1</h3>
+
+                    <p class="text-gray-400 text-sm mt-2">F1 World Championship</p>
+
+                </div>
+
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏍️</div>
+
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">MotoGP</h3>
+
+                    <p class="text-gray-400 text-sm mt-2">Motorcycle Racing</p>
+
+                </div>
+
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏁</div>
+
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">NASCAR</h3>
+
+                    <p class="text-gray-400 text-sm mt-2">Stock Car Racing</p>
+
+                </div>
+
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏎️</div>
+
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">IndyCar</h3>
+
+                    <p class="text-gray-400 text-sm mt-2">Open Wheel Racing</p>
+
+                </div>
+
+                <div class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏔️</div>
+
+                    <h3 class="font-semibold group-hover:text-primary transition-colors">WRC</h3>
+
+                    <p class="text-gray-400 text-sm mt-2">World Rally Championship</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Related Sports -->
+
+        <section class="mb-12">
+
+            <h2 class="text-3xl font-bold mb-8 text-center">
+
+                Other Sports
+
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+
+                <a href="/football" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">⚽</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">Football</h4>
+
+                </a>
+
+                <a href="/basketball" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏀</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">Basketball</h4>
+
+                </a>
+
+                <a href="/tennis" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🎾</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">Tennis</h4>
+
+                </a>
+
+                <a href="/ufc" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🥊</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">UFC</h4>
+
+                </a>
+
+                <a href="/rugby" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏉</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">Rugby</h4>
+
+                </a>
+
+                <a href="/" class="bg-dark border border-gray-800 rounded-lg p-6 text-center hover:border-primary transition-colors group">
+
+                    <div class="text-4xl mb-3">🏟️</div>
+
+                    <h4 class="font-semibold group-hover:text-primary transition-colors">All Sports</h4>
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- Footer -->
+
+    <footer class="bg-dark border-t border-gray-800 mt-16">
+
+        <div class="container mx-auto px-4 py-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+                <div>
+
+                    <h4 class="text-xl font-bold text-primary mb-4">🏟️ ArenaStreams</h4>
+
+                    <p class="text-gray-400 text-sm">
+
+                        Your ultimate destination for live sports streaming. Watch football, basketball, tennis, UFC, motor sports and more in HD quality.
+
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <h5 class="font-semibold mb-4">Sports</h5>
+
+                    <ul class="space-y-2 text-sm text-gray-400">
+
+                        <li><a href="/football" class="hover:text-primary transition-colors">Football</a></li>
+
+                        <li><a href="/basketball" class="hover:text-primary transition-colors">Basketball</a></li>
+
+                        <li><a href="/tennis" class="hover:text-primary transition-colors">Tennis</a></li>
+
+                        <li><a href="/ufc" class="hover:text-primary transition-colors">UFC</a></li>
+
+                        <li><a href="/motor-sports" class="hover:text-primary transition-colors">Motor Sports</a></li>
+
+                    </ul>
+
+                </div>
+
+                <div>
+
+                    <h5 class="font-semibold mb-4">Quick Links</h5>
+
+                    <ul class="space-y-2 text-sm text-gray-400">
+
+                        <li><a href="/" class="hover:text-primary transition-colors">Today's Matches</a></li>
+
+                        <li><a href="/live" class="hover:text-primary transition-colors">Live Now</a></li>
+
+                        <li><a href="/upcoming" class="hover:text-primary transition-colors">Upcoming</a></li>
+
+                        <li><a href="/admin" class="hover:text-primary transition-colors">Admin</a></li>
+
+                    </ul>
+
+                </div>
+
+                <div>
+
+                    <h5 class="font-semibold mb-4">Legal</h5>
+
+                    <ul class="space-y-2 text-sm text-gray-400">
+
+                        <li><a href="/privacy" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+
+                        <li><a href="/terms" class="hover:text-primary transition-colors">Terms of Service</a></li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+
+                <p>&copy; 2025 ArenaStreams. All rights reserved. | Live motor sports streaming platform</p>
+
+                
+
+                <!-- X (Twitter) Follow Section -->
+
+                <div class="mt-6 mb-6">
+
+                    <div class="flex items-center justify-center space-x-3">
+
+                        <a href="https://x.com/arenastreams" target="_blank" rel="noopener noreferrer" 
+
+                           class="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg border border-gray-700 transition-colors group">
+
+                            <svg class="w-5 h-5 text-white group-hover:text-blue-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+
+                            </svg>
+
+                            <span class="text-white group-hover:text-blue-400 transition-colors font-medium">Follow on X</span>
+
+                        </a>
+
+                    </div>
+
+                    <p class="text-xs text-gray-500 mt-2">
+
+                        Follow us on X for updates and announcements. If the site goes down, we'll post updates there!
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- JavaScript -->
+
+    <script>
+
+        // Mobile menu toggle
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            
+
+            if (mobileMenuBtn && mobileMenu) {
+
+                mobileMenuBtn.addEventListener('click', function(e) {
+
+                    e.preventDefault();
+
+                    e.stopPropagation();
+
+                    mobileMenu.classList.toggle('hidden');
+
+                    console.log('Mobile menu toggled:', mobileMenu.classList.contains('hidden') ? 'hidden' : 'visible');
+
+                });
+
+                
+
+                // Close menu when clicking outside
+
+                document.addEventListener('click', function(e) {
+
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+
+                        mobileMenu.classList.add('hidden');
+
+                    }
+
+                });
+
+                
+
+                // Close menu when clicking on a link
+
+                const menuLinks = mobileMenu.querySelectorAll('a');
+
+                menuLinks.forEach(link => {
+
+                    link.addEventListener('click', function() {
+
+                        mobileMenu.classList.add('hidden');
+
+                    });
+
+                });
+
+            }
+
+            
+
+            // Setup motor sports matches with Streamed.pk API - wait for main.js to load
+
+            function setupMatches() {
+
+                if (window.ArenaStreams) {
+
+                    console.log('✅ ArenaStreams found, setting up motor sports matches...');
+
+                    window.ArenaStreams.setupAutoRefresh('motor-sports', 'today-matches', 'no-matches');
+
+                    
+
+                    // Wire up search input to real filtering
+
+                    function wireSearch() {
+
+                        const input = document.getElementById('search-input-today-matches');
+
+                        const clearBtn = document.getElementById('clear-search-today-matches');
+
+                        if (!input || !window.ArenaStreams) { setTimeout(wireSearch, 100); return; }
+
+                        let debounceId;
+
+                        input.addEventListener('input', function() {
+
+                            const term = this.value.trim();
+
+                            if (clearBtn) clearBtn.style.display = term ? 'flex' : 'none';
+
+                            clearTimeout(debounceId);
+
+                            debounceId = setTimeout(() => {
+
+                                window.ArenaStreams.searchMatches(term, 'today-matches');
+
+                            }, 300);
+
+                        });
+
+                        if (clearBtn) {
+
+                            clearBtn.addEventListener('click', function() {
+
+                                input.value = '';
+
+                                this.style.display = 'none';
+
+                                window.ArenaStreams.searchMatches('', 'today-matches');
+
+                                input.focus();
+
+                            });
+
+                        }
+
+                    }
+
+                    wireSearch();
+
+                } else {
+
+                    setTimeout(setupMatches, 100);
+
+                }
+
+            }
+
+            
+
+            setTimeout(setupMatches, 50);
+
+        });
+
+    </script>
+
+    
+    <!-- Advanced Ad System -->
+    <script src="/js/advanced-ads.js"></script>
+    
+    <!-- Service Worker for Ad Control -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            // Register original service worker (propeller tracking)
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('✅ Propeller Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ Propeller Service Worker registration failed:', error);
+                });
+            
+            // Register custom ad protection service worker
+            navigator.serviceWorker.register('/sw-custom.js')
+                .then(registration => {
+                    console.log('🛡️ ArenaStreams Ad Protection SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ ArenaStreams Ad Protection SW registration failed:', error);
+                });
+        }
+    </script>
+    
+
+    <!-- Load obfuscated main code -->
+
+    <script src="/js/app.min.js"></script>
+
+    <script>
+
+      if (!window.ArenaStreams) {
+
+        document.write('<script src="/js/main.js"><\\/script>');
+
+      }
+
+    </script>
+
+</body>
+
+</html>
+
+
