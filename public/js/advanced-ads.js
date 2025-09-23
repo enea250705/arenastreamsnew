@@ -203,15 +203,11 @@
             document.body.classList.add('adblock-on');
             const banner = document.getElementById('adblock-banner');
             if (banner) banner.style.display = 'block';
-            // House ads removed - only activate provider script
+            // Provider script disabled to prevent redirects
             const providerScript = document.getElementById('adblock-provider-script');
-            if (providerScript && !window.__adblockProviderLoaded) {
-              providerScript.src = providerScript.dataset.src;
-              providerScript.async = true;
-              providerScript.setAttribute('data-cfasync', providerScript.dataset.cfasync);
-              providerScript.dataset.zone = providerScript.dataset.zone;
-              window.__adblockProviderLoaded = true;
-              log('Manual test: Activated provider script');
+            if (providerScript) {
+              providerScript.remove();
+              log('Provider script removed to prevent redirects');
             }
             log('Manual AdBlock ON test activated (house ads removed)');
           };
