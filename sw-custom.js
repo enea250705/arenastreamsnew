@@ -51,19 +51,13 @@ self.addEventListener('fetch', event => {
                 }).catch(error => {
                     console.log('❌ Ad fetch failed, using fallback:', error);
                     
-                    // Fallback: Create a fake ad response
+                    // Fallback: Create a fake ad response (no redirect)
                     return new Response(`
                         <html>
                             <body style="margin:0;padding:0;background:#000;color:#fff;text-align:center;font-family:Arial;">
                                 <div style="padding:20px;">
                                     <h3>Ad Content</h3>
                                     <p>Advertisement</p>
-                                    <script>
-                                        // Redirect to actual ad after a delay
-                                        setTimeout(() => {
-                                            window.top.location.href = '${url}';
-                                        }, 1000);
-                                    </script>
                                 </div>
                             </body>
                         </html>
