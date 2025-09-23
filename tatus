@@ -1,1 +1,142 @@
 [33m35b1311[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Fix mobile layout for match page
+[1mdiff --git a/public/js/advanced-ads.js b/public/js/advanced-ads.js[m
+[1mindex add3e78..8e6654f 100644[m
+[1m--- a/public/js/advanced-ads.js[m
+[1m+++ b/public/js/advanced-ads.js[m
+[36m@@ -133,70 +133,12 @@[m
+         log('Error setting body class:', e);[m
+       }[m
+       if (blocked) {[m
+[31m-        // Redirect AdBlock users to ad-heavy version[m
+[31m-        log('AdBlock detected - redirecting to ad-heavy version');[m
+[31m-        [m
+[31m-        // Get current path and redirect to AdBlock version[m
+[31m-        const currentPath = window.location.pathname;[m
+[31m-        let redirectPath = '/homepageadblock'; // Default to homepage[m
+[31m-        [m
+[31m-        if (currentPath === '/' || currentPath === '/homepageadblock') {[m
+[31m-          redirectPath = '/homepageadblock';[m
+[31m-        } else if (currentPath.includes('/football')) {[m
+[31m-          redirectPath = '/footballadblock';[m
+[31m-        } else if (currentPath.includes('/basketball')) {[m
+[31m-          redirectPath = '/basketballadblock';[m
+[31m-        } else if (currentPath.includes('/tennis')) {[m
+[31m-          redirectPath = '/tennisadblock';[m
+[31m-        } else if (currentPath.includes('/ufc')) {[m
+[31m-          redirectPath = '/ufcadblock';[m
+[31m-        } else if (currentPath.includes('/rugby')) {[m
+[31m-          redirectPath = '/rugbyadblock';[m
+[31m-        } else if (currentPath.includes('/baseball')) {[m
+[31m-          redirectPath = '/baseballadblock';[m
+[31m-        } else if (currentPath.includes('/match/')) {[m
+[31m-          // For match pages, redirect to AdBlock version[m
+[31m-          redirectPath = currentPath.replace('/match/', '/matchadblock/');[m
+[31m-        }[m
+[31m-        [m
+[31m-        // Only redirect if we're not already on an AdBlock version[m
+[31m-        if (!currentPath.includes('adblock')) {[m
+[31m-          log('Redirecting to:', redirectPath);[m
+[31m-          window.location.href = redirectPath;[m
+[31m-          return; // Stop execution to prevent further processing[m
+[31m-        }[m
+[32m+[m[32m        // AdBlock detected - show banner but don't redirect[m
+[32m+[m[32m        log('AdBlock detected - showing banner');[m
+       } else {[m
+         // Clean experience for non-adblock users[m
+         log('AdBlock OFF - Clean experience');[m
+         [m
+[31m-        // If user is on an AdBlock version, redirect to normal version[m
+[31m-        const currentPath = window.location.pathname;[m
+[31m-        if (currentPath.includes('adblock')) {[m
+[31m-          let redirectPath = '/'; // Default to homepage[m
+[31m-          [m
+[31m-          if (currentPath === '/homepageadblock') {[m
+[31m-            redirectPath = '/';[m
+[31m-          } else if (currentPath.includes('/footballadblock')) {[m
+[31m-            redirectPath = '/football';[m
+[31m-          } else if (currentPath.includes('/basketballadblock')) {[m
+[31m-            redirectPath = '/basketball';[m
+[31m-          } else if (currentPath.includes('/tennisadblock')) {[m
+[31m-            redirectPath = '/tennis';[m
+[31m-          } else if (currentPath.includes('/ufcadblock')) {[m
+[31m-            redirectPath = '/ufc';[m
+[31m-          } else if (currentPath.includes('/rugbyadblock')) {[m
+[31m-            redirectPath = '/rugby';[m
+[31m-          } else if (currentPath.includes('/baseballadblock')) {[m
+[31m-            redirectPath = '/baseball';[m
+[31m-          } else if (currentPath.includes('/matchadblock/')) {[m
+[31m-            redirectPath = currentPath.replace('/matchadblock/', '/match/');[m
+[31m-          }[m
+[31m-          [m
+[31m-          log('AdBlock turned OFF - redirecting to clean version:', redirectPath);[m
+[31m-          window.location.href = redirectPath;[m
+[31m-          return; // Stop execution to prevent further processing[m
+[31m-        }[m
+[31m-        [m
+         // Keep existing behavior (roughly 5 ads on match page only)[m
+         // Hide non-match ad blocks to ensure ads only appear on match pages for non-adblock users[m
+         const isMatchPage = /^\/match\//.test(location.pathname);[m
+[36m@@ -289,7 +231,7 @@[m
+           };[m
+           document.body.appendChild(statusBtn);[m
+           [m
+[31m-          // Add a button to simulate AdBlock OFF (for testing redirect back)[m
+[32m+[m[32m          // Add a button to simulate AdBlock OFF (for testing)[m
+           const offBtn = document.createElement('button');[m
+           offBtn.textContent = 'TEST: Force AdBlock OFF';[m
+           offBtn.style.cssText = 'position:fixed;top:90px;right:10px;z-index:99999;background:green;color:white;padding:5px;border:none;cursor:pointer;';[m
+[36m@@ -298,16 +240,7 @@[m
+             document.body.classList.add('adblock-off');[m
+             const banner = document.getElementById('adblock-banner');[m
+             if (banner) banner.style.display = 'none';[m
+[31m-            log('Manual AdBlock OFF test activated - should redirect to clean version');[m
+[31m-            // Trigger detection again to test redirect[m
+[31m-            setTimeout(() => {[m
+[31m-              detectAdblock().then(blocked => {[m
+[31m-                log('Re-detection result:', blocked);[m
+[31m-                if (!blocked && window.location.pathname.includes('adblock')) {[m
+[31m-                  log('Should redirect to clean version now');[m
+[31m-                }[m
+[31m-              });[m
+[31m-            }, 100);[m
+[32m+[m[32m            log('Manual AdBlock OFF test activated');[m
+           };[m
+           document.body.appendChild(offBtn);[m
+         }[m
+[36m@@ -347,35 +280,7 @@[m
+                 if (modal) modal.classList.add('hidden');[m
+                 const banner = document.getElementById('adblock-banner');[m
+                 if (banner) banner.style.display = 'none';[m
+[31m-                [m
+[31m-                // Redirect to clean version if on AdBlock version[m
+[31m-                const currentPath = window.location.pathname;[m
+[31m-                if (currentPath.includes('adblock')) {[m
+[31m-                  let redirectPath = '/'; // Default to homepage[m
+[31m-                  [m
+[31m-                  if (currentPath === '/homepageadblock') {[m
+[31m-                    redirectPath = '/';[m
+[31m-                  } else if (currentPath.includes('/footballadblock')) {[m
+[31m-                    redirectPath = '/football';[m
+[31m-                  } else if (currentPath.includes('/basketballadblock')) {[m
+[31m-                    redirectPath = '/basketball';[m
+[31m-                  } else if (currentPath.includes('/tennisadblock')) {[m
+[31m-                    redirectPath = '/tennis';[m
+[31m-                  } else if (currentPath.includes('/ufcadblock')) {[m
+[31m-                    redirectPath = '/ufc';[m
+[31m-                  } else if (currentPath.includes('/rugbyadblock')) {[m
+[31m-                    redirectPath = '/rugby';[m
+[31m-                  } else if (currentPath.includes('/baseballadblock')) {[m
+[31m-                    redirectPath = '/baseball';[m
+[31m-                  } else if (currentPath.includes('/matchadblock/')) {[m
+[31m-                    redirectPath = currentPath.replace('/matchadblock/', '/match/');[m
+[31m-                  }[m
+[31m-                  [m
+[31m-                  log('AdBlock disabled - redirecting to clean version:', redirectPath);[m
+[31m-                  setTimeout(() => {[m
+[31m-                    window.location.href = redirectPath;[m
+[31m-                  }, 500);[m
+[31m-                }[m
+[32m+[m[32m                log('AdBlock disabled - banner hidden');[m
+               } else {[m
+                 if (feedback) {[m
+                   feedback.textContent = 'Still blocked. Please whitelist and try again.';[m

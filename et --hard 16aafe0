@@ -1,0 +1,56 @@
+[33mb2d67ef[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update Ballon dOr 2025 to use match route with correct slug
+[33m87fd9c5[m Fix event page stream loading - ensure streams are ready before play
+[33m0cd9105[m Fix event page stream loading - ensure streams are ready before play
+[33m14766f0[m Add Ballon dOr 2025 as featured event on football page
+[33me4fb0d3[m Fix event page stream loading - use pre-loaded streams
+[33m16aafe0[m Fix auto-redirect for malformed event URLs
+[33m52ab6a6[m Add auto-redirect for events from match URLs
+[33m053d172[m Add event route for non-match content + restore popup ads
+[33m456b66d[m Fix stream loading for ballon-d-or-2025 match - handle direct array API response format
+[33m623996f[m Fix NFL banner mobile display - separate mobile and desktop layouts for better visibility
+[33m8bc79e4[m Add NFL Sunday notice banner to homepage - inform users about delays and mirror solutions
+[33m27ba629[m Update match.html: Simplify navigation and update ad provider script
+[33mc952841[m Fix navigation: Add missing sports and remove duplicate Hockey entries
+[33m08b98b8[m Update match.html template with improvements
+[33mef2e530[m Add hockey sport integration with full SEO, navigation, and templates
+
+                   SSUUMMMMAARRYY OOFF LLEESSSS CCOOMMMMAANNDDSS
+
+      Commands marked with * may be preceded by a number, _N.
+      Notes in parentheses indicate the behavior if _N is given.
+      A key preceded by a caret indicates the Ctrl key; thus ^K is ctrl-K.
+
+  h  H                 Display this help.
+  q  :q  Q  :Q  ZZ     Exit.
+ ---------------------------------------------------------------------------
+
+                           MMOOVVIINNGG
+
+  e  ^E  j  ^N  CR  *  Forward  one line   (or _N lines).
+  y  ^Y  k  ^K  ^P  *  Backward one line   (or _N lines).
+  f  ^F  ^V  SPACE  *  Forward  one window (or _N lines).
+  b  ^B  ESC-v      *  Backward one window (or _N lines).
+  z                 *  Forward  one window (and set window to _N).
+  w                 *  Backward one window (and set window to _N).
+  ESC-SPACE         *  Forward  one window, but don't stop at end-of-file.
+  d  ^D             *  Forward  one half-window (and set half-window to _N).
+  u  ^U             *  Backward one half-window (and set half-window to _N).
+  ESC-)  RightArrow *  Right one half screen width (or _N positions).
+  ESC-(  LeftArrow  *  Left  one half screen width (or _N positions).
+  ESC-}  ^RightArrow   Right to last column displayed.
+  ESC-{  ^LeftArrow    Left  to first column.
+  F                    Forward forever; like "tail -f".
+  ESC-F                Like F but stop when search pattern is found.
+  r  ^R  ^L            Repaint screen.
+  R                    Repaint screen, discarding buffered input.
+        ---------------------------------------------------
+        Default "window" is the screen height.
+        Default "half-window" is half of the screen height.
+ ---------------------------------------------------------------------------
+
+                          SSEEAARRCCHHIINNGG
+
+  /_p_a_t_t_e_r_n          *  Search forward for (_N-th) matching line.
+  ?_p_a_t_t_e_r_n          *  Search backward for (_N-th) matching line.
+  n                 *  Repeat previous search (for _N-th occurrence).
+  N                 *  Repeat previous search in reverse direction.
