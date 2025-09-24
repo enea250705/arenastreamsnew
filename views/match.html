@@ -850,9 +850,9 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 1 popup (further reduced for better UX)
-                    console.log('🎬 First click - triggering 1 popup');
-                    triggerPopups(1);
+                    // First click: Show overlay + trigger 5 popunders
+                    console.log('🎬 First click - triggering 5 popunders');
+                    triggerPopups(5);
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
