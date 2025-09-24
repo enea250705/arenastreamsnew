@@ -803,7 +803,7 @@
                 // Check if user has reached popup limit
                 const sessionKey = 'arenastreams_popups_' + window.match.id;
                 let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 6; // Strict limit of 6 popups
+                const maxPopups = 5; // Strict limit of 5 popups
                 
                 if (popupCount >= maxPopups) {
                     console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
