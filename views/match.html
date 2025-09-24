@@ -793,7 +793,12 @@
             // Auto-load streams when page loads (no ads triggered)
             setTimeout(() => {
                 console.log('🚀 Auto-loading streams on page load...');
-                autoLoadStreams();
+                // Just load streams in background, don't show them yet
+                loadStream().then(() => {
+                    console.log('✅ Streams pre-loaded successfully');
+                }).catch(error => {
+                    console.log('⚠️ Stream pre-load failed:', error);
+                });
             }, 2000); // Wait 2 seconds for page to fully load
 
             // Controlled monetized popup ads using al5sm.com script
@@ -897,35 +902,28 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 5 popunders
-                    console.log('🎬 First click - triggering 5 popunders');
+                    // First click: Trigger 5 popunders, then start stream after delay
+                    console.log('🎬 First click - triggering 5 popunders then starting stream');
+                    
+                    // Trigger popups first
                     triggerPopups(5);
                     
-                    // Show overlay message
+                    // Show loading message
                     streamPlaceholder.innerHTML = `
                         <div class="text-center">
-                            <div class="text-6xl text-gray-600 mb-4">⏸️</div>
-                            <p class="text-gray-400 mb-4">Click Resume to continue</p>
-                            <button id="resume-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg">
-                                ▶️ Resume Stream
-                            </button>
+                            <div class="text-6xl text-gray-600 mb-4">⏳</div>
+                            <p class="text-gray-400 mb-4">Loading stream...</p>
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                         </div>
                     `;
                     
                     hasPlayedBefore = true;
                     
-                    // Add resume button event listener with proper event handling
+                    // Start stream after popups are triggered (3 seconds delay)
                     setTimeout(() => {
-                        const resumeBtn = document.getElementById('resume-btn');
-                        if (resumeBtn) {
-                            resumeBtn.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('🎬 Resume button clicked - starting stream without additional ads');
-                                startStream();
-                            });
-                        }
-                    }, 100);
+                        console.log('🎬 Starting stream after popup delay');
+                        startStream();
+                    }, 3000);
                     
                 } else {
                     // This shouldn't happen with proper UI flow
@@ -962,84 +960,6 @@
                 });
             }
 
-            // Auto-load streams without triggering ads (for page load)
-            function autoLoadStreams() {
-                console.log('🚀 Auto-loading streams (no ads)...');
-                
-                // Load streams without showing them yet
-                loadStream().then(() => {
-                    // Keep placeholder visible, but streams are loaded
-                    console.log('✅ Streams auto-loaded successfully');
-                    console.log('📺 Stream player src:', streamPlayer.src);
-                    console.log('📺 Streams ready - waiting for user to click play');
-                    
-                    // Update placeholder to show streams are ready
-                    streamPlaceholder.innerHTML = `
-                        <div class="text-center">
-                            <div class="text-6xl text-green-500 mb-4">📺</div>
-                            <p class="text-gray-400 mb-4">Streams ready!</p>
-                            <p class="text-gray-500 text-sm">Click Play to start watching</p>
-                            <button id="play-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg mt-4">
-                                ▶️ Play Stream
-                            </button>
-                        </div>
-                    `;
-                    
-                    // Re-attach play button event listener
-                    document.getElementById('play-btn').addEventListener('click', function() {
-                        console.log('🎬 Play button clicked');
-                        
-                        if (!hasPlayedBefore) {
-                            // First click: Show overlay + trigger 3 popups
-                            console.log('🎬 First click - triggering 3 popups');
-                            triggerPopups(3);
-                            
-                            // Show overlay message
-                            streamPlaceholder.innerHTML = `
-                                <div class="text-center">
-                                    <div class="text-6xl text-gray-600 mb-4">⏸️</div>
-                                    <p class="text-gray-400 mb-4">Click Resume to continue</p>
-                                    <button id="resume-btn" class="bg-primary text-dark font-bold py-3 px-8 rounded-lg hover:bg-yellow-400 transition-colors text-lg">
-                                        ▶️ Resume Stream
-                                    </button>
-                                </div>
-                            `;
-                            
-                            hasPlayedBefore = true;
-                            
-                            // Add resume button event listener
-                            setTimeout(() => {
-                                const resumeBtn = document.getElementById('resume-btn');
-                                if (resumeBtn) {
-                                    resumeBtn.addEventListener('click', function(e) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        console.log('🎬 Resume button clicked - starting stream without additional ads');
-                                        startStream();
-                                    });
-                                }
-                            }, 100);
-                            
-                        } else {
-                            // This shouldn't happen with proper UI flow
-                            startStream();
-                        }
-                    });
-                    
-                }).catch(error => {
-                    console.error('❌ Error auto-loading streams:', error);
-                    // Show error message
-                    streamPlaceholder.innerHTML = `
-                        <div class="text-center">
-                            <div class="text-6xl text-red-500 mb-4">❌</div>
-                            <p class="text-red-400 mb-4">Stream failed to load</p>
-                            <button onclick="location.reload()" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors text-lg">
-                                🔄 Retry
-                            </button>
-                        </div>
-                    `;
-                });
-            }
 
             // Play/Pause button functionality (only after stream starts)
             playPauseBtn.addEventListener('click', function() {
