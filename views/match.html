@@ -17,7 +17,6 @@
         });
     </script>
     
-    <script>(s=>{s.dataset.zone='9879600',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{match.teamA}} vs {{match.teamB}} Live Stream {{match.competition}} {{match.date}} | ArenaStreams</title>
@@ -768,8 +767,12 @@
                 });
             }
 
-            // Initialize player tabs (no popup tracking - ad network controlled)
-            console.log(`🔄 Initializing player tabs... (ad network will control popups)`);
+            // Initialize popup tracking from localStorage
+            const sessionKey = 'arenastreams_popups_' + window.match.id;
+            let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
+            const maxPopups = 5;
+
+            console.log(`🔄 Initializing player tabs... Popup count: ${popupCount}/${maxPopups}`);
 
             // Generate default tabs first, then load real streams
             try {
@@ -797,9 +800,9 @@
                 });
             }, 2000); // Wait 2 seconds for page to fully load
 
-            // Let ad network control popup ads naturally
+            // Controlled popup ads with 5 ads per session limit
             window.triggerPopups = function triggerPopups(count) {
-                console.log(`💰 Triggering popunder ads via al5sm.com (letting ad network decide quantity)...`);
+                console.log(`💰 Attempting to trigger ${count} popunder ads...`);
                 
                 // Prevent multiple simultaneous popup triggers
                 if (isTriggeringPopups) {
@@ -807,49 +810,88 @@
                     return;
                 }
                 
+                // Check if user has reached popup limit
+                const sessionKey = 'arenastreams_popups_' + window.match.id;
+                let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
+                const maxPopups = 5; // Limit of 5 popups per session
+                
+                console.log(`📊 Current popup count: ${popupCount}/${maxPopups}`);
+                
+                if (popupCount >= maxPopups) {
+                    console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups}) - NO MORE ADS`);
+                    return;
+                }
+                
                 // Set flag to prevent multiple triggers
                 isTriggeringPopups = true;
                 
-                try {
-                    // Create and inject al5sm.com script - let the ad network handle the rest
-                    const script = document.createElement('script');
-                    script.dataset.zone = '9879600';
-                    script.src = 'https://al5sm.com/tag.min.js';
-                    script.async = true;
-                    
-                    // Add to page to trigger popunder
-                    document.head.appendChild(script);
-                    console.log(`✅ Ad network script loaded - letting al5sm.com control ad frequency`);
-                    
-                    // Remove script after a delay to prevent multiple loads
+                // Calculate how many popups we can actually trigger
+                const availableSlots = maxPopups - popupCount;
+                const actualCount = Math.min(count, availableSlots);
+                
+                console.log(`🎯 Triggering ${actualCount} popups (requested: ${count}, available: ${availableSlots})`);
+                
+                // Trigger popups with bvtpk.com script
+                for (let i = 0; i < actualCount; i++) {
                     setTimeout(() => {
-                        if (script.parentNode) {
-                            script.parentNode.removeChild(script);
+                        // Double-check limit before each popup
+                        const currentCount = parseInt(localStorage.getItem(sessionKey) || '0');
+                        if (currentCount >= maxPopups) {
+                            console.log(`🚫 Limit reached during execution, stopping at popup ${i + 1}`);
+                            return;
                         }
-                    }, 5000);
-                    
-                } catch (error) {
-                    console.log('❌ Ad network script failed:', error);
+                        
+                        try {
+                            // Create and inject bvtpk.com script for popunder
+                            const script = document.createElement('script');
+                            script.dataset.zone = '9879600';
+                            script.src = 'https://bvtpk.com/tag.min.js';
+                            script.async = true;
+                            
+                            // Add to page to trigger popunder
+                            document.head.appendChild(script);
+                            
+                            // Update counter immediately
+                            const newCount = currentCount + 1;
+                            localStorage.setItem(sessionKey, newCount.toString());
+                            console.log(`✅ Popunder ${i + 1} triggered (${newCount}/${maxPopups})`);
+                            
+                            // Remove script after a short delay to prevent multiple loads
+                            setTimeout(() => {
+                                if (script.parentNode) {
+                                    script.parentNode.removeChild(script);
+                                }
+                            }, 3000);
+                            
+                        } catch (error) {
+                            console.log('❌ Popunder failed:', error);
+                        }
+                    }, i * 500); // Stagger popups by 500ms
                 }
                 
-                // Reset flag after delay
+                // Reset flag after all popups are scheduled
                 setTimeout(() => {
                     isTriggeringPopups = false;
-                    console.log(`🏁 Ad network triggering complete, flag reset`);
-                }, 2000);
+                    console.log(`🏁 Popup triggering complete, flag reset`);
+                }, actualCount * 500 + 1000);
             }
             
             // Debug function to check popup status
             window.checkPopupStatus = function() {
-                console.log(`📊 Popup Status: Ad network controlled (no artificial limits)`);
+                const sessionKey = 'arenastreams_popups_' + window.match.id;
+                const popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
+                const maxPopups = 5;
+                console.log(`📊 Popup Status: ${popupCount}/${maxPopups} (${popupCount >= maxPopups ? 'LIMIT REACHED' : 'MORE AVAILABLE'})`);
                 console.log(`🚩 Triggering flag: ${isTriggeringPopups}`);
-                return { status: 'ad_network_controlled', triggering: isTriggeringPopups };
+                return { count: popupCount, max: maxPopups, limitReached: popupCount >= maxPopups };
             }
             
-            // Reset popup trigger flag function
-            window.resetPopupFlag = function() {
+            // Reset popup counter function
+            window.resetPopupCounter = function() {
+                const sessionKey = 'arenastreams_popups_' + window.match.id;
+                localStorage.removeItem(sessionKey);
                 isTriggeringPopups = false;
-                console.log(`🔄 Popup trigger flag reset for match: ${window.match.id}`);
+                console.log(`🔄 Popup counter reset for match: ${window.match.id}`);
             }
 
             // Play button functionality (First/Second click logic)
@@ -859,11 +901,11 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Let ad network trigger popups, then start stream after delay
-                    console.log('🎬 First click - letting ad network control popups then starting stream');
+                    // First click: Trigger 5 popups, then start stream after delay
+                    console.log('🎬 First click - triggering 5 popups then starting stream');
                     
-                    // Trigger popups first (ad network decides quantity)
-                    triggerPopups(1);
+                    // Trigger popups first (5 popups)
+                    triggerPopups(5);
                     
                     // Show loading message
                     streamPlaceholder.innerHTML = `
