@@ -779,7 +779,7 @@
                 // Check if user has reached popup limit
                 const sessionKey = 'arenastreams_popups_' + window.match.id;
                 let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 8; // Increased from 5 to 8
+                const maxPopups = 6; // Reduced to 6 for better UX
                 
                 if (popupCount >= maxPopups) {
                     console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -813,7 +813,7 @@
                                 
                                 // Backup method: Direct popunder using al5sm.com
                                 setTimeout(() => {
-                                    if (Math.random() < 0.6) { // 60% chance for backup popunder
+                                    if (Math.random() < 0.3) { // 30% chance for backup popunder - reduced for better UX
                                         try {
                                             const backupScript = document.createElement('script');
                                             backupScript.dataset.zone = '9879600';
@@ -845,9 +845,9 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 4 popups (increased from 3)
-                    console.log('🎬 First click - triggering 4 popups');
-                    triggerPopups(4);
+                    // First click: Show overlay + trigger 2 popups (reduced for better UX)
+                    console.log('🎬 First click - triggering 2 popups');
+                    triggerPopups(2);
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
@@ -864,8 +864,8 @@
                     
                     // Add resume button event listener
                     document.getElementById('resume-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume button clicked - triggering 3 popups (increased from 2)');
-                        triggerPopups(3);
+                        console.log('🎬 Resume button clicked - triggering 1 popup (reduced for better UX)');
+                        triggerPopups(1);
                         startStream();
                     });
                     
@@ -1004,8 +1004,8 @@
             refreshBtn.addEventListener('click', function() {
                 console.log('🔄 Refreshing stream...');
                 
-                // Trigger ad on refresh (40% chance)
-                if (Math.random() < 0.4) {
+                // Trigger ad on refresh (20% chance - reduced for better UX)
+                if (Math.random() < 0.2) {
                     console.log('💰 Refresh ad triggered via al5sm.com');
                     triggerPopups(1);
                 }
@@ -1019,8 +1019,8 @@
                 if (e.target.classList.contains('player-tab')) {
                     console.log('🎯 Player tab clicked:', e.target.dataset.player);
                     
-                    // Trigger ad on player switch (30% chance)
-                    if (Math.random() < 0.3) {
+                    // Trigger ad on player switch (10% chance - reduced for better UX)
+                    if (Math.random() < 0.1) {
                         console.log('💰 Player switch ad triggered via al5sm.com');
                         triggerPopups(1);
                     }
@@ -1158,7 +1158,7 @@
                     // Trigger ad every 2-3 minutes (randomized)
                     const randomDelay = Math.random() * 60000 + 120000; // 2-3 minutes
                     setTimeout(() => {
-                        if (Math.random() < 0.6) { // 60% chance
+                        if (Math.random() < 0.3) { // 30% chance - reduced for better UX
                             console.log('💰 Periodic ad triggered via al5sm.com');
                             triggerPopups(1);
                         }
@@ -1174,8 +1174,8 @@
                     if (pageVisibilityTimer) clearTimeout(pageVisibilityTimer);
                 } else {
                     console.log('👁️ Page visible - resuming ad timers');
-                    // Trigger ad when user returns to page (25% chance)
-                    if (Math.random() < 0.25) {
+                    // Trigger ad when user returns to page (15% chance - reduced for better UX)
+                    if (Math.random() < 0.15) {
                         console.log('💰 Page visibility ad triggered via al5sm.com');
                         triggerPopups(1);
                     }
@@ -1185,7 +1185,7 @@
                         adTimer = setInterval(() => {
                             const randomDelay = Math.random() * 60000 + 120000;
                             setTimeout(() => {
-                                if (Math.random() < 0.6) {
+                                if (Math.random() < 0.3) { // 30% chance - reduced for better UX
                                     console.log('💰 Periodic ad triggered via al5sm.com');
                                     triggerPopups(1);
                                 }
@@ -1200,7 +1200,7 @@
             window.addEventListener('scroll', function() {
                 if (!scrollAdTriggered && window.scrollY > 500) {
                     scrollAdTriggered = true;
-                    if (Math.random() < 0.3) { // 30% chance
+                    if (Math.random() < 0.15) { // 15% chance - reduced for better UX
                         console.log('💰 Scroll ad triggered via al5sm.com');
                         triggerPopups(1);
                     }
