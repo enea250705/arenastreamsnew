@@ -912,18 +912,18 @@
                     streamPlaceholder.innerHTML = `
                         <div class="text-center">
                             <div class="text-6xl text-gray-600 mb-4">⏳</div>
-                            <p class="text-gray-400 mb-4">Loading stream...</p>
+                            <p class="text-gray-400 mb-4">Starting stream...</p>
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                         </div>
                     `;
                     
                     hasPlayedBefore = true;
                     
-                    // Start stream after popups are triggered (3 seconds delay)
+                    // Start stream after popups are triggered (1 second delay)
                     setTimeout(() => {
                         console.log('🎬 Starting stream after popup delay');
                         startStream();
-                    }, 3000);
+                    }, 1000);
                     
                 } else {
                     // This shouldn't happen with proper UI flow
