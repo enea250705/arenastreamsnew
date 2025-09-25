@@ -494,7 +494,7 @@
             // Check if user has reached popup limit - USE MATCH ID ONLY
             const sessionKey = 'arenastreams_popups_' + window.match.id;
             let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 6; // Match pages get 6 ads max
+            const maxPopups = 8; // Match pages get 8 ads max (5 for play + 3 for other interactions)
             
             if (popupCount >= maxPopups) {
                 console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -780,7 +780,7 @@
             // Initialize popup tracking from localStorage - USE MATCH ID ONLY
             const sessionKey = 'arenastreams_popups_' + window.match.id;
             let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 6; // Match pages get 6 ads max
+            const maxPopups = 8; // Match pages get 8 ads max (5 for play + 3 for other interactions)
 
             console.log(`🔄 Initializing player tabs... Popup count: ${popupCount}/${maxPopups}`);
 
@@ -812,7 +812,7 @@
                 // Check if user has reached popup limit
                 const sessionKey = 'arenastreams_popups_' + window.match.id;
                 let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 6; // Reduced to 6 for better UX
+                const maxPopups = 8; // Match pages get 8 ads max (5 for play + 3 for other interactions)
                 
                 if (popupCount >= maxPopups) {
                     console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -878,9 +878,9 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 1 popup (as requested)
-                    console.log('🎬 First click - triggering 1 popup');
-                    triggerPopups(1);
+                    // First click: Show overlay + trigger 5 popups (required before watching)
+                    console.log('🎬 First click - triggering 5 popups (required before watching)');
+                    triggerPopups(5);
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
@@ -964,9 +964,9 @@
                         console.log('🎬 Play button clicked');
                         
                         if (!hasPlayedBefore) {
-                            // First click: Show overlay + trigger 1 popup (as requested)
-                            console.log('🎬 First click - triggering 1 popup');
-                            triggerPopups(1);
+                            // First click: Show overlay + trigger 5 popups (required before watching)
+                            console.log('🎬 First click - triggering 5 popups (required before watching)');
+                            triggerPopups(5);
                             
                             // Show overlay message
                             streamPlaceholder.innerHTML = `
