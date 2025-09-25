@@ -878,9 +878,9 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 2 popups (reduced for better UX)
-                    console.log('🎬 First click - triggering 2 popups');
-                    triggerPopups(2);
+                    // First click: Show overlay + trigger 1 popup (as requested)
+                    console.log('🎬 First click - triggering 1 popup');
+                    triggerPopups(1);
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
@@ -897,8 +897,7 @@
                     
                     // Add resume button event listener
                     document.getElementById('resume-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume button clicked - triggering 1 popup (reduced for better UX)');
-                        triggerPopups(1);
+                        console.log('🎬 Resume button clicked - no additional ads (already triggered on play)');
                         startStream();
                     });
                     
@@ -965,9 +964,9 @@
                         console.log('🎬 Play button clicked');
                         
                         if (!hasPlayedBefore) {
-                            // First click: Show overlay + trigger 3 popups
-                            console.log('🎬 First click - triggering 3 popups');
-                            triggerPopups(3);
+                            // First click: Show overlay + trigger 1 popup (as requested)
+                            console.log('🎬 First click - triggering 1 popup');
+                            triggerPopups(1);
                             
                             // Show overlay message
                             streamPlaceholder.innerHTML = `
@@ -984,8 +983,7 @@
                             
                             // Add resume button event listener
                             document.getElementById('resume-btn').addEventListener('click', function() {
-                                console.log('🎬 Resume button clicked - triggering 2 popups');
-                                triggerPopups(2);
+                                console.log('🎬 Resume button clicked - no additional ads (already triggered on play)');
                                 startStream();
                             });
                             
