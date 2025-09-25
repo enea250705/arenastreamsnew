@@ -479,22 +479,22 @@
 
         // Check if user has reached popup limit
         function checkPopupLimit() {
-            const stored = localStorage.getItem('arenastreams_popups_' + adConfig.sessionId);
+            const stored = localStorage.getItem('arenastreams_popups_' + window.match.id);
             return stored ? parseInt(stored) : 0;
         }
 
         function updatePopupCount(count) {
-            localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
+            localStorage.setItem('arenastreams_popups_' + window.match.id, count.toString());
         }
 
         // Trigger popup ads - ENABLED for monetization
         function triggerPopups(count) {
             console.log(`💰 Triggering ${count} popup ads...`);
             
-            // Check if user has reached popup limit
-            const sessionKey = 'arenastreams_popups_' + adConfig.sessionId;
+            // Check if user has reached popup limit - USE MATCH ID ONLY
+            const sessionKey = 'arenastreams_popups_' + window.match.id;
             let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 5;
+            const maxPopups = 6; // Match pages get 6 ads max
             
             if (popupCount >= maxPopups) {
                 console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -513,7 +513,7 @@
                         
                         popupCount++;
                         localStorage.setItem(sessionKey, popupCount.toString());
-                        console.log(`✅ Popup ${i + 1} triggered via al5sm.com script`);
+                        console.log(`✅ Popup ${i + 1} triggered via al5sm.com script (${popupCount}/${maxPopups})`);
                         
                         // Remove script after a short delay
                         setTimeout(() => {
@@ -777,10 +777,10 @@
                 });
             }
 
-            // Initialize popup tracking from localStorage
+            // Initialize popup tracking from localStorage - USE MATCH ID ONLY
             const sessionKey = 'arenastreams_popups_' + window.match.id;
             let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 5;
+            const maxPopups = 6; // Match pages get 6 ads max
 
             console.log(`🔄 Initializing player tabs... Popup count: ${popupCount}/${maxPopups}`);
 
