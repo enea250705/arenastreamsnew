@@ -1205,31 +1205,65 @@
                 }
             }
 
-            // Initialize viewer count via SSE
+            // Initialize viewer count via SSE with improved session tracking
             function initViewerCount() {
                 const slug = (window.match && window.match.slug) ? window.match.slug : null;
                 if (!slug) return;
+                
                 try {
                     if (viewerEvtSource) {
                         try { viewerEvtSource.close(); } catch (e) {}
                     }
+                    
+                    // Generate unique session ID to prevent duplicates
+                    const sessionId = `viewer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    
                     const url = `/api/viewers/${encodeURIComponent(slug)}/stream`;
                     viewerEvtSource = new EventSource(url);
+                    
+                    // Set session ID header if possible (some browsers don't support this)
+                    if (viewerEvtSource.setRequestHeader) {
+                        viewerEvtSource.setRequestHeader('X-Session-ID', sessionId);
+                    }
+                    
                     viewerEvtSource.onmessage = (evt) => {
                         try {
                             const data = JSON.parse(evt.data);
                             if (data && typeof data.count === 'number') {
                                 const el = document.getElementById('viewer-count');
-                                if (el) el.textContent = data.count;
+                                if (el) {
+                                    el.textContent = data.count;
+                                    console.log(`📊 Viewer count updated: ${data.count} watching ${slug}`);
+                                }
                             }
-                        } catch (e) {}
+                        } catch (e) {
+                            console.warn('Error parsing viewer count data:', e);
+                        }
                     };
-                    viewerEvtSource.onerror = () => {
+                    
+                    viewerEvtSource.onerror = (error) => {
+                        console.warn('Viewer count SSE error:', error);
                         // Auto-retry in a few seconds
-                        setTimeout(() => initViewerCount(), 5000);
+                        setTimeout(() => {
+                            if (viewerEvtSource && viewerEvtSource.readyState === EventSource.CLOSED) {
+                                initViewerCount();
+                            }
+                        }, 5000);
                     };
+                    
+                    viewerEvtSource.onopen = () => {
+                        console.log(`📡 Viewer count SSE connected for ${slug}`);
+                    };
+                    
+                    // Cleanup on page unload
+                    window.addEventListener('beforeunload', () => {
+                        if (viewerEvtSource) {
+                            viewerEvtSource.close();
+                        }
+                    });
+                    
                 } catch (e) {
-                    console.log('Viewer SSE init failed:', e);
+                    console.error('Viewer SSE init failed:', e);
                 }
             }
 

@@ -1213,31 +1213,94 @@ app.get('/api/streamed/images/:type/:id', async (req, res) => {
   }
 });
 
-// Live viewer counts (in-memory)
+// Live viewer counts (in-memory with improved tracking)
 const viewerClientsBySlug = new Map(); // slug -> Set<res>
+const viewerSessions = new Map(); // sessionId -> { slug, timestamp, lastPing }
+const VIEWER_TIMEOUT = 60000; // 60 seconds timeout
+const CLEANUP_INTERVAL = 30000; // 30 seconds cleanup
 
 function getViewerCount(slug) {
   const set = viewerClientsBySlug.get(slug);
-  return set ? set.size : 0;
+  if (!set) return 0;
+  
+  // Clean up dead connections
+  const now = Date.now();
+  const activeClients = new Set();
+  
+  for (const client of set) {
+    try {
+      // Check if connection is still alive
+      if (client.writable && !client.destroyed) {
+        activeClients.add(client);
+      }
+    } catch (e) {
+      // Connection is dead, skip it
+    }
+  }
+  
+  // Update the set with only active clients
+  viewerClientsBySlug.set(slug, activeClients);
+  
+  return activeClients.size;
 }
 
 function broadcastViewerCount(slug) {
   const set = viewerClientsBySlug.get(slug);
   if (!set) return;
-  const payload = `data: ${JSON.stringify({ slug, count: getViewerCount(slug) })}\n\n`;
+  
+  const count = getViewerCount(slug);
+  const payload = `data: ${JSON.stringify({ slug, count })}\n\n`;
+  
   for (const client of set) {
     try {
-      client.write(payload);
+      if (client.writable && !client.destroyed) {
+        client.write(payload);
+      }
     } catch (e) {
-      // Ignore write errors
+      // Remove dead connection
+      set.delete(client);
     }
   }
 }
+
+// Cleanup dead connections periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [slug, set] of viewerClientsBySlug.entries()) {
+    const activeClients = new Set();
+    
+    for (const client of set) {
+      try {
+        if (client.writable && !client.destroyed) {
+          activeClients.add(client);
+        }
+      } catch (e) {
+        // Skip dead connections
+      }
+    }
+    
+    if (activeClients.size === 0) {
+      viewerClientsBySlug.delete(slug);
+    } else if (activeClients.size !== set.size) {
+      viewerClientsBySlug.set(slug, activeClients);
+      broadcastViewerCount(slug);
+    }
+  }
+  
+  // Clean up old sessions
+  for (const [sessionId, session] of viewerSessions.entries()) {
+    if (now - session.lastPing > VIEWER_TIMEOUT) {
+      viewerSessions.delete(sessionId);
+    }
+  }
+}, CLEANUP_INTERVAL);
 
 // SSE endpoint for a single match slug
 app.get('/api/viewers/:slug/stream', (req, res) => {
   try {
     const { slug } = req.params;
+    const sessionId = req.headers['x-session-id'] || `${Date.now()}-${Math.random()}`;
+    
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
@@ -1245,27 +1308,53 @@ app.get('/api/viewers/:slug/stream', (req, res) => {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.flushHeaders && res.flushHeaders();
 
+    // Check if this session is already connected to avoid duplicates
+    if (viewerSessions.has(sessionId)) {
+      console.log(`Session ${sessionId} already connected, skipping duplicate`);
+      res.end();
+      return;
+    }
+
     if (!viewerClientsBySlug.has(slug)) {
       viewerClientsBySlug.set(slug, new Set());
     }
     const clients = viewerClientsBySlug.get(slug);
     clients.add(res);
 
-    // Send initial count immediately and a comment to open the stream
+    // Track this session
+    viewerSessions.set(sessionId, {
+      slug,
+      timestamp: Date.now(),
+      lastPing: Date.now(),
+      response: res
+    });
+
+    // Send initial count immediately
     res.write(': connected\n\n');
     res.write(`data: ${JSON.stringify({ slug, count: getViewerCount(slug) })}\n\n`);
 
-    // Heartbeat to keep connection alive (and bypass proxies)
+    // Heartbeat to keep connection alive and detect dead connections
     const ping = setInterval(() => {
       try {
-        res.write(': ping\n\n');
+        if (res.writable && !res.destroyed) {
+          res.write(': ping\n\n');
+          // Update last ping time
+          const session = viewerSessions.get(sessionId);
+          if (session) {
+            session.lastPing = Date.now();
+          }
+        } else {
+          clearInterval(ping);
+        }
       } catch (e) {
-        // noop
+        clearInterval(ping);
       }
-    }, 25000);
+    }, 15000); // Reduced to 15 seconds for better accuracy
 
     req.on('close', () => {
       clearInterval(ping);
+      
+      // Remove from clients
       const set = viewerClientsBySlug.get(slug);
       if (set) {
         set.delete(res);
@@ -1275,11 +1364,19 @@ app.get('/api/viewers/:slug/stream', (req, res) => {
           broadcastViewerCount(slug);
         }
       }
+      
+      // Remove session tracking
+      viewerSessions.delete(sessionId);
+      
+      console.log(`Viewer disconnected from ${slug}, count: ${getViewerCount(slug)}`);
     });
 
     // Notify others of new viewer
     broadcastViewerCount(slug);
+    console.log(`New viewer connected to ${slug}, count: ${getViewerCount(slug)}`);
+    
   } catch (error) {
+    console.error('SSE connection error:', error);
     try { res.end(); } catch (e) {}
   }
 });
