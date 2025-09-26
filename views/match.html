@@ -222,10 +222,10 @@
                         <iframe id="stream-player" 
                                 src="" 
                                 frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                                 allowfullscreen
                                 class="w-full h-full hidden">
-                        --></iframe>
+                        </iframe>
                     </div>
                     
                     <!-- Player Controls -->
@@ -236,6 +236,9 @@
                             </button>
                             <button id="refresh-stream-btn" class="bg-gray-700 text-white font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base">
                                 🔄 Refresh Stream
+                            </button>
+                            <button id="fullscreen-btn" class="bg-gray-700 text-white font-bold py-2 px-4 sm:py-2 sm:px-6 rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base hidden">
+                                ⛶ Fullscreen
                             </button>
                         </div>
                         <p class="text-gray-400 text-xs sm:text-sm mt-2 px-4">
@@ -713,6 +716,7 @@
             const playBtn = document.getElementById('play-btn');
             const playPauseBtn = document.getElementById('play-pause-btn');
             const refreshBtn = document.getElementById('refresh-stream-btn');
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
             const playerContainer = document.getElementById('player-container');
             const streamPlayer = document.getElementById('stream-player');
             const streamPlaceholder = document.getElementById('stream-placeholder');
@@ -812,7 +816,7 @@
                 // Check if user has reached popup limit
                 const sessionKey = 'arenastreams_popups_' + window.match.id;
                 let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 8; // Match pages get 8 ads max (5 for play + 3 for other interactions)
+                const maxPopups = 5; // Reduced to 5 for better UX
                 
                 if (popupCount >= maxPopups) {
                     console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -878,9 +882,9 @@
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 5 popups (required before watching)
-                    console.log('🎬 First click - triggering 5 popups (required before watching)');
-                    triggerPopups(5);
+                    // First click: Show overlay + trigger 1 popup only
+                    console.log('🎬 First click - triggering 1 popup');
+                    triggerPopups(1);
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
@@ -897,7 +901,7 @@
                     
                     // Add resume button event listener
                     document.getElementById('resume-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume button clicked - no additional ads (already triggered on play)');
+                        console.log('🎬 Resume button clicked - starting stream without ads');
                         startStream();
                     });
                     
@@ -916,6 +920,7 @@
                     streamPlaceholder.style.display = 'none';
                     streamPlayer.classList.remove('hidden');
                     playPauseBtn.classList.remove('hidden');
+                    fullscreenBtn.classList.remove('hidden');
                     isStreamPlaying = true;
                     
                     console.log('✅ Stream started successfully');
@@ -1011,19 +1016,31 @@
             // Play/Pause button functionality (only after stream starts)
             playPauseBtn.addEventListener('click', function() {
                 if (isStreamPlaying) {
-                    // Pause stream
+                    // Pause stream - NO ADS
                     streamPlayer.classList.add('hidden');
                     streamPlaceholder.style.display = 'flex';
                     streamPlaceholder.innerHTML = `
                         <div class="text-center">
                             <div class="text-6xl text-gray-600 mb-4">⏸️</div>
                             <p class="text-gray-400">Stream paused</p>
+                            <button id="resume-stream-btn" class="bg-primary text-dark font-bold py-2 px-4 rounded-lg hover:bg-yellow-400 transition-colors mt-4">
+                                ▶️ Resume Stream
+                            </button>
                         </div>
                     `;
                     playPauseBtn.innerHTML = '▶️ Resume';
                     isStreamPlaying = false;
+                    
+                    // Add resume button event listener - NO ADS
+                    document.getElementById('resume-stream-btn').addEventListener('click', function() {
+                        console.log('🎬 Resume stream button clicked - no ads');
+                        streamPlayer.classList.remove('hidden');
+                        streamPlaceholder.style.display = 'none';
+                        playPauseBtn.innerHTML = '⏸️ Pause';
+                        isStreamPlaying = true;
+                    });
                 } else {
-                    // Resume stream
+                    // Resume stream - NO ADS
                     streamPlayer.classList.remove('hidden');
                     streamPlaceholder.style.display = 'none';
                     playPauseBtn.innerHTML = '⏸️ Pause';
@@ -1035,13 +1052,43 @@
             refreshBtn.addEventListener('click', function() {
                 console.log('🔄 Refreshing stream...');
                 
-                // Trigger ad on refresh (20% chance - reduced for better UX)
-                if (Math.random() < 0.2) {
-                    console.log('💰 Refresh ad triggered via al5sm.com');
-                    triggerPopups(1);
-                }
+                // No ads on refresh - let users refresh freely
                 
                 loadStream();
+            });
+
+            // Fullscreen button functionality
+            fullscreenBtn.addEventListener('click', function() {
+                console.log('⛶ Toggling fullscreen...');
+                
+                if (!document.fullscreenElement) {
+                    // Enter fullscreen
+                    if (playerContainer.requestFullscreen) {
+                        playerContainer.requestFullscreen();
+                    } else if (playerContainer.webkitRequestFullscreen) {
+                        playerContainer.webkitRequestFullscreen();
+                    } else if (playerContainer.msRequestFullscreen) {
+                        playerContainer.msRequestFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '⛶ Exit Fullscreen';
+                } else {
+                    // Exit fullscreen
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '⛶ Fullscreen';
+                }
+            });
+
+            // Listen for fullscreen changes
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement) {
+                    fullscreenBtn.innerHTML = '⛶ Fullscreen';
+                }
             });
 
 
@@ -1050,11 +1097,7 @@
                 if (e.target.classList.contains('player-tab')) {
                     console.log('🎯 Player tab clicked:', e.target.dataset.player);
                     
-                    // Trigger ad on player switch (10% chance - reduced for better UX)
-                    if (Math.random() < 0.1) {
-                        console.log('💰 Player switch ad triggered via al5sm.com');
-                        triggerPopups(1);
-                    }
+                    // No ads on player switch - let users switch freely
                     
                     // Update active tab
                     const allTabs = document.querySelectorAll('.player-tab');
@@ -1182,61 +1225,11 @@
             let adTimer = null;
             let pageVisibilityTimer = null;
             
-            // Start periodic ads after 30 seconds of page load
-            setTimeout(() => {
-                console.log('💰 Starting periodic ad triggers...');
-                adTimer = setInterval(() => {
-                    // Trigger ad every 2-3 minutes (randomized)
-                    const randomDelay = Math.random() * 60000 + 120000; // 2-3 minutes
-                    setTimeout(() => {
-                        if (Math.random() < 0.3) { // 30% chance - reduced for better UX
-                            console.log('💰 Periodic ad triggered via al5sm.com');
-                            triggerPopups(1);
-                        }
-                    }, randomDelay);
-                }, 180000); // Check every 3 minutes
-            }, 30000); // Start after 30 seconds
+            // Disabled periodic ads - they interfere with user experience
             
-            // Page visibility change ads
-            document.addEventListener('visibilitychange', function() {
-                if (document.hidden) {
-                    console.log('👁️ Page hidden - stopping ad timers');
-                    if (adTimer) clearInterval(adTimer);
-                    if (pageVisibilityTimer) clearTimeout(pageVisibilityTimer);
-                } else {
-                    console.log('👁️ Page visible - resuming ad timers');
-                    // Trigger ad when user returns to page (15% chance - reduced for better UX)
-                    if (Math.random() < 0.15) {
-                        console.log('💰 Page visibility ad triggered via al5sm.com');
-                        triggerPopups(1);
-                    }
-                    
-                    // Restart periodic ads
-                    setTimeout(() => {
-                        adTimer = setInterval(() => {
-                            const randomDelay = Math.random() * 60000 + 120000;
-                            setTimeout(() => {
-                                if (Math.random() < 0.3) { // 30% chance - reduced for better UX
-                                    console.log('💰 Periodic ad triggered via al5sm.com');
-                                    triggerPopups(1);
-                                }
-                            }, randomDelay);
-                        }, 180000);
-                    }, 10000); // Restart after 10 seconds
-                }
-            });
+            // Disabled page visibility ads - they interfere with user experience
             
-            // Scroll-based ad triggers
-            let scrollAdTriggered = false;
-            window.addEventListener('scroll', function() {
-                if (!scrollAdTriggered && window.scrollY > 500) {
-                    scrollAdTriggered = true;
-                    if (Math.random() < 0.15) { // 15% chance - reduced for better UX
-                        console.log('💰 Scroll ad triggered via al5sm.com');
-                        triggerPopups(1);
-                    }
-                }
-            });
+            // Disabled scroll ads - they interfere with user experience
             
             // Cleanup on page unload
             window.addEventListener('beforeunload', function() {
