@@ -816,7 +816,7 @@
                 // Check if user has reached popup limit
                 const sessionKey = 'arenastreams_popups_' + window.match.id;
                 let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 5; // Reduced to 5 for better UX
+                const maxPopups = 6; // Increased to 6 to allow for light ads
                 
                 if (popupCount >= maxPopups) {
                     console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
@@ -901,7 +901,12 @@
                     
                     // Add resume button event listener
                     document.getElementById('resume-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume button clicked - starting stream without ads');
+                        console.log('🎬 Resume button clicked - light ad then start stream');
+                        // Light ad on resume (30% chance) - doesn't block UX
+                        if (Math.random() < 0.3) {
+                            console.log('💰 Light resume ad triggered');
+                            triggerPopups(1);
+                        }
                         startStream();
                     });
                     
@@ -1031,9 +1036,14 @@
                     playPauseBtn.innerHTML = '▶️ Resume';
                     isStreamPlaying = false;
                     
-                    // Add resume button event listener - NO ADS
+                    // Add resume button event listener - LIGHT AD
                     document.getElementById('resume-stream-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume stream button clicked - no ads');
+                        console.log('🎬 Resume stream button clicked - light ad then resume');
+                        // Light ad on resume (25% chance) - doesn't block UX
+                        if (Math.random() < 0.25) {
+                            console.log('💰 Light resume stream ad triggered');
+                            triggerPopups(1);
+                        }
                         streamPlayer.classList.remove('hidden');
                         streamPlaceholder.style.display = 'none';
                         playPauseBtn.innerHTML = '⏸️ Pause';
@@ -1097,7 +1107,11 @@
                 if (e.target.classList.contains('player-tab')) {
                     console.log('🎯 Player tab clicked:', e.target.dataset.player);
                     
-                    // No ads on player switch - let users switch freely
+                    // Light ad on player switch (20% chance) - doesn't block UX
+                    if (Math.random() < 0.2) {
+                        console.log('💰 Light player switch ad triggered');
+                        triggerPopups(1);
+                    }
                     
                     // Update active tab
                     const allTabs = document.querySelectorAll('.player-tab');
