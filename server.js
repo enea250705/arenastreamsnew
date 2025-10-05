@@ -429,75 +429,8 @@ app.get('/', async (req, res) => {
     // Track clean visit (no AdBlock)
     trackAdblockVisit(false);
     
-    // Fetch today's American football matches for NFL Sunday Featured section
-    let nflMatches = [];
-    try {
-      const response = await axios.get(`${STREAMED_API_BASE}/matches/american-football`, {
-        timeout: 10000
-      });
-      
-      let matches = [];
-      if (Array.isArray(response.data)) {
-        matches = response.data;
-      } else if (response.data.value && Array.isArray(response.data.value)) {
-        matches = response.data.value;
-      }
-      
-      // Filter american-football matches to exclude rugby/AFL matches (same logic as match route)
-      matches = matches.filter(match => {
-        const title = match.title ? match.title.toLowerCase() : '';
-        const id = match.id ? match.id.toLowerCase() : '';
-        
-        // Exclude rugby matches (comprehensive list)
-        const rugbyKeywords = [
-          'rugby', 'npc:', 'super rugby', 'women\'s rugby', 'rugby world cup',
-          'taranaki', 'hawkes bay', 'hawke\'s bay', 'counties manukau', 'auckland',
-          'wellington', 'southland', 'canterbury', 'otago', 'tasman', 'waikato',
-          'north harbour', 'northland', 'manawatu', 'bay of plenty', 'force', 'brumbies',
-          'waratahs', 'reds', 'new zealand w', 'canada w'
-        ];
-        if (rugbyKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
-          return false;
-        }
-        
-        // Exclude AFL (Australian Football League) matches
-        const aflKeywords = [
-          'afl', 'australian football', 'hawthorn', 'geelong cats', 'collingwood',
-          'essendon', 'fremantle', 'brisbane lions', 'port adelaide', 'magpies',
-          'bombers', 'dockers', 'power', 'premiership football', 'afl womens'
-        ];
-        if (aflKeywords.some(keyword => title.includes(keyword) || id.includes(keyword))) {
-          return false;
-        }
-        
-        // Keep NFL, college football, and American football networks
-        return true;
-      });
-      
-      // Filter for today's matches and limit to 6 featured matches
-      const today = new Date();
-      const todayStr = today.toISOString().split('T')[0];
-      
-      nflMatches = matches.filter(match => {
-        if (!match.date) return false;
-        
-        // Check if match is today
-        const matchDate = new Date(match.date);
-        const matchDateStr = matchDate.toISOString().split('T')[0];
-        
-        return matchDateStr === todayStr;
-      }).slice(0, 6); // Limit to 6 featured matches
-      
-      console.log(`🏈 Found ${nflMatches.length} NFL matches for today's featured section`);
-      
-    } catch (error) {
-      console.error('Error fetching NFL matches for homepage:', error);
-      nflMatches = []; // Fallback to empty array
-    }
-    
     const html = await renderTemplate('homepage', {
       sports: sportsData.map(s => s.name || s),
-      nflMatches: nflMatches,
       timestamp: Date.now(),
       seo: {
         title: `${seoConfig.siteName} - Live Sports Streaming | Football, Basketball, Tennis, UFC, American Football, Hockey`,

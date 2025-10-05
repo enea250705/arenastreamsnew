@@ -267,8 +267,7 @@
         </section>
 
         <!-- NFL Sunday Featured Section -->
-        {{#if nflMatches.length}}
-        <section class="mb-12">
+        <section class="mb-12" id="nfl-featured-section" style="display: none;">
             <div class="text-center mb-8">
                 <h3 class="text-3xl font-bold mb-4">
                     🏈 NFL Sunday <span class="text-primary">Featured</span>
@@ -276,39 +275,24 @@
                 <p class="text-gray-400 text-lg">Today's NFL matches - Watch live streams in HD</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {{#each nflMatches}}
-                <div class="bg-dark border-2 border-gray-800 rounded-xl p-6 hover:border-primary hover:bg-gray-800 transition-all duration-300 group">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-2xl">🏈</span>
-                            <span class="text-sm text-gray-400">{{competition}}</span>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            <span class="text-xs text-gray-400">Live</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center mb-4">
-                        <h4 class="font-bold text-lg text-white mb-2 group-hover:text-primary transition-colors">
-                            {{title}}
-                        </h4>
-                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-300">
-                            <span class="font-semibold">{{teamA}}</span>
-                            <span class="text-gray-500">vs</span>
-                            <span class="font-semibold">{{teamB}}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="/match/{{slug}}" 
-                           class="inline-block bg-primary text-dark font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors group-hover:scale-105 transform duration-300">
-                            Watch Live Stream
-                        </a>
-                    </div>
+            <!-- Loading State -->
+            <div id="nfl-loading" class="text-center py-8">
+                <div class="inline-flex items-center space-x-2 text-gray-400">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span>Loading NFL matches...</span>
                 </div>
-                {{/each}}
+            </div>
+            
+            <!-- NFL Matches Grid -->
+            <div id="nfl-matches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto" style="display: none;">
+                <!-- Matches will be populated here by JavaScript -->
+            </div>
+            
+            <!-- No Matches State -->
+            <div id="nfl-no-matches" class="text-center py-8" style="display: none;">
+                <div class="text-4xl text-gray-600 mb-4">🏈</div>
+                <p class="text-gray-400 mb-2">No NFL matches found for today</p>
+                <p class="text-gray-500 text-sm">Check back later or visit the American Football section</p>
             </div>
             
             <div class="text-center mt-6">
@@ -318,7 +302,6 @@
                 </a>
             </div>
         </section>
-        {{/if}}
 
         <!-- Global Search Section -->
         <section class="mb-12">
@@ -770,10 +753,127 @@
         }
 
 
-        // Initialize homepage
+            // Load NFL matches for featured section
+            async function loadNFLMatches() {
+                try {
+                    console.log('🏈 Loading NFL matches for homepage featured section...');
+                    
+                    // Show loading state
+                    document.getElementById('nfl-featured-section').style.display = 'block';
+                    document.getElementById('nfl-loading').style.display = 'block';
+                    document.getElementById('nfl-matches-grid').style.display = 'none';
+                    document.getElementById('nfl-no-matches').style.display = 'none';
+                    
+                    // Fetch American football matches using the same API as american-football page
+                    const response = await fetch('/api/streamed/matches/american-football');
+                    const data = await response.json();
+                    
+                    let matches = [];
+                    if (Array.isArray(data)) {
+                        matches = data;
+                    } else if (data.value && Array.isArray(data.value)) {
+                        matches = data.value;
+                    }
+                    
+                    console.log(`🏈 Found ${matches.length} American football matches`);
+                    
+                    // Filter for today's matches and limit to 6 featured matches
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+                    
+                    const todayMatches = matches.filter(match => {
+                        if (!match.date) return false;
+                        
+                        // Check if match is today
+                        const matchDate = new Date(match.date);
+                        const matchDateStr = matchDate.toISOString().split('T')[0];
+                        
+                        return matchDateStr === todayStr;
+                    }).slice(0, 6); // Limit to 6 featured matches
+                    
+                    console.log(`🏈 Found ${todayMatches.length} NFL matches for today's featured section`);
+                    
+                    // Hide loading state
+                    document.getElementById('nfl-loading').style.display = 'none';
+                    
+                    if (todayMatches.length > 0) {
+                        // Render matches
+                        const grid = document.getElementById('nfl-matches-grid');
+                        grid.innerHTML = todayMatches.map(match => {
+                            const matchTitle = match.title || `${match.teamA} vs ${match.teamB}`;
+                            const matchSlug = match.slug || match.id || 'nfl-match';
+                            const competition = match.competition || match.category || 'NFL';
+                            
+                            return `
+                                <div class="bg-dark border-2 border-gray-800 rounded-xl p-6 hover:border-primary hover:bg-gray-800 transition-all duration-300 group">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-2xl">🏈</span>
+                                            <span class="text-sm text-gray-400">${competition}</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                            <span class="text-xs text-gray-400">Live</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center mb-4">
+                                        <h4 class="font-bold text-lg text-white mb-2 group-hover:text-primary transition-colors">
+                                            ${matchTitle}
+                                        </h4>
+                                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-300">
+                                            <span class="font-semibold">${match.teamA || 'Team A'}</span>
+                                            <span class="text-gray-500">vs</span>
+                                            <span class="font-semibold">${match.teamB || 'Team B'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <a href="/match/${matchSlug}" 
+                                           class="inline-block bg-primary text-dark font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors group-hover:scale-105 transform duration-300">
+                                            Watch Live Stream
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        // Show matches grid
+                        grid.style.display = 'grid';
+                        document.getElementById('nfl-no-matches').style.display = 'none';
+                        
+                        // Track NFL featured section view
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'nfl_featured_view', {
+                                event_category: 'NFL Featured',
+                                event_label: 'Homepage',
+                                value: todayMatches.length
+                            });
+                        }
+                        
+                    } else {
+                        // No matches found
+                        document.getElementById('nfl-matches-grid').style.display = 'none';
+                        document.getElementById('nfl-no-matches').style.display = 'block';
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error loading NFL matches for homepage:', error);
+                    
+                    // Hide loading and show error state
+                    document.getElementById('nfl-loading').style.display = 'none';
+                    document.getElementById('nfl-matches-grid').style.display = 'none';
+                    document.getElementById('nfl-no-matches').style.display = 'block';
+                }
+            }
+
+            // Initialize homepage
         document.addEventListener('DOMContentLoaded', function() {
             // Display today's date immediately
             displayTodaysDate();
+            
+            // Load NFL matches for featured section
+            loadNFLMatches();
 
             // Copy link button functionality (Desktop) - Copy arenastreams.com like on match page
             const copyLinkBtn = document.getElementById('copy-link-btn');
