@@ -106,33 +106,11 @@ router.get('/', async (req, res) => {
   try {
     const matchesData = await loadMatchesFromStorage();
     
-    // Fetch AdBlock statistics
-    let adblockStats = {
-      totalVisits: 0,
-      adblockVisits: 0,
-      cleanVisits: 0,
-      adblockPercentage: 0,
-      cleanPercentage: 0,
-      dailyStats: {}
-    };
-    
-    try {
-      // Use relative URL to work in both development and production
-      const baseUrl = req.protocol + '://' + req.get('host');
-      const response = await fetch(`${baseUrl}/api/admin/adblock-stats`);
-      if (response.ok) {
-        adblockStats = await response.json();
-      }
-    } catch (error) {
-      console.error('Error fetching AdBlock stats:', error);
-    }
-    
     const stats = {
       totalMatches: matchesData.length,
       matchesBySport: {},
       todayMatches: 0,
       upcomingMatches: 0,
-      adblock: adblockStats
     };
     
     const today = new Date().toISOString().split('T')[0];

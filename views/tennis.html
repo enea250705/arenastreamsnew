@@ -37,7 +37,7 @@
     })({})
     </script>
     
-    <script>(s=>{s.dataset.zone='9879600',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{seo.title}}</title>
@@ -137,31 +137,7 @@
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', lazyLoadImages);
     </script>
-    
-    <!-- Service Worker for Ad Control -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            // Register original service worker (propeller tracking)
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('✅ Propeller Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.log('❌ Propeller Service Worker registration failed:', error);
-                });
-            
-            // Register custom ad protection service worker
-            navigator.serviceWorker.register('/sw-custom.js')
-                .then(registration => {
-                    console.log('🛡️ ArenaStreams Ad Protection SW registered:', registration);
-                })
-                .catch(error => {
-                    console.log('❌ ArenaStreams Ad Protection SW registration failed:', error);
-                });
-        }
-    </script>
-    
-    <!-- Advanced Schema.org JSON-LD - 11/10 SEO -->
+<!-- Advanced Schema.org JSON-LD - 11/10 SEO -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -478,15 +454,7 @@
         <section class="mb-12">
             <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 max-w-4xl mx-auto">
                 <p class="text-gray-400 text-sm mb-2 text-center">Advertisement</p>
-                <div class="text-center">
-                    <!-- Real Banner Ad -->
-                    <!-- <iframe src="https://otieu.com/4/9889886" 
-                            width="728" height="90" 
-                            frameborder="0" 
-                            scrolling="no"
-                            style="max-width: 100%; height: auto;">
-                    --></iframe>
-                    <p class="text-xs mt-2 text-gray-500">728x90 Banner Ad</p>
+                <div class="text-center"><p class="text-xs mt-2 text-gray-500">728x90 Banner Ad</p>
                 </div>
             </div>
         </section>
@@ -775,97 +743,9 @@
                 });
             }
             
-            // Ad configuration (moved to DOMContentLoaded)
-            // Check if user has reached popup limit
-            function checkPopupLimit() {
-                const stored = localStorage.getItem('arenastreams_popups_' + adConfig.sessionId);
-                return stored ? parseInt(stored) : 0;
-            }
-            
             function updatePopupCount(count) {
                 localStorage.setItem('arenastreams_popups_' + adConfig.sessionId, count.toString());
-            }
-            
-            // Trigger popup ads - ENABLED for monetization
-            function triggerPopups(count) {
-                console.log(`💰 Triggering ${count} popup ads...`);
-                
-                // Check if user has reached popup limit
-                const sessionKey = 'arenastreams_popups_' + adConfig.sessionId;
-                let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 5;
-                
-                if (popupCount >= maxPopups) {
-                    console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
-                    return;
-                }
-                
-                // Trigger popup ads
-                for (let i = 0; i < count; i++) {
-                    setTimeout(() => {
-                        try {
-                            const script = document.createElement('script');
-                            script.dataset.zone = '9879600';
-                            script.src = 'https://al5sm.com/tag.min.js';
-                            script.async = true;
-                            document.head.appendChild(script);
-                            
-                            popupCount++;
-                            localStorage.setItem(sessionKey, popupCount.toString());
-                            console.log(`✅ Popup ${i + 1} triggered via al5sm.com script`);
-                            
-                            // Remove script after a short delay
-                            setTimeout(() => {
-                                if (script.parentNode) {
-                                    script.parentNode.removeChild(script);
-                                }
-                            }, 3000);
-                        } catch (error) {
-                            console.log('❌ Popup failed:', error);
-                        }
-                    }, i * 2000); // Stagger popups by 2 seconds
-                }
-            }
-            
-            // Initialize popup tracking from localStorage
-            const sessionKey = 'arenastreams_popups_' + window.location.pathname;
-            let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 5;
-            
-            // Re-enable monetized popup ads - ENABLED for monetization
-            window.triggerPopups = function triggerPopups(count) {
-                console.log(`💰 Triggering ${count} popup ads...`);
-                
-                // Check if user has reached popup limit
-                const sessionKey = 'arenastreams_popups_' + window.location.pathname;
-                let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 5;
-                
-                if (popupCount >= maxPopups) {
-                    console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
-                    return;
-                }
-                
-                // Trigger popup ads
-                for (let i = 0; i < count; i++) {
-                    setTimeout(() => {
-                        try {
-                            const script = document.createElement('script');
-                            script.dataset.zone = '9879600';
-                            script.src = 'https://al5sm.com/tag.min.js';
-                            script.async = true;
-                            document.head.appendChild(script);
-                            
-                            popupCount++;
-                            localStorage.setItem(sessionKey, popupCount.toString());
-                            console.log(`✅ Popup ${i + 1} triggered via al5sm.com script`);
-                            
-                            // Remove script after a short delay
-                            setTimeout(() => {
-                                if (script.parentNode) {
-                                    script.parentNode.removeChild(script);
-                                }
-                            }, 3000);
+            }, 3000);
                         } catch (error) {
                             console.log('❌ Popup failed:', error);
                         }

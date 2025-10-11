@@ -17,64 +17,6 @@ handlebars.registerHelper('json', function(context) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// AdBlock tracking system
-const adblockStats = {
-  totalVisits: 0,
-  adblockVisits: 0,
-  cleanVisits: 0,
-  dailyStats: {},
-  lastReset: new Date().toISOString().split('T')[0]
-};
-
-// Reset daily stats if new day
-function resetDailyStatsIfNeeded() {
-  const today = new Date().toISOString().split('T')[0];
-  if (adblockStats.lastReset !== today) {
-    adblockStats.dailyStats = {};
-    adblockStats.lastReset = today;
-  }
-}
-
-// Track AdBlock visits
-function trackAdblockVisit(isAdblock) {
-  resetDailyStatsIfNeeded();
-  const today = new Date().toISOString().split('T')[0];
-  
-  adblockStats.totalVisits++;
-  if (isAdblock) {
-    adblockStats.adblockVisits++;
-    console.log(`🚫 AdBlock visit tracked - Total: ${adblockStats.totalVisits}, AdBlock: ${adblockStats.adblockVisits}`);
-  } else {
-    adblockStats.cleanVisits++;
-    console.log(`✅ Clean visit tracked - Total: ${adblockStats.totalVisits}, Clean: ${adblockStats.cleanVisits}`);
-  }
-  
-  if (!adblockStats.dailyStats[today]) {
-    adblockStats.dailyStats[today] = { adblock: 0, clean: 0 };
-  }
-  
-  if (isAdblock) {
-    adblockStats.dailyStats[today].adblock++;
-  } else {
-    adblockStats.dailyStats[today].clean++;
-  }
-  
-  console.log(`📊 Daily stats for ${today}:`, adblockStats.dailyStats[today]);
-}
-
-// Get AdBlock statistics
-function getAdblockStats() {
-  resetDailyStatsIfNeeded();
-  return {
-    ...adblockStats,
-    adblockPercentage: adblockStats.totalVisits > 0 ? 
-      Math.round((adblockStats.adblockVisits / adblockStats.totalVisits) * 100) : 0,
-    cleanPercentage: adblockStats.totalVisits > 0 ? 
-      Math.round((adblockStats.cleanVisits / adblockStats.totalVisits) * 100) : 0
-  };
-}
-
-
 // Advanced Security Headers for 11/10 SEO
 app.use(helmet({
   contentSecurityPolicy: {
@@ -85,14 +27,6 @@ app.use(helmet({
         "'self'",
         "'unsafe-inline'",
         "https://cdn.tailwindcss.com",
-        // Ads / partners
-        "https://fpyf8.com",
-        "https://kt.restowelected.com",
-        "https://np.mournersamoa.com",
-        "https://madurird.com",
-        "https://al5sm.com",
-        "https://shoukigaigoors.net",
-        "https://tzegilo.com",
         // Google Analytics / Tag Manager
         "https://www.googletagmanager.com",
         "https://www.google-analytics.com"
@@ -158,32 +92,6 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
-// Serve a tiny 1x1 GIF at a common ad path so the adblock probe doesn't 404
-app.get('/ads/ad.gif', (req, res) => {
-  try {
-    const base64Gif = 'R0lGODlhAQABAPAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
-    const buf = Buffer.from(base64Gif, 'base64');
-    res.set({
-      'Content-Type': 'image/gif',
-      'Cache-Control': 'public, max-age=31536000, immutable'
-    });
-    res.end(buf);
-  } catch (e) {
-    res.status(204).end();
-  }
-});
-
-// Serve a test script for adblock detection
-app.get('/ads/test.js', (req, res) => {
-  res.set({
-    'Content-Type': 'application/javascript',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0'
-  });
-  res.send('// Adblock detection test script\nwindow.adblockTest = true;');
-});
-
 // HTML minification middleware (after static, before routes)
 app.use(async (req, res, next) => {
   // Only minify HTML responses
@@ -217,20 +125,6 @@ app.get('/sw.js', (req, res) => {
     res.set('Content-Type', 'application/javascript');
     res.set('Service-Worker-Allowed', '/');
     res.sendFile(path.join(__dirname, 'sw.js'));
-});
-
-// Serve custom ad protection service worker
-app.get('/sw-custom.js', (req, res) => {
-    res.set('Content-Type', 'application/javascript');
-    res.set('Service-Worker-Allowed', '/');
-    res.sendFile(path.join(__dirname, 'sw-custom.js'));
-});
-
-// Serve adblock-specific service worker
-app.get('/sw.adblock.js', (req, res) => {
-  res.set('Content-Type', 'application/javascript');
-  res.set('Service-Worker-Allowed', '/');
-  res.sendFile(path.join(__dirname, 'sw.adblock.js'));
 });
 
 app.use(cors());
@@ -426,9 +320,6 @@ async function renderTemplate(templateName, data) {
 // Homepage route - API only with advanced SEO
 app.get('/', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('homepage', {
       sports: sportsData.map(s => s.name || s),
       timestamp: Date.now(),
@@ -496,9 +387,6 @@ Object.keys(seoConfig.sports).forEach(sport => {
 // Match page route - fetch real data from Streamed.pk
 app.get('/match/:slug', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const { slug } = req.params;
     
     // Try to find the match by searching through all sports
@@ -831,9 +719,6 @@ app.get('/match/:slug', async (req, res) => {
 // Sport page routes
 app.get('/football', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('football', {});
     res.send(html);
   } catch (error) {
@@ -844,9 +729,6 @@ app.get('/football', async (req, res) => {
 
 app.get('/basketball', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('basketball', {});
     res.send(html);
   } catch (error) {
@@ -857,9 +739,6 @@ app.get('/basketball', async (req, res) => {
 
 app.get('/tennis', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('tennis', {});
     res.send(html);
   } catch (error) {
@@ -870,9 +749,6 @@ app.get('/tennis', async (req, res) => {
 
 app.get('/ufc', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('ufc', {});
     res.send(html);
   } catch (error) {
@@ -883,9 +759,6 @@ app.get('/ufc', async (req, res) => {
 
 app.get('/rugby', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const sport = seoConfig.sports.rugby;
     const html = await renderTemplate('rugby', {
       sport: sport,
@@ -912,9 +785,6 @@ app.get('/rugby', async (req, res) => {
 
 app.get('/baseball', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const html = await renderTemplate('baseball', {});
     res.send(html);
   } catch (error) {
@@ -925,9 +795,6 @@ app.get('/baseball', async (req, res) => {
 
 app.get('/american-football', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const sport = seoConfig.sports['american-football'];
     const html = await renderTemplate('americanfootball', {
       sport: sport,
@@ -954,9 +821,6 @@ app.get('/american-football', async (req, res) => {
 
 app.get('/hockey', async (req, res) => {
   try {
-    // Track clean visit (no AdBlock)
-    trackAdblockVisit(false);
-    
     const sport = seoConfig.sports.hockey;
     const html = await renderTemplate('hockey', {
       sport: sport,
@@ -1687,34 +1551,6 @@ app.get('/terms', async (req, res) => {
   } catch (error) {
     console.error('Error rendering terms page:', error);
     res.status(500).send('Internal Server Error');
-  }
-});
-
-// API endpoint for client to track AdBlock status
-app.post('/api/track-adblock', (req, res) => {
-  try {
-    const { adblock, page, timestamp } = req.body;
-    console.log(`📊 Client tracking AdBlock status: ${adblock ? 'ON' : 'OFF'} on page: ${page}`);
-    
-    // Track the visit
-    trackAdblockVisit(adblock);
-    
-    res.json({ success: true, tracked: true });
-  } catch (error) {
-    console.error('Error tracking AdBlock status:', error);
-    res.status(500).json({ error: 'Failed to track AdBlock status' });
-  }
-});
-
-// API endpoint for admin to get AdBlock statistics
-app.get('/api/admin/adblock-stats', (req, res) => {
-  try {
-    const stats = getAdblockStats();
-    console.log('📊 AdBlock stats requested:', stats);
-    res.json(stats);
-  } catch (error) {
-    console.error('Error getting AdBlock stats:', error);
-    res.status(500).json({ error: 'Failed to get AdBlock statistics' });
   }
 });
 

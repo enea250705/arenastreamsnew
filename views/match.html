@@ -34,8 +34,6 @@
     l.parentNode.insertBefore(s, l);
     })({})
     </script>
-    
-    <script>(s=>{s.dataset.zone='9879600',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{match.teamA}} vs {{match.teamB}} Live Stream {{match.competition}} {{match.date}} | ArenaStreams</title>
@@ -261,41 +259,8 @@
                             </button>
                         </div>
                         <p class="text-gray-400 text-xs sm:text-sm mt-2 px-4">
-                            Click Play to start streaming. Ads may appear to support free service.
+                            Click Play to start streaming.
                         </p>
-                    </div>
-                </div>
-                
-                <!-- Enhanced Banner Ads -->
-                <div class="mt-4 sm:mt-6 text-center">
-                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-2 sm:p-4">
-                        <p class="text-gray-400 text-xs sm:text-sm mb-2">Advertisement</p>
-                        <div class="text-center">
-                            <!-- Real Banner Ad -->
-                            <iframe src="https://otieu.com/4/9889886" 
-                                    width="728" height="90" 
-                                    frameborder="0" 
-                                    scrolling="no"
-                                    style="max-width: 100%; height: auto;">
-                            </iframe>
-                            <p class="text-xs mt-2 text-gray-500">Advertisement</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Additional Banner Ad -->
-                <div class="mt-4 text-center">
-                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-2 sm:p-4">
-                        <p class="text-gray-400 text-xs sm:text-sm mb-2">Advertisement</p>
-                        <div class="text-center">
-                            <iframe src="https://otieu.com/4/9879177" 
-                                    width="728" height="90" 
-                                    frameborder="0" 
-                                    scrolling="no"
-                                    style="max-width: 100%; height: auto;">
-                            </iframe>
-                            <p class="text-xs mt-2 text-gray-500">Advertisement</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -388,10 +353,6 @@
                             <span class="text-white">3 Available</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Ads:</span>
-                            <span class="text-white">Minimal</span>
-                        </div>
-                        <div class="flex justify-between">
                             <span class="text-gray-400">Mobile:</span>
                             <span class="text-green-500">Supported</span>
                         </div>
@@ -400,22 +361,6 @@
                             <span class="text-green-500">Free</span>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Sidebar Ad Section -->
-            <div class="mt-6 text-center">
-                <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
-                    <p class="text-gray-400 text-sm mb-3">Advertisement</p>
-                    <div class="flex justify-center">
-                        <iframe src="https://otieu.com/4/9879176" 
-                                width="300" height="250" 
-                                frameborder="0" 
-                                scrolling="no"
-                                style="max-width: 100%; height: auto;">
-                        </iframe>
-                    </div>
-                    <p class="text-xs mt-2 text-gray-500">Advertisement</p>
                 </div>
             </div>
         </section>
@@ -495,61 +440,7 @@
 
     
     
-    <!-- Ad Scripts -->
     <script>
-        // Ad configuration (moved to DOMContentLoaded)
-
-        // Check if user has reached popup limit
-        function checkPopupLimit() {
-            const stored = localStorage.getItem('arenastreams_popups_' + window.match.id);
-            return stored ? parseInt(stored) : 0;
-        }
-
-        function updatePopupCount(count) {
-            localStorage.setItem('arenastreams_popups_' + window.match.id, count.toString());
-        }
-
-        // Trigger popup ads - ENABLED for monetization
-        function triggerPopups(count) {
-            console.log(`💰 Triggering ${count} popup ads...`);
-            
-            // Check if user has reached popup limit - USE MATCH ID ONLY
-            const sessionKey = 'arenastreams_popups_' + window.match.id;
-            let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-            const maxPopups = 8; // Match pages get 8 ads max (5 for play + 3 for other interactions)
-            
-            if (popupCount >= maxPopups) {
-                console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
-                return;
-            }
-            
-            // Trigger popup ads
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    try {
-                        const script = document.createElement('script');
-                        script.dataset.zone = '9879600';
-                        script.src = 'https://al5sm.com/tag.min.js';
-                        script.async = true;
-                        document.head.appendChild(script);
-                        
-                        popupCount++;
-                        localStorage.setItem(sessionKey, popupCount.toString());
-                        console.log(`✅ Popup ${i + 1} triggered via al5sm.com script (${popupCount}/${maxPopups})`);
-                        
-                        // Remove script after a short delay
-                        setTimeout(() => {
-                            if (script.parentNode) {
-                                script.parentNode.removeChild(script);
-                            }
-                        }, 3000);
-                    } catch (error) {
-                        console.log('❌ Popup failed:', error);
-                    }
-                }, i * 2000); // Stagger popups by 2 seconds
-            }
-        }
-
         // Stream player functionality (variables moved to DOMContentLoaded)
         
         // Load real streams from Streamed.pk if available
@@ -828,82 +719,14 @@
                 autoLoadStreams();
             }, 2000); // Wait 2 seconds for page to fully load
 
-            // Enhanced monetized popup ads using al5sm.com script
-            window.triggerPopups = function triggerPopups(count) {
-                console.log(`💰 Triggering ${count} popunder ads from al5sm.com...`);
-                
-                // Check if user has reached popup limit
-                const sessionKey = 'arenastreams_popups_' + window.match.id;
-                let popupCount = parseInt(localStorage.getItem(sessionKey) || '0');
-                const maxPopups = 6; // Increased to 6 to allow for light ads
-                
-                if (popupCount >= maxPopups) {
-                    console.log(`🚫 Popup limit reached (${popupCount}/${maxPopups})`);
-                    return;
-                }
-                
-                // Trigger popunder ads using al5sm.com script
-                for (let i = 0; i < count; i++) {
-                    setTimeout(() => {
-                        if (popupCount < maxPopups) {
-                            try {
-                                // Create and inject al5sm.com script for popunder
-                                const script = document.createElement('script');
-                                script.dataset.zone = '9879600';
-                                script.src = 'https://al5sm.com/tag.min.js';
-                                script.async = true;
-                                
-                                // Add to page to trigger popunder
-                                document.head.appendChild(script);
-                                
-                                popupCount++;
-                                localStorage.setItem(sessionKey, popupCount.toString());
-                                console.log(`✅ Popunder ${i + 1} triggered via al5sm.com script`);
-                                
-                                // Remove script after a short delay to prevent multiple loads
-                                setTimeout(() => {
-                                    if (script.parentNode) {
-                                        script.parentNode.removeChild(script);
-                                    }
-                                }, 3000);
-                                
-                                // Backup method: Direct popunder using al5sm.com
-                                setTimeout(() => {
-                                    if (Math.random() < 0.3) { // 30% chance for backup popunder - reduced for better UX
-                                        try {
-                                            const backupScript = document.createElement('script');
-                                            backupScript.dataset.zone = '9879600';
-                                            backupScript.src = 'https://al5sm.com/tag.min.js';
-                                            backupScript.async = true;
-                                            document.head.appendChild(backupScript);
-                                            
-                                            setTimeout(() => {
-                                                if (backupScript.parentNode) {
-                                                    backupScript.parentNode.removeChild(backupScript);
-                                                }
-                                            }, 2000);
-                                        } catch (error) {
-                                            console.log('❌ Backup popunder failed:', error);
-                                        }
-                                    }
-                                }, 2000);
-                                
-                            } catch (error) {
-                                console.log('❌ Popunder failed:', error);
-                            }
-                        }
-                    }, i * 2000); // Stagger popunders by 2 seconds
-                }
-            }
 
             // Play button functionality (First/Second click logic)
             playBtn.addEventListener('click', function() {
                 console.log('🎬 Play button clicked');
                 
                 if (!hasPlayedBefore) {
-                    // First click: Show overlay + trigger 1 popup only
-                    console.log('🎬 First click - triggering 1 popup');
-                    triggerPopups(1);
+                    // First click: Show overlay
+                    console.log('🎬 First click');
                     
                     // Show overlay message
                     streamPlaceholder.innerHTML = `
@@ -920,12 +743,7 @@
                     
                     // Add resume button event listener
                     document.getElementById('resume-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume button clicked - light ad then start stream');
-                        // Light ad on resume (30% chance) - doesn't block UX
-                        if (Math.random() < 0.3) {
-                            console.log('💰 Light resume ad triggered');
-                            triggerPopups(1);
-                        }
+                        console.log('🎬 Resume button clicked - start stream');
                         startStream();
                     });
                     
@@ -993,9 +811,8 @@
                         console.log('🎬 Play button clicked');
                         
                         if (!hasPlayedBefore) {
-                            // First click: Show overlay + trigger 5 popups (required before watching)
-                            console.log('🎬 First click - triggering 5 popups (required before watching)');
-                            triggerPopups(5);
+                            // First click: Show overlay
+                            console.log('🎬 First click');
                             
                             // Show overlay message
                             streamPlaceholder.innerHTML = `
@@ -1055,14 +872,9 @@
                     playPauseBtn.innerHTML = '▶️ Resume';
                     isStreamPlaying = false;
                     
-                    // Add resume button event listener - LIGHT AD
+                    // Add resume button event listener
                     document.getElementById('resume-stream-btn').addEventListener('click', function() {
-                        console.log('🎬 Resume stream button clicked - light ad then resume');
-                        // Light ad on resume (25% chance) - doesn't block UX
-                        if (Math.random() < 0.25) {
-                            console.log('💰 Light resume stream ad triggered');
-                            triggerPopups(1);
-                        }
+                        console.log('🎬 Resume stream button clicked - resume');
                         streamPlayer.classList.remove('hidden');
                         streamPlaceholder.style.display = 'none';
                         playPauseBtn.innerHTML = '⏸️ Pause';
@@ -1125,12 +937,6 @@
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('player-tab')) {
                     console.log('🎯 Player tab clicked:', e.target.dataset.player);
-                    
-                    // Light ad on player switch (20% chance) - doesn't block UX
-                    if (Math.random() < 0.2) {
-                        console.log('💰 Light player switch ad triggered');
-                        triggerPopups(1);
-                    }
                     
                     // Update active tab
                     const allTabs = document.querySelectorAll('.player-tab');
