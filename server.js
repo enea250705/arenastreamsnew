@@ -696,10 +696,12 @@ app.get('/match/:slug', async (req, res) => {
     try {
       const { getSupabaseClient } = require('./lib/supabase');
       const supabase = getSupabaseClient();
-      const { data: override } = await supabase.from('overrides').select('embed_urls').eq('slug', slug).single();
-      if (override && Array.isArray(override.embed_urls) && override.embed_urls.length > 0) {
-        matchData.embedUrls = override.embed_urls;
-        console.log(`✅ Applied ${override.embed_urls.length} override server(s) for slug ${slug}`);
+      if (supabase) {
+        const { data: override } = await supabase.from('overrides').select('embed_urls').eq('slug', slug).single();
+        if (override && Array.isArray(override.embed_urls) && override.embed_urls.length > 0) {
+          matchData.embedUrls = override.embed_urls;
+          console.log(`✅ Applied ${override.embed_urls.length} override server(s) for slug ${slug}`);
+        }
       }
     } catch (e) {
       console.log('Overrides lookup failed:', e.message);
