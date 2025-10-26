@@ -1,0 +1,55 @@
+==============================================
+   HOW TO UPLOAD FIXED HOMEPAGE TO GITHUB
+==============================================
+
+OPTION 1: GitHub Web Upload (EASIEST - No Git needed!)
+-------------------------------------------------------
+
+1. Open this URL in your browser:
+   https://github.com/enea250705/arenastreams100/blob/main/views/homepage.html
+
+2. Click the PENCIL icon (✏️) in the top right to Edit
+
+3. Select ALL content in the editor (Ctrl+A)
+
+4. Open this file on your computer:
+   C:\Users\eneam\Downloads\arenastreams100-2\views\homepage.html
+
+5. Select ALL content (Ctrl+A) and Copy (Ctrl+C)
+
+6. Go back to GitHub editor and Paste (Ctrl+V)
+
+7. Scroll down to "Commit changes"
+
+8. Enter this commit message:
+   "Fix homepage HTML structure - add missing closing tags"
+
+9. Make sure "Commit directly to main branch" is selected
+
+10. Click "Commit changes"
+
+11. Done! The fix will be live on Vercel in a few minutes.
+
+-------------------------------------------------------
+
+OPTION 2: Using Git (After installing Git)
+-------------------------------------------------------
+
+1. Install Git from the downloaded installer
+2. Open a NEW PowerShell window
+3. Run: cd C:\Users\eneam\Downloads\arenastreams100-2
+4. Run: .\push-to-github.bat
+5. Follow the prompts
+
+==============================================
+   WHAT WAS FIXED?
+==============================================
+
+✓ Added missing </section> tag
+✓ Added missing </main> tag  
+✓ Fixed whitelist modal structure
+✓ No linter errors
+✓ Homepage now displays correctly
+
+==============================================
+
