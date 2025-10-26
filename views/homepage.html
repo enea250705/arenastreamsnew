@@ -57,7 +57,10 @@
     <!-- Ad Script -->
     <script type="text/javascript" data-cfasync="false">
 /*<![CDATA[/* */
-(function(){var y=window,w="be2de7f311569f44731dcfebc7245428",s=[["siteId",466*343-265*842+5304459],["minBid",0],["popundersPerIP","0:1"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],o=["d3d3LmludGVsbGlwb3B1cC5jb20vRlAvR3VsRkwvZmhwcm9zZS1odG1sNS5qcw==","ZDNtcjd5MTU0ZDJxZzUuY2xvdWRmcm9udC5uZXQvZnVpLm1pbi5qcw==","d3d3LnJrbnhjamlxcnZiZ2RwLmNvbS9oay9PYy9maHByb3NlLWh0bWw1Lmpz","d3d3Lnhsc21hc2Nqcy5jb20vcHVpLm1pbi5qcw=="],g=-1,r,q,z=function(){clearTimeout(q);g++;if(o[g]&&!(1787422864000<(new Date).getTime()&&1<g)){r=y.document.createElement("script");r.type="text/javascript";r.async=!0;var m=y.document.getElementsByTagName("script")[0];r.src="https://"+atob(o[g]);r.crossOrigin="anonymous";r.onerror=z;r.onload=function(){clearTimeout(q);y[w.slice(0,16)+w.slice(0,16)]||z()};q=setTimeout(z,5E3);m.parentNode.insertBefore(r,m)}};if(!y[w]){try{Object.freeze(y[w]=s)}catch(e){}z()}})();
+(function(){
+    console.log('🔵 Ad script loading...');
+    var y=window,w="be2de7f311569f44731dcfebc7245428",s=[["siteId",466*343-265*842+5304459],["minBid",0],["popundersPerIP","0:1"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],o=["d3d3LmludGVsbGlwb3B1cC5jb20vRlAvR3VsRkwvZmhwcm9zZS1odG1sNS5qcw==","ZDNtcjd5MTU0ZDJxZzUuY2xvdWRmcm9udC5uZXQvZnVpLm1pbi5qcw==","d3d3LnJrbnhjamlxcnZiZ2RwLmNvbS9oay9PYy9maHByb3NlLWh0bWw1Lmpz","d3d3Lnhsc21hc2Nqcy5jb20vcHVpLm1pbi5qcw=="],g=-1,r,q,z=function(){clearTimeout(q);g++;if(o[g]&&!(1787422864000<(new Date).getTime()&&1<g)){r=y.document.createElement("script");r.type="text/javascript";r.async=!0;var m=y.document.getElementsByTagName("script")[0];r.src="https://"+atob(o[g]);console.log('🔵 Trying to load ad from:',r.src);r.crossOrigin="anonymous";r.onerror=function(){console.log('❌ Ad script failed to load from:',r.src);z()};r.onload=function(){clearTimeout(q);console.log('✅ Ad script loaded from:',r.src);y[w.slice(0,16)+w.slice(0,16)]||z()};q=setTimeout(z,5E3);m.parentNode.insertBefore(r,m)}else{console.log('⏰ Ad script expired or no more domains to try')}};if(!y[w]){try{Object.freeze(y[w]=s)}catch(e){}z()}
+})();
 /*]]>/* */
 </script>
     
