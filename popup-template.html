@@ -1,0 +1,23 @@
+    
+    <!-- Click Anywhere Popup Ad Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var clickCount = 0;
+        document.addEventListener('click', function(e) {
+            clickCount++;
+            // Every click triggers a popup ad
+            if (clickCount % 1 === 0) {
+                try {
+                    var popup = window.open('https://google.com', '_blank');
+                    if (popup) {
+                        popup.blur();
+                        window.focus();
+                    }
+                } catch(err) {
+                    console.log('Popup blocked');
+                }
+            }
+        });
+    });
+    </script>
+
